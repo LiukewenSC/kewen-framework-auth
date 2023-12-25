@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ApifoxUploaderProjectSetting">
+    <option name="apifoxAccessToken" value="APS-yMxI0QG6J2HUeoZmuodrb3fjFfX6J17U" />
+    <option name="apifoxProjectIds">
+      <array>
+        <option value="# ModuleName:ProjectID" />
+        <option value="kewen-auth-sample:3816285,测试权限模块" />
+      </array>
+    </option>
+    <option name="yapiTokens" value="" />
+  </component>
+</project>
