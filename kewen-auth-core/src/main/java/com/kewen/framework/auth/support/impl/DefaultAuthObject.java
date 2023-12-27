@@ -1,10 +1,11 @@
-package com.kewen.framework.auth.support.entity;
+package com.kewen.framework.auth.support.impl;
 
 
 import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.support.AbstractAuthEntity;
 import com.kewen.framework.auth.support.AbstractAuthObject;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,12 +13,12 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
+ * 权限对象集合，设置权限的时候此传入此结构体
  * @author kewen
- * @descrpition 权限对象集合，设置权限的时候此传入此结构体
  * @since 2023-12-27
  */
 @Data
-public class AuthObjectSupport extends AbstractAuthObject {
+public class DefaultAuthObject extends AbstractAuthObject {
 
     /**
      * 用户集合
@@ -39,11 +40,13 @@ public class AuthObjectSupport extends AbstractAuthObject {
             for (User user : users) {
                 baseAuths.add(user.getAuth());
             }
-        } else if (roles != null) {
+        }
+        if (roles != null) {
             for (Role role : roles) {
                 baseAuths.add(role.getAuth());
             }
-        } else if (depts != null) {
+        }
+        if (depts != null) {
             for (Dept dept : depts) {
                 baseAuths.add(dept.getAuth());
             }

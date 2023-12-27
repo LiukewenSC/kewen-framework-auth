@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.core.annotation.data.authedit;
 
 
-import com.kewen.framework.auth.core.annotation.AnnotationAuthAdaptor;
+import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.data.EditDataAuth;
 import com.kewen.framework.auth.exception.AuthCheckException;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -27,7 +27,7 @@ public class AuthDataEditAspect {
     private static final Logger log = LoggerFactory.getLogger(AuthDataEditAspect.class);
 
     @Autowired
-    private AnnotationAuthAdaptor annotationAuthAdaptor;
+    private AnnotationAuthHandler annotationAuthAdaptor;
 
 
 

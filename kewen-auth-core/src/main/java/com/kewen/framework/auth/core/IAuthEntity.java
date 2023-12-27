@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.model;
+package com.kewen.framework.auth.core;
 
 import com.kewen.framework.auth.core.BaseAuth;
 

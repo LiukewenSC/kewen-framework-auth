@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.support.entity;
+package com.kewen.framework.auth.support.impl;
 
 import com.kewen.framework.auth.support.AbstractAuthEntity;
 import lombok.Data;

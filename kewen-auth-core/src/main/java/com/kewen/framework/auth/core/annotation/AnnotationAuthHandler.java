@@ -9,7 +9,7 @@ import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseFiel
  * @author kewen
  * @since 2023-04-10
  */
-public interface AnnotationAuthAdaptor<ID> {
+public interface AnnotationAuthHandler<ID> {
 
 
     /**

@@ -1,9 +1,11 @@
 package com.kewen.framework.auth.support;
 
 import com.kewen.framework.auth.core.BaseAuth;
-import com.kewen.framework.auth.model.IAuthEntity;
+import com.kewen.framework.auth.core.IAuthEntity;
 import com.kewen.framework.auth.util.ClassUtil;
 import lombok.Data;
+
+import java.util.Objects;
 
 import static com.kewen.framework.auth.core.AuthConstant.AUTH_SPLIT;
 
@@ -58,7 +60,7 @@ public abstract class AbstractAuthEntity<ID> implements IAuthEntity {
         if (!authStrs[0].equals(flag())){
             throw new IllegalArgumentException();
         }
-        Class actualT = ClassUtil.parseActualT(this.getClass(), Object.class);
+        Class actualT = ClassUtil.parseSuperActualT(this.getClass(), Object.class);
         //这里也还是硬伤啊
         if (actualT== Integer.class){
             setId((ID)Integer.valueOf(authStrs[1]));
@@ -67,7 +69,19 @@ public abstract class AbstractAuthEntity<ID> implements IAuthEntity {
         } else if (actualT == String.class){
             setId((ID)authStrs[1]);
         }
-        setName(descStrs[2]);
+        setName(descStrs[1]);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractAuthEntity)) return false;
+        AbstractAuthEntity<?> that = (AbstractAuthEntity<?>) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

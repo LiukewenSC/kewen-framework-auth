@@ -13,7 +13,7 @@ import com.alibaba.druid.sql.parser.SQLParserUtils;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.util.JdbcConstants;
 import com.alibaba.druid.util.JdbcUtils;
-import com.kewen.framework.auth.core.annotation.AnnotationAuthAdaptor;
+import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.data.DataRange;
 import com.kewen.framework.auth.core.BaseAuth;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ import java.util.Properties;
 public class MybatisDataRangeInterceptor implements Interceptor {
 
     @Autowired
-    private AnnotationAuthAdaptor annotationAuthAdaptor;
+    private AnnotationAuthHandler annotationAuthAdaptor;
 
     public DataRangeDatabaseField getDataRangeDatabaseField() {
         return annotationAuthAdaptor.getDataRangeDatabaseField();

@@ -3,7 +3,7 @@ package com.kewen.framework.auth.core.annotation.data.edit;
 
 import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.data.CheckDataOperation;
-import com.kewen.framework.auth.core.annotation.AnnotationAuthAdaptor;
+import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.CurrentUserAuthContext;
 import com.kewen.framework.auth.exception.AuthCheckException;
 import org.aspectj.lang.JoinPoint;
@@ -30,7 +30,7 @@ public class DataCheckAspect {
     private static final Logger log = LoggerFactory.getLogger(DataCheckAspect.class);
 
     @Autowired
-    private AnnotationAuthAdaptor authHandler;
+    private AnnotationAuthHandler authHandler;
 
 
 

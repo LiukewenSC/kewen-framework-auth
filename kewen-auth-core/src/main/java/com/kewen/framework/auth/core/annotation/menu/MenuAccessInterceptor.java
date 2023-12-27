@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.core.annotation.menu;
 
 import com.kewen.framework.auth.core.IAuthObject;
-import com.kewen.framework.auth.core.annotation.AnnotationAuthAdaptor;
+import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.CurrentUserAuthContext;
 import com.kewen.framework.auth.exception.AuthCheckException;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MenuAccessInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private AnnotationAuthAdaptor authAdaptor;
+    private AnnotationAuthHandler authAdaptor;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {

@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.support.entity;
+package com.kewen.framework.auth.support.impl;
 
 import com.kewen.framework.auth.support.AbstractAuthEntity;
 import lombok.Data;
@@ -11,14 +11,14 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class Dept extends AbstractAuthEntity<Long> {
+public class Role extends AbstractAuthEntity<Long> {
 
 
-    public Dept() {
+    public Role() {
 
     }
 
-    public Dept(Long id , String name) {
+    public Role(Long id , String name) {
         this.id=id;
         this.name=name;
     }
@@ -26,6 +26,6 @@ public class Dept extends AbstractAuthEntity<Long> {
 
     @Override
     public String flag() {
-        return "USER";
+        return "ROLE";
     }
 }
