@@ -9,7 +9,7 @@ import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseFiel
  * @author kewen
  * @since 2023-04-10
  */
-public interface AnnotationAuthHandler<ID> {
+public interface AnnotationAuthHandler<A extends IAuthObject,ID> {
 
 
     /**
@@ -25,7 +25,7 @@ public interface AnnotationAuthHandler<ID> {
      * @param url
      * @return
      */
-    boolean hasMenuAccessAuth(IAuthObject authObject, String url) ;
+    boolean hasMenuAccessAuth(A authObject, String url) ;
 
 
 
@@ -43,7 +43,7 @@ public interface AnnotationAuthHandler<ID> {
      * @param businessId 业务id，如 1L 1011L等业务主键ID
      * @return 是否有权限
      */
-    boolean hasDataOperateAuths(IAuthObject authObject, String module, String operate, ID businessId);
+    boolean hasDataOperateAuths(A authObject, String module, String operate, ID businessId);
 
 
     /**

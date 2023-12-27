@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.extension;
+package com.kewen.framework.auth.support;
 
 import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
@@ -9,7 +9,7 @@ import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
  * @author kewen
  * @since 2023-12-26
  */
-public interface ExtensionAuthHandler<A extends IAuthObject,ID> extends AnnotationAuthHandler<ID> {
+public interface ExtensionAuthHandler<A extends IAuthObject,ID> extends AnnotationAuthHandler<A,ID> {
 
 
     /**
