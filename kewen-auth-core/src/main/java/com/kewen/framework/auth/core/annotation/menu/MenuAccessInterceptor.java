@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.core.annotation.menu;
 
+import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthAdaptor;
 import com.kewen.framework.auth.core.context.CurrentUserAuthContext;
 import com.kewen.framework.auth.exception.AuthCheckException;
@@ -11,7 +12,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
 
 /**
  * @descrpition 菜单权限校验拦截器，校验请求在菜单中配置的权限，
@@ -43,11 +43,11 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
             url = request.getRequestURI();
         }
         //获取当前用户的权限
-        Collection<String> userAuthorities = CurrentUserAuthContext.getAuths();
+        IAuthObject authObject = CurrentUserAuthContext.getAuthObject();
 
         //检查是否有菜单访问权限
         boolean hasMenuAuth = authAdaptor.hasMenuAccessAuth(
-                userAuthorities,
+                authObject,
                 url
         );
         if (!hasMenuAuth){

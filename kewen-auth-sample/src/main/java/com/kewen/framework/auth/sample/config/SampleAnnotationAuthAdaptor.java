@@ -1,11 +1,9 @@
 package com.kewen.framework.auth.sample.config;
 
+import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthAdaptor;
 import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseField;
 import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * @author kewen
@@ -13,7 +11,7 @@ import java.util.List;
  * @since 2023-12-26 14:36
  */
 @Component
-public class SampleAnnotationAuthAdaptor implements AnnotationAuthAdaptor {
+public class SampleAnnotationAuthAdaptor implements AnnotationAuthAdaptor<Long> {
 
     @Override
     public DataRangeDatabaseField getDataRangeDatabaseField() {
@@ -21,19 +19,18 @@ public class SampleAnnotationAuthAdaptor implements AnnotationAuthAdaptor {
     }
 
     @Override
-    public boolean hasMenuAccessAuth(Collection authorities, String url) {
-        System.out.println("hasMenuAccessAuth");
+    public boolean hasMenuAccessAuth(IAuthObject authObject, String url) {
         return false;
     }
 
     @Override
-    public boolean hasDataOperateAuths(Collection auths, String module, String operate, Object businessId) {
-        System.out.println("hasDataOperateAuths");
+    public boolean hasDataOperateAuths(IAuthObject authObject, String module, String operate, Long businessId) {
         return false;
     }
 
     @Override
-    public void editDataAuths(Object businessId, String module, String operate, List auths) {
-        System.out.println("editDataAuths success");
+    public void editDataAuths(Long businessId, String module, String operate, IAuthObject authObject) {
+
     }
+
 }

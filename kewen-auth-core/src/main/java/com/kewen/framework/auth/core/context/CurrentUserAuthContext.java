@@ -1,6 +1,8 @@
 package com.kewen.framework.auth.core.context;
 
 
+import com.kewen.framework.auth.core.IAuthObject;
+import com.kewen.framework.auth.core.BaseAuth;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -14,8 +16,11 @@ public class CurrentUserAuthContext implements ApplicationContextAware {
 
     private static CurrentAuthUserContextContainer container ;
 
-    public static Collection<String> getAuths() {
+    public static Collection<BaseAuth> getAuths() {
         return container.getAuths();
+    }
+    public static IAuthObject getAuthObject(){
+        return container.getAuthObject();
     }
 
     @Override

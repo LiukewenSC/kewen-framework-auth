@@ -1,5 +1,8 @@
 package com.kewen.framework.auth.core.context;
 
+import com.kewen.framework.auth.core.IAuthObject;
+import com.kewen.framework.auth.core.BaseAuth;
+
 import java.util.Collection;
 
 /**
@@ -14,7 +17,9 @@ public interface CurrentAuthUserContextContainer {
      * 获取用户权限
      * @return
      */
-    Collection<String> getAuths();
+    Collection<BaseAuth> getAuths();
 
     void setAuths(Collection<String> auths);
+
+    IAuthObject getAuthObject();
 }

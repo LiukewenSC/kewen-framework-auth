@@ -15,6 +15,7 @@ import com.alibaba.druid.util.JdbcConstants;
 import com.alibaba.druid.util.JdbcUtils;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthAdaptor;
 import com.kewen.framework.auth.core.annotation.data.DataRange;
+import com.kewen.framework.auth.core.BaseAuth;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -26,7 +27,6 @@ import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -121,8 +121,8 @@ public class MybatisDataRangeInterceptor implements Interceptor {
     }
     private String parseAuthWhereConditionSQL(DataRangeContext.AuthRange authContext,String mainTableAlias) {
         StringBuilder builder = new StringBuilder();
-        for (String authority : authContext.getAuthorities()) {
-            builder.append("'").append(authority).append("'").append(",");
+        for (BaseAuth baseAuth : authContext.getAuthorities()) {
+            builder.append("'").append(baseAuth.getAuth()).append("'").append(",");
         }
         //去掉最后一个,
         String authSept = builder.substring(0, builder.length() - 1);

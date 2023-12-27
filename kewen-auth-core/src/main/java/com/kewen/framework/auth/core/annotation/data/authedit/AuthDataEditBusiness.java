@@ -1,7 +1,8 @@
 package com.kewen.framework.auth.core.annotation.data.authedit;
 
 
-import com.kewen.framework.auth.core.annotation.model.AuthEntity;
+import com.kewen.framework.auth.core.IAuthObject;
+import com.kewen.framework.auth.support.AbstractAuthEntity;
 
 import java.util.List;
 
@@ -10,18 +11,18 @@ import java.util.List;
  * @author kewen
  * @since 2022-12-19
  */
-public interface AuthDataEditBusiness<T extends AuthEntity> {
+public interface AuthDataEditBusiness<ID> {
 
     /**
      * 获取业务ID
      * @return
      */
-    Long getBusinessId();
+    ID getBusinessId();
 
     /**
      * 获取权限对象
      * @return
      */
-    List<T> getAuthEntities();
+    IAuthObject  getAuthObject();
 
 }

@@ -2,6 +2,7 @@ package com.kewen.framework.auth.core.annotation.data.range;
 
 
 
+import com.kewen.framework.auth.core.BaseAuth;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -49,7 +50,7 @@ public class DataRangeContext {
         /**
          * 用户权限字符串
          */
-        private Collection<String> authorities;
+        private Collection<BaseAuth> authorities;
 
 
         /**

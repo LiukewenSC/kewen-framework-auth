@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.sample.controller;
 
+import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.data.authedit.AuthDataEditBusiness;
 import com.kewen.framework.auth.core.annotation.data.edit.ApplicationBusiness;
 import com.kewen.framework.auth.sample.mp.entity.SysMenu;
@@ -92,7 +93,7 @@ public class AuthAnnotationSampleController {
         }
     }
     @Data
-    public static class EditAuthDataEditBusiness implements AuthDataEditBusiness {
+    public static class EditAuthDataEditBusiness implements AuthDataEditBusiness<Long> {
 
         private Long id;
 
@@ -102,9 +103,10 @@ public class AuthAnnotationSampleController {
         }
 
         @Override
-        public List getAuthEntities() {
+        public IAuthObject getAuthObject() {
             return null;
         }
+
     }
 
 

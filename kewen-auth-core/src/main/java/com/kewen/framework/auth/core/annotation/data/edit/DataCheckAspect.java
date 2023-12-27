@@ -1,6 +1,7 @@
 package com.kewen.framework.auth.core.annotation.data.edit;
 
 
+import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.data.CheckDataOperation;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthAdaptor;
 import com.kewen.framework.auth.core.context.CurrentUserAuthContext;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -49,8 +49,8 @@ public class DataCheckAspect {
             throw new AuthCheckException("参数没有找到接口ApplicationBusiness实现类");
         }
         ApplicationBusiness business = (ApplicationBusiness) first.get();
-        Collection<String> userAuths = CurrentUserAuthContext.getAuths();
-        boolean hasAuth = authHandler.hasDataOperateAuths(userAuths, authAnn.module(), authAnn.operate(), business.getBusinessId());
+        IAuthObject authObject = CurrentUserAuthContext.getAuthObject();
+        boolean hasAuth = authHandler.hasDataOperateAuths(authObject, authAnn.module(), authAnn.operate(), business.getBusinessId());
         if (!hasAuth){
             throw new AuthCheckException("权限校验不通过");
         }

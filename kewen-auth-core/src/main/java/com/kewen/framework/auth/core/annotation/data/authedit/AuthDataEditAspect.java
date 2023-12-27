@@ -43,17 +43,20 @@ public class AuthDataEditAspect {
         if (args==null){
             throw new AuthCheckException("参数不能为空");
         }
-        Optional<Object> first = Arrays.stream(args).filter(a -> a instanceof AuthDataEditBusiness).findFirst();
+        Optional<AuthDataEditBusiness> first = Arrays.stream(args)
+                .filter(a -> a instanceof AuthDataEditBusiness)
+                .map(a ->(AuthDataEditBusiness)a)
+                .findFirst();
         if (!first.isPresent()){
             throw new AuthCheckException("参数没有找到接口 AuthDataEditBusiness 实现类");
         }
-        AuthDataEditBusiness authDataEditBusiness = (AuthDataEditBusiness) first.get();
+        AuthDataEditBusiness authDataEditBusiness = first.get();
 
         annotationAuthAdaptor.editDataAuths(
                 authDataEditBusiness.getBusinessId(),
                 checkDataAuthEdit.module(),
                 checkDataAuthEdit.operate(),
-                authDataEditBusiness.getAuthEntities());
+                authDataEditBusiness.getAuthObject());
 
         try {
             return joinPoint.proceed();
