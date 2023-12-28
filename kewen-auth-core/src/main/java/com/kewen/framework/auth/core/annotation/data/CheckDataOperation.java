@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.core.annotation.data;
 
 
-import com.kewen.framework.auth.core.annotation.data.edit.ApplicationBusiness;
+import com.kewen.framework.auth.core.annotation.data.edit.BusinessData;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  *  select business_id from sys_application_auth
  *  where application=#{application} and operate=#{operate} and business_id=#{businessId} and authority in ( #{用户权限} )
  *  limit 1
- * businessId需要关联获取 {@link ApplicationBusiness}
+ * businessId需要关联获取 {@link BusinessData}
  * @author kewen
  * @since 2022-11-23
  */

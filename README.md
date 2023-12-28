@@ -1,77 +1,128 @@
-# kewen-framework-auth
 
-#### 介绍
+# 介绍
 
-本项目是基于kewen-framework的权限管理框架，实现了RBAC权限管理，支持多角色，多权限，多资源，多菜单，多按钮，多数据权限，多数据范围，多数据规则，多数据过滤
+本项目是基于kewen-framework的权限管理框架，实现了权限的统一封装权限控制
 
-#### 功能说明
+# 模块功能说明
 
-本系统主要分为功能(菜单按钮)权限和资源(数据)权限
+## `kewen-auth-core` 
 
-- 功能权限主要控制菜单按钮的功能，从前端出发即表示一个登录人是否有权限访问某个菜单或点击某个按钮，从后台的角度出发即指是否能够访问某个请求
-- 资源权限主要是控制某个具体资源的操作（访问）权限，其重点一定是需要落到具体的某一条数据的。
+本模块主要提供基础的权限校验功能，包括：
 
-我们用会议室和公告这两个案例来做一个比喻
+- 菜单访问权限校验 `@CheckMenuAccess`。
+- 数据范围查询封装 `@DataRange`。
+- 数据操作校验  `@CheckDataOperation`。
+- 数据权限编辑 `@EditDataAuth`。
 
-- 功能权限： 添加会议室、修改会议室、删除会议室 的权限；添加、删除某一条公告 的权限
-- 数据权限： 会议室信息的修改，如修改会议室的描述；修改公告的内容或时间等；
+### 使用说明
 
-说明：某些项可能同时需要设置功能权限和数据权限；如会议室信息的修改，那么首先需要有会议室修改的功能权限，然后才可以执行修改操作，如果对此会议室修改指定了修改权限，那么用户还需要在资源修改的权限中才行。
-可能有的人会有疑问，那我有功能的修改权限却没有资源的修改权限，岂不是点击修改按钮就报错了？其实不会的，我们在查询用户可修改会议室的时候是需要带权限查询条件的，这样查询出来就是自己有权限修改的资源；
+#### 接口实现
 
-这里有一个特殊的，就是删除功能；需要指定资源的删除权限不？如果是管理员，应当可以有删除功能就可以删除（每一个资源赋予删除权限会很麻烦，但是这样就没了区别）；如果不是管理员，应当也可以删除自己的或者是被赋予了管理权限的
+1. 使用`kewen-auth-core`模块需要用户自行实现`AnnotationAuthHandler`接口，完成
 
-因此，应用自身需要控制好这两个度；管理员接口就直接校验功能权限就行了，分配的有权限执行的除了校验功能权限，还应当校验资源权限
+   - 数据范围权限的数据库字段定义
+   - 是否有菜单访问权限 判定
+   - 是否有某条数据的操作权限 判定
+   - 编辑某条数据权限的 实现逻辑
+    （本项目默认实现在`kewen-auth-impl`中，在starter中可以替换）
 
-如果有一个用户管理多个资源的情况，可以适当对资源进行分组，校验的时候校验分组的ID就可以了
+2. 用户登录逻辑自行控制，登录完成后每次请求的时候设置用户权限至 `UserAuthContextContainer`中
+   `UserAuthContextContainer`也有默认实现ThreadLocal方式，也可以修改，如spring-security的SecurityContextHolder方式
 
+#### 菜单访问权限校验 `@CheckMenuAccess`说明
 
+菜单访问权限通过webmvc的 `HandlerInterceptor` 来实现，应用在需要校验的Controller方法上加入注解`@CheckMenuAccess`即可.
+默认菜单会根据请求的url去对应后台配置的菜单链接
+如：
+```java
+@Controller
+@RequestMapping("/test")
+public class UserController {
+    /**
+     * 测试菜单控制
+     * @return
+     */
+    @CheckMenuAccess
+    @GetMapping("/checkMenu")
+    public String testCheckMenu() {
+        //......
+    }
+}
+```
 
+#### 数据范围查询封装 `@DataRange`说明
 
+数据范围查询封装，通过注解`@DataRange`来实现，在查询方法上加入注解`@DataRange`
+就可以实现不用再关注权限相关东西，业务直接调用即可范围查询即可
+如：
+```java
+@Controller
+@RequestMapping("/test")
+public class UserController {
 
+    /**
+     * 测试数据范围
+     * @return
+     */
+    @DataRange(module = "testauth")
+    @GetMapping("/dataRange")
+    public String testDataRange() {
+        //直接测试菜单的权限就知道了，
+        List<TestauthAnnotationBusiness> list = testauthAnnotationBusinessMpService.list();
+        System.out.println(list);
+        Assert.isTrue(list.size()==1, "菜单列表为空");
+        return "testDataRange";
+    }
+}
+```
 
-#### 软件环境
+#### 数据操作校验  `@CheckDataOperation`说明
 
-- JDK 1.8
-- MySQL 5.7
-- Redis 5.0.10
-- Maven 3.6.3
+数据权限校验，通过注解`@CheckDataOperation`来实现，需要校验的方法上加入注解`@CheckDataOperation`，同时，请求参数需要实现`BusinessData`接口
+如：
+```java
+@Controller
+@RequestMapping("/test")
+public class UserController {
 
+    /**
+     * 测试数据编辑
+     * @return
+     */
+    @PostMapping("/dataEdit")
+    @CheckDataOperation(module = "testedit")
+    public String testDataEdit(@RequestBody EditBusinessData editBusinessData) {
+        System.out.println("successEdit");
+        return "testDataEdit";
+    }
+}
+```
 
+#### 数据权限编辑封装 `@EditDataAuth`说明
 
-#### 软件版本
+数据权限编辑封装，通过注解`@EditDataAuth`来实现，需要校验的方法上加入注解`@EditDataAuth`，同时，请求参数需要实现`AuthDataEditBusiness`接口
+如：
+```java
+@Controller
+@RequestMapping("/test")
+public class UserController {
+    /**
+     * 测试数据权限编辑
+     * @return
+     */
+    @PostMapping("/dataAuthEdit")
+    @EditDataAuth(module = "testauth")
+    public String testDataAuthEdit(@RequestBody EditAuthDataEditBusiness applicationBusiness) {
 
-- 1.0.0-SNAPSHOT
+        return "testDataAuthEdit";
+    }
+ }
+```
 
-#### 软件架构
-软件架构说明
+#### 扩展实现
 
+定义了抽象的权限配置集合体，以及权限实体，用户可以统一使用此定义，方便快捷的对权限字符串和权限实体、权限集合体进行转换，从而转换成项目中可直观使用的权限集合体。
+默认已经有`DefaultAuthObject`实现，和基本的`User、Dept、Role`实体
+需要自定义实体的则 权限配置集合体继承`DefaultAuthObject`，权限实体则继承`AbstractIdNameAuthEntity`或实现`IAuthEntityProvider`
 
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+## `kewen-auth-core-starter`

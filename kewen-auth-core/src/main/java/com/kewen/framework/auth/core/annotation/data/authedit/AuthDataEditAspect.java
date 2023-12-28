@@ -3,15 +3,14 @@ package com.kewen.framework.auth.core.annotation.data.authedit;
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.data.EditDataAuth;
-import com.kewen.framework.auth.exception.AuthCheckException;
+import com.kewen.framework.auth.exception.AuthException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -20,13 +19,12 @@ import java.util.Optional;
  * @descrpition 编辑权限切面
  * @since 2022-12-19
  */
-@Component
 @Aspect
 public class AuthDataEditAspect {
 
     private static final Logger log = LoggerFactory.getLogger(AuthDataEditAspect.class);
 
-    @Autowired
+
     private AnnotationAuthHandler annotationAuthAdaptor;
 
 
@@ -41,14 +39,14 @@ public class AuthDataEditAspect {
         log.info("编辑业务权限，拦截方法:{}",joinPoint.toString());
         Object[] args = joinPoint.getArgs();
         if (args==null){
-            throw new AuthCheckException("参数不能为空");
+            throw new AuthException("参数不能为空");
         }
         Optional<AuthDataEditBusiness> first = Arrays.stream(args)
                 .filter(a -> a instanceof AuthDataEditBusiness)
                 .map(a ->(AuthDataEditBusiness)a)
                 .findFirst();
         if (!first.isPresent()){
-            throw new AuthCheckException("参数没有找到接口 AuthDataEditBusiness 实现类");
+            throw new AuthException("参数没有找到接口 AuthDataEditBusiness 实现类");
         }
         AuthDataEditBusiness authDataEditBusiness = first.get();
 
@@ -56,7 +54,7 @@ public class AuthDataEditAspect {
                 authDataEditBusiness.getBusinessId(),
                 checkDataAuthEdit.module(),
                 checkDataAuthEdit.operate(),
-                authDataEditBusiness.getAuthObject());
+                authDataEditBusiness.getAuthObject().listBaseAuth());
 
         try {
             return joinPoint.proceed();
@@ -66,4 +64,8 @@ public class AuthDataEditAspect {
         }
     }
 
+
+    public void setAnnotationAuthAdaptor(AnnotationAuthHandler annotationAuthAdaptor) {
+        this.annotationAuthAdaptor = annotationAuthAdaptor;
+    }
 }

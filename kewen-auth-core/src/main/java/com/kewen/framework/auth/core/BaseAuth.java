@@ -2,6 +2,8 @@ package com.kewen.framework.auth.core;
 
 import lombok.Data;
 
+import java.util.Objects;
+
 /**
  * 权限字符串，定义了基础的格式，所有的权限都按照此来转换
  * @author kewen
@@ -35,6 +37,19 @@ public class BaseAuth {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BaseAuth)) return false;
+        BaseAuth baseAuth = (BaseAuth) o;
+        return Objects.equals(auth, baseAuth.auth);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(auth);
     }
 
     @Override

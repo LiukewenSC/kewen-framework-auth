@@ -12,6 +12,7 @@
         <module>kewen-auth-core</module>
         <module>kewen-auth-sample</module>
         <module>kewen-auth-core-starter</module>
+        <module>kewen-auth-impl</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
     <properties>

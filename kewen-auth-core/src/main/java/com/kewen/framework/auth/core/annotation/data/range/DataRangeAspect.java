@@ -17,7 +17,6 @@ import java.util.Collection;
  * @author kewen
  * @since 2022-11-24 17:26
  */
-@Component
 @Aspect
 public class DataRangeAspect {
 

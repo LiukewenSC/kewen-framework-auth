@@ -2,12 +2,9 @@ package com.kewen.framework.auth.core.annotation.data.authedit;
 
 
 import com.kewen.framework.auth.core.IAuthObject;
-import com.kewen.framework.auth.support.AbstractAuthEntity;
-
-import java.util.List;
 
 /**
- * @descrpition 编辑权限
+ * @descrpition 数据的 编辑权限
  * @author kewen
  * @since 2022-12-19
  */
@@ -20,7 +17,7 @@ public interface AuthDataEditBusiness<ID> {
     ID getBusinessId();
 
     /**
-     * 获取权限对象
+     * 获取需要设置的权限集合体
      * @return
      */
     IAuthObject  getAuthObject();

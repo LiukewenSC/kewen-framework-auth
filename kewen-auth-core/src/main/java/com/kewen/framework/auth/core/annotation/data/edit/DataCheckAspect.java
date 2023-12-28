@@ -1,21 +1,20 @@
 package com.kewen.framework.auth.core.annotation.data.edit;
 
 
-import com.kewen.framework.auth.core.IAuthObject;
+import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.core.annotation.data.CheckDataOperation;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.CurrentUserAuthContext;
-import com.kewen.framework.auth.exception.AuthCheckException;
+import com.kewen.framework.auth.exception.AuthException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -23,14 +22,12 @@ import java.util.Optional;
  * @author kewen
  * @since 2022-11-25
  */
-@Component
 @Aspect
 public class DataCheckAspect {
 
     private static final Logger log = LoggerFactory.getLogger(DataCheckAspect.class);
 
-    @Autowired
-    private AnnotationAuthHandler authHandler;
+    private AnnotationAuthHandler annotationAuthHandler;
 
 
 
@@ -42,18 +39,21 @@ public class DataCheckAspect {
         log.info("校验用户权限，拦截方法:{}",joinPoint.toString());
         Object[] args = joinPoint.getArgs();
         if (args==null){
-            throw new AuthCheckException("参数不能为空");
+            throw new AuthException("参数不能为空");
         }
-        Optional<Object> first = Arrays.stream(args).filter(a -> a instanceof ApplicationBusiness).findFirst();
+        Optional<Object> first = Arrays.stream(args).filter(a -> a instanceof BusinessData).findFirst();
         if (!first.isPresent()){
-            throw new AuthCheckException("参数没有找到接口ApplicationBusiness实现类");
+            throw new AuthException("参数没有找到接口ApplicationBusiness实现类");
         }
-        ApplicationBusiness business = (ApplicationBusiness) first.get();
-        IAuthObject authObject = CurrentUserAuthContext.getAuthObject();
-        boolean hasAuth = authHandler.hasDataOperateAuths(authObject, authAnn.module(), authAnn.operate(), business.getBusinessId());
+        BusinessData business = (BusinessData) first.get();
+        Collection<BaseAuth> auths = CurrentUserAuthContext.getAuths();
+        boolean hasAuth = annotationAuthHandler.hasDataOperateAuths(auths, authAnn.module(), authAnn.operate(), business.getDataId());
         if (!hasAuth){
-            throw new AuthCheckException("权限校验不通过");
+            throw new AuthException("权限校验不通过");
         }
     }
 
+    public void setAnnotationAuthHandler(AnnotationAuthHandler annotationAuthHandler) {
+        this.annotationAuthHandler = annotationAuthHandler;
+    }
 }

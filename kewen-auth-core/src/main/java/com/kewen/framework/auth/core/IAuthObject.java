@@ -16,6 +16,10 @@ public interface IAuthObject {
      */
     Collection<BaseAuth> listBaseAuth();
 
-    void setPropertiesFromBaseAuth(Collection<BaseAuth> baseAuths);
+    /**
+     * 通过BaseAuth设置权限体的权限属性值
+     * @param baseAuths
+     */
+    void setProperties(Collection<BaseAuth> baseAuths);
 
 }

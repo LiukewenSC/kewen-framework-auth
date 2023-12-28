@@ -27,8 +27,6 @@ import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.util.Properties;
@@ -46,15 +44,14 @@ import java.util.Properties;
  * 通过 MyBatis 提供的强大机制，使用插件是非常简单的，只需实现 Interceptor 接口，并指定想要拦截的方法签名即可
  */
 @Slf4j
-@Component
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
 public class MybatisDataRangeInterceptor implements Interceptor {
 
-    @Autowired
-    private AnnotationAuthHandler annotationAuthAdaptor;
+
+    private AnnotationAuthHandler annotationAuthHandler;
 
     public DataRangeDatabaseField getDataRangeDatabaseField() {
-        return annotationAuthAdaptor.getDataRangeDatabaseField();
+        return annotationAuthHandler.getDataRangeDatabaseField();
     }
 
     /**
@@ -158,5 +155,9 @@ public class MybatisDataRangeInterceptor implements Interceptor {
 
     @Override
     public void setProperties(Properties properties) {
+    }
+
+    public void setAnnotationAuthHandler(AnnotationAuthHandler annotationAuthHandler) {
+        this.annotationAuthHandler = annotationAuthHandler;
     }
 }

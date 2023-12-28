@@ -2,10 +2,8 @@ package com.kewen.framework.auth.sample.controller;
 
 import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.data.authedit.AuthDataEditBusiness;
-import com.kewen.framework.auth.core.annotation.data.edit.ApplicationBusiness;
-import com.kewen.framework.auth.sample.mp.entity.SysMenu;
+import com.kewen.framework.auth.core.annotation.data.edit.BusinessData;
 import com.kewen.framework.auth.sample.mp.entity.TestauthAnnotationBusiness;
-import com.kewen.framework.auth.sample.mp.service.SysMenuMpService;
 import com.kewen.framework.auth.core.annotation.data.CheckDataOperation;
 import com.kewen.framework.auth.core.annotation.data.DataRange;
 import com.kewen.framework.auth.core.annotation.data.EditDataAuth;
@@ -55,7 +53,7 @@ public class AuthAnnotationSampleController {
      */
     @PostMapping("/dataEdit")
     @CheckDataOperation(module = "testedit")
-    public String testDataEdit(@RequestBody EditApplicationBusiness applicationBusiness) {
+    public String testDataEdit(@RequestBody EditBusinessData editBusinessData) {
         System.out.println("successEdit");
         return "testDataEdit";
     }
@@ -83,12 +81,12 @@ public class AuthAnnotationSampleController {
     }
 
     @Data
-    public static class EditApplicationBusiness implements ApplicationBusiness {
+    public static class EditBusinessData implements BusinessData {
 
         private Long id;
 
         @Override
-        public Long getBusinessId() {
+        public Long getDataId() {
             return id;
         }
     }

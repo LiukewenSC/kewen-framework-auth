@@ -1,17 +1,17 @@
 package com.kewen.framework.auth.core.annotation.menu;
 
+import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.CurrentUserAuthContext;
-import com.kewen.framework.auth.exception.AuthCheckException;
+import com.kewen.framework.auth.exception.AuthException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 
 /**
  * @descrpition 菜单权限校验拦截器，校验请求在菜单中配置的权限，
@@ -19,11 +19,9 @@ import javax.servlet.http.HttpServletResponse;
  * @author kewen
  * @since 2022-11-25
  */
-@Component
 public class MenuAccessInterceptor implements HandlerInterceptor {
 
-    @Autowired
-    private AnnotationAuthHandler authAdaptor;
+    private AnnotationAuthHandler annotationAuthHandler;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -43,16 +41,20 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
             url = request.getRequestURI();
         }
         //获取当前用户的权限
-        IAuthObject authObject = CurrentUserAuthContext.getAuthObject();
+        Collection<BaseAuth> auths = CurrentUserAuthContext.getAuths();
 
         //检查是否有菜单访问权限
-        boolean hasMenuAuth = authAdaptor.hasMenuAccessAuth(
-                authObject,
+        boolean hasMenuAuth = annotationAuthHandler.hasMenuAccessAuth(
+                auths,
                 url
         );
         if (!hasMenuAuth){
-            throw new AuthCheckException("没有菜单访问权限");
+            throw new AuthException("没有菜单访问权限");
         }
         return true;
+    }
+
+    public void setAnnotationAuthHandler(AnnotationAuthHandler annotationAuthHandler) {
+        this.annotationAuthHandler = annotationAuthHandler;
     }
 }

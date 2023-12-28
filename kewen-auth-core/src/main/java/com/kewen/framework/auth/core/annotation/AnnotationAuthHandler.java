@@ -1,7 +1,10 @@
 package com.kewen.framework.auth.core.annotation;
 
+import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.core.IAuthObject;
 import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseField;
+
+import java.util.Collection;
 
 /**
  *  权限处理器，对于注解涉及到的权限需要的实现都从这里完成
@@ -9,7 +12,7 @@ import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseFiel
  * @author kewen
  * @since 2023-04-10
  */
-public interface AnnotationAuthHandler<A extends IAuthObject,ID> {
+public interface AnnotationAuthHandler<ID> {
 
 
     /**
@@ -21,11 +24,11 @@ public interface AnnotationAuthHandler<A extends IAuthObject,ID> {
 
     /**
      * 是否有菜单访问权限
-     * @param authObject
+     * @param auths
      * @param url
      * @return
      */
-    boolean hasMenuAccessAuth(A authObject, String url) ;
+    boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String url) ;
 
 
 
@@ -37,13 +40,13 @@ public interface AnnotationAuthHandler<A extends IAuthObject,ID> {
 
     /**
      * 是否有某条数据的操作权限
-     * @param authObject 用户权限
+     * @param auths 用户权限
      * @param module 模块
      * @param operate 操作
-     * @param businessId 业务id，如 1L 1011L等业务主键ID
+     * @param dataId 业务id，如 1L 1011L等业务主键ID
      * @return 是否有权限
      */
-    boolean hasDataOperateAuths(A authObject, String module, String operate, ID businessId);
+    boolean hasDataOperateAuths(Collection<BaseAuth> auths, String module, String operate, ID dataId);
 
 
     /**
@@ -52,9 +55,9 @@ public interface AnnotationAuthHandler<A extends IAuthObject,ID> {
      * @param businessId 业务id
      * @param module 模块
      * @param operate 操作
-     * @param authObject 权限结构
+     * @param auths 权限结构
      */
-    void editDataAuths(ID businessId, String module, String operate, IAuthObject authObject);
+    void editDataAuths(ID businessId, String module, String operate, Collection<BaseAuth> auths);
 
 
 }
