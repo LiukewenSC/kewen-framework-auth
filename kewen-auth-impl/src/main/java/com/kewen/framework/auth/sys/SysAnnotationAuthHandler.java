@@ -5,8 +5,10 @@ import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseField;
 import com.kewen.framework.auth.sys.composite.SysDataAuthComposite;
 import com.kewen.framework.auth.sys.composite.SysMenuAuthComposite;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.Setter;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.util.Collection;
 
@@ -15,14 +17,11 @@ import java.util.Collection;
  * @author kewen
  * @since 2023-12-28
  */
-@Component
-public class DefaultAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
+public class SysAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
 
 
-    @Autowired
     SysMenuAuthComposite sysMenuAuthComposite;
 
-    @Autowired
     SysDataAuthComposite sysDataAuthComposite;
 
     @Override

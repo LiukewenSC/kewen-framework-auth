@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
  * @since 2023-04-07
  */
 @Service
-@Primary
 public class SysUserGroupMpServiceImpl extends ServiceImpl<SysUserGroupMpMapper, SysUserGroup> implements SysUserGroupMpService {
 
 }

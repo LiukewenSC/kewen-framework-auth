@@ -1,7 +1,7 @@
 
 # 介绍
 
-本项目是基于kewen-framework的权限管理框架，实现了权限的统一封装权限控制
+本项目是基于kewen-framework的权限管理框架，并在原基础上做了优化，更易于理解，实现了权限的统一封装权限控制
 
 # 模块功能说明
 
@@ -125,4 +125,4 @@ public class UserController {
 默认已经有`DefaultAuthObject`实现，和基本的`User、Dept、Role`实体
 需要自定义实体的则 权限配置集合体继承`DefaultAuthObject`，权限实体则继承`AbstractIdNameAuthEntity`或实现`IAuthEntityProvider`
 
-## `kewen-auth-core-starter`
+## `kewen-auth-starter`

@@ -6,10 +6,7 @@ import com.kewen.framework.auth.extension.AbstractAuthObject;
 import com.kewen.framework.auth.extension.IAuthEntityProvider;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * 权限对象集合体，设置权限的时候此传入此结构体
@@ -31,6 +28,16 @@ public class DefaultAuthObject extends AbstractAuthObject {
      * 部门集合
      */
     protected List<Dept> depts = new ArrayList<>();
+
+    public void addUsers(User... users){
+        this.users.addAll(Arrays.asList(users));
+    }
+    public void addDepts(Dept... depts){
+        this.depts.addAll(Arrays.asList(depts));
+    }
+    public void addRoles(Role... roles){
+        this.roles.addAll(Arrays.asList(roles));
+    }
 
     @Override
     public Collection<BaseAuth> listBaseAuth() {

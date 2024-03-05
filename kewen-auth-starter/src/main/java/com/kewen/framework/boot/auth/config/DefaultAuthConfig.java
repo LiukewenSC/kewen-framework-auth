@@ -1,10 +1,9 @@
 package com.kewen.framework.boot.auth.config;
 
-import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.UserAuthContextContainer;
-import com.kewen.framework.auth.sys.DefaultAnnotationAuthHandler;
 import com.kewen.framework.auth.support.ThreadLocalUserAuthContextContainer;
 import com.kewen.framework.auth.extension.model.DefaultAuthObject;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,17 +16,12 @@ import org.springframework.context.annotation.Configuration;
 public class DefaultAuthConfig {
 
     /**
-     * 注解权限处理器
+     * 用户权限上下文容器，默认注入ThreadLocal类型的
      * @return
      */
     @Bean
-
-    AnnotationAuthHandler annotationAuthHandler() {
-        return new DefaultAnnotationAuthHandler();
-    }
-
-    @Bean
-    UserAuthContextContainer<DefaultAuthObject> defaultCurrentAuthUserContextContainer(){
+    @ConditionalOnMissingBean(UserAuthContextContainer.class)
+    UserAuthContextContainer<DefaultAuthObject> userAuthContextContainer(){
         return new ThreadLocalUserAuthContextContainer();
     }
 

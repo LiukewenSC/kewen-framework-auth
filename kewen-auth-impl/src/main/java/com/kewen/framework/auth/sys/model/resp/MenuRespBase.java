@@ -1,7 +1,9 @@
 package com.kewen.framework.auth.sys.model.resp;
 
-import com.kewen.framework.auth.sys.constant.MenuTypeConstant;
+
 import lombok.Data;
+
+import com.kewen.framework.auth.sys.model.MenuTypeConstant;
 
 import java.time.LocalDateTime;
 

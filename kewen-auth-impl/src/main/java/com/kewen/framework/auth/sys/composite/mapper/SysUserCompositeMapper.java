@@ -14,16 +14,6 @@ import java.util.List;
  */
 @Mapper
 public interface SysUserCompositeMapper {
-    List<DeptPrimary> listUserDept(Long userId);
-
-    List<Role> listUserRole(@Param("userId") Long userId);
-
-    /**
-     * 查询用户岗位列表
-     * @param userId
-     * @return
-     */
-    List<Position> listUserPosition(@Param("userId") Long userId);
 
 
     /**

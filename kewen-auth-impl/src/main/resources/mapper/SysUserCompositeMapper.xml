@@ -3,12 +3,12 @@
 <mapper namespace="com.kewen.framework.auth.sys.composite.mapper.SysUserCompositeMapper">
 
 
-    <select id="listUserDept" resultType="com.kewen.framework.auth.sys.model.DeptPrimary">
+    <!--<select id="listUserDept" resultType="com.kewen.framework.auth.sys.model.DeptPrimary">
         select d.id,d.name,ud.is_primary from sys_user_dept ud inner join sys_dept d on ud.dept_id= d.id
         where ud.user_id=#{userId}
-    </select>
+    </select>-->
 
-    <select id="listUserPosition" resultType="com.kewen.framework.auth.sys.model.Position">
+    <!--<select id="listUserPosition" resultType="com.kewen.framework.auth.sys.model.Position">
         select p.id,p.name from sys_user_position up
                                     inner join sys_position p on up.position_id=p.id
         where up.user_id=#{userId}
@@ -17,7 +17,7 @@
     <select id="listUserRole" resultType="com.kewen.framework.auth.sys.model.Role">
         select r.id,r.name from sys_user_role sur inner join sys_role r on sur.role_id=r.id
         where sur.user_id=#{userId}
-    </select>
+    </select>-->
 
     <select id="hasAuth" resultType="java.lang.Integer">
         select 1 from sys_application_auth
