@@ -14,6 +14,8 @@
 - 数据操作校验  `@CheckDataOperation`。
 - 数据权限编辑 `@EditDataAuth`。
 
+本模块仅做了权限流程的抽象，并未对其实现，需要用户自行实现，也可以引入`kewen-auth-impl`默认实现模块
+
 ### 使用说明
 
 #### 接口实现
@@ -125,4 +127,16 @@ public class UserController {
 默认已经有`DefaultAuthObject`实现，和基本的`User、Dept、Role`实体
 需要自定义实体的则 权限配置集合体继承`DefaultAuthObject`，权限实体则继承`AbstractIdNameAuthEntity`或实现`IAuthEntityProvider`
 
+## `kewen-auth-impl`
+
+默认实现模块，对auth-core的权限有dept role user三个维度的默认实现，也可以通过继承替换添加更多的维度
+当然也可以不使用此模块，完全对core模块实现
+
 ## `kewen-auth-starter`
+
+默认的springboot启动器，引入即可以开箱即用，权限维度默认`kewen-auth-impl`的`User、Dept、Role`维度
+修改见`AuthImplConfig`类，注入自己的`SysDataAuthComposite`和`SysMenuAuthComposite`
+
+## `kewen-auth-sample`
+
+启动示例

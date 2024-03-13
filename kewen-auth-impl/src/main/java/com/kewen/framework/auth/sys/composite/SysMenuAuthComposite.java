@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @descrpition  菜单权限整合服务类
  * @author kewen
- * @since 2022-12-01 10:24
+ * @since 2022-12-01
  */
 public interface SysMenuAuthComposite {
     /**
