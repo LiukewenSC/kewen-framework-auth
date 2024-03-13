@@ -129,8 +129,8 @@ public class UserController {
 
 ## `kewen-auth-impl`
 
-默认实现模块，对auth-core的权限有dept role user三个维度的默认实现，也可以通过继承替换添加更多的维度
-当然也可以不使用此模块，完全对core模块实现
+默认实现模块，对`kewen-auth-core`的权限实现，有`Dept Role User`三个维度的默认实现，也可以通过继承替换添加更多的维度
+当然也可以不使用此模块，完全对core模块自行实现
 
 ## `kewen-auth-starter`
 
