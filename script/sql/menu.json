@@ -1,0 +1,354 @@
+{
+  "path": "/",
+  "redirect": "/home",
+  "component": "layout/index",
+  "children": [
+    {
+      "path": "/home",
+      "component": "home",
+      "icon": "el-icon-s-home",
+      "name": "首页",
+      "meta": {
+        "parent": "/home",
+        "affix": true,
+        "hidden": false,
+        "isExternalLinks": false,
+        "externalLinkUrl": null
+      }
+    },
+    {
+      "path": "/docs",
+      "component": "docs",
+      "icon": "el-icon-s-order",
+      "name": "文档",
+      "meta": {
+        "parent": "/docs",
+        "affix": true
+      }
+    },
+    {
+      "path": "/user",
+      "redirect": "/user/user-list",
+      "component": "layout/publics",
+      "icon": "el-icon-s-help",
+      "name": "用户",
+      "meta": {
+        "parent": "/user"
+      },
+      "children": [
+        {
+          "path": "/user/user-list",
+          "component": "user/list",
+          "parentPath": "/user",
+          "icon": "el-icon-s-platform",
+          "name": "网站用户",
+          "meta": {
+            "parent": "/user"
+          }
+        },
+        {
+          "path": "/user/user-admin",
+          "component": "user/admin",
+          "parentPath": "/user",
+          "icon": "el-icon-s-promotion",
+          "name": "后台管理员",
+          "meta": {
+            "parent": "/user"
+          }
+        },
+        {
+          "path": "/user/user-role",
+          "component": "user/role",
+          "parentPath": "/user",
+          "icon": "el-icon-s-custom",
+          "name": "菜单管理",
+          "meta": {
+            "parent": "/user"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/profile",
+      "component": "profile",
+      "icon": "el-icon-star-on",
+      "name": "个人中心",
+      "meta": {
+        "parent": "/profile",
+        "hidden": true
+      }
+    },
+    {
+      "path": "/menu",
+      "redirect": "/menu/menu1",
+      "component": "layout/publics",
+      "icon": "el-icon-s-data",
+      "name": "路由嵌套",
+      "meta": {
+        "parent": "/menu"
+      },
+      "children": [
+        {
+          "path": "/menu/menu1",
+          "component": "layout/publics",
+          "parentPath": "/menu",
+          "icon": "el-icon-s-operation",
+          "name": "菜单1",
+          "meta": {
+            "parent": "/menu"
+          },
+          "redirect": "/menu/menu1/menu1-1",
+          "children": [
+            {
+              "path": "/menu/menu1/menu1-1",
+              "component": "menu/menu1/menu1-1",
+              "parentPath": "/menu/menu1",
+              "icon": "el-icon-s-operation",
+              "name": "菜单1-1",
+              "meta": {
+                "parent": "/menu"
+              }
+            },
+            {
+              "path": "/menu/menu1/menu1-2",
+              "component": "layout/publics",
+              "parentPath": "/menu/menu1",
+              "icon": "el-icon-s-operation",
+              "name": "菜单1-2",
+              "meta": {
+                "parent": "/menu"
+              },
+              "redirect": "/menu/menu1/menu1-2/menu1-2-1",
+              "children": [
+                {
+                  "path": "/menu/menu1/menu1-2/menu1-2-1",
+                  "component": "menu/menu1/menu1-2/menu1-2-1",
+                  "parentPath": "/menu/menu1/menu1-2",
+                  "icon": "el-icon-s-operation",
+                  "name": "菜单1-2-1",
+                  "meta": {
+                    "parent": "/menu"
+                  }
+                },
+                {
+                  "path": "/menu/menu1/menu1-2/menu1-2-2",
+                  "component": "menu/menu1/menu1-2/menu1-2-2",
+                  "parentPath": "/menu/menu1/menu1-2",
+                  "icon": "el-icon-s-operation",
+                  "name": "菜单1-2-2",
+                  "meta": {
+                    "parent": "/menu"
+                  }
+                }
+              ]
+            },
+            {
+              "path": "/menu/menu1/menu1-3",
+              "component": "menu/menu1/menu1-3",
+              "parentPath": "/menu/menu1",
+              "icon": "el-icon-s-operation",
+              "name": "菜单1-3",
+              "meta": {
+                "parent": "/menu"
+              }
+            }
+          ]
+        },
+        {
+          "path": "/menu/menu2",
+          "component": "menu/menu2",
+          "parentPath": "/menu",
+          "icon": "el-icon-s-operation",
+          "name": "菜单2",
+          "meta": {
+            "parent": "/menu"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/demo",
+      "redirect": "/demo/filtering",
+      "component": "layout/publics",
+      "icon": "el-icon-star-on",
+      "name": "组件例子",
+      "meta": {
+        "parent": "/demo"
+      },
+      "children": [
+        {
+          "path": "/demo/filtering",
+          "component": "demo/filtering/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-s-marketing",
+          "name": "筛选组件",
+          "meta": {
+            "parent": "/demo"
+          }
+        },
+        {
+          "path": "/demo/filtering-details",
+          "component": "demo/filtering/component/details",
+          "parentPath": "/demo",
+          "icon": "el-icon-s-marketing",
+          "name": "筛选组件详情",
+          "meta": {
+            "parent": "/demo",
+            "hidden": true
+          }
+        },
+        {
+          "path": "/demo/v-charts",
+          "component": "demo/vCharts/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-data-analysis",
+          "name": "v-charts 图表",
+          "meta": {
+            "parent": "/demo"
+          }
+        },
+        {
+          "path": "externalLinkUrl",
+          "parentPath": "/demo",
+          "icon": "el-icon-s-data",
+          "name": "大数据可视化",
+          "meta": {
+            "isExternalLinks": true,
+            "externalLinkUrl": "/big-data"
+          }
+        },
+        {
+          "path": "/demo/tVSwitch",
+          "component": "demo/tVSwitch/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-s-platform",
+          "name": "仿电视开关机",
+          "meta": {
+            "parent": "/demo"
+          }
+        },
+        {
+          "path": "/demo/mavonEditor",
+          "component": "demo/mavonEditor/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-edit-outline",
+          "name": "富文本编辑器",
+          "meta": {
+            "parent": "/demo"
+          }
+        },
+        {
+          "path": "/demo/waterfall",
+          "component": "demo/waterfall/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-reading",
+          "name": "瀑布屏",
+          "meta": {
+            "parent": "/demo"
+          }
+        },
+        {
+          "path": "/demo/comment",
+          "component": "demo/comment/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-chat-line-square",
+          "name": "论坛评价",
+          "meta": {
+            "parent": "/demo"
+          }
+        },
+        {
+          "path": "/demo/treeControl",
+          "component": "demo/treeControl/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-finished",
+          "name": "Tree 树形控件",
+          "meta": {
+            "parent": "/demo"
+          }
+        },
+        {
+          "path": "/demo/tianditu",
+          "component": "demo/tianditu/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-location-information",
+          "name": "天地图",
+          "meta": {
+            "parent": "/demo"
+          }
+        },
+        {
+          "path": "/demo/table",
+          "component": "demo/table/index",
+          "parentPath": "/demo",
+          "icon": "el-icon-tickets",
+          "name": "表格",
+          "meta": {
+            "parent": "/demo"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/forms",
+      "redirect": "/forms/basic-form",
+      "component": "layout/publics",
+      "icon": "el-icon-notebook-2",
+      "name": "表单页",
+      "meta": {
+        "parent": "/forms"
+      },
+      "children": [
+        {
+          "path": "/forms/basic-form",
+          "component": "forms/basicForm/index",
+          "parentPath": "/forms",
+          "icon": "el-icon-cloudy",
+          "name": "基础表单",
+          "meta": {
+            "parent": "/forms"
+          }
+        },
+        {
+          "path": "/forms/step-form",
+          "component": "forms/stepForm/index",
+          "parentPath": "/forms",
+          "icon": "el-icon-partly-cloudy",
+          "name": "分步表单",
+          "meta": {
+            "parent": "/forms"
+          }
+        },
+        {
+          "path": "/forms/advanced-form",
+          "component": "forms/advancedForm/index",
+          "parentPath": "/forms",
+          "icon": "el-icon-cloudy-and-sunny",
+          "name": "高级表单",
+          "meta": {
+            "parent": "/forms"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/tools",
+      "component": "tools",
+      "icon": "el-icon-setting",
+      "name": "工具类集合",
+      "meta": {
+        "parent": "/tools"
+      }
+    },
+    {
+      "path": "externalLinkUrl",
+      "icon": "el-icon-link",
+      "name": "外链",
+      "meta": {
+        "isExternalLinks": true,
+        "externalLinkUrl": "https://www.baidu.com",
+        "externalLinkType": "open"
+      }
+    }
+  ]
+}

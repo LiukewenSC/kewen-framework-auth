@@ -9,7 +9,7 @@ import java.util.Collection;
  * @author kewen
  * @since 2023-12-28
  */
-public interface SysDataAuthComposite {
+public interface SysAuthDataComposite {
 
     /**
      * 查询用户手有某个业务操作的权限

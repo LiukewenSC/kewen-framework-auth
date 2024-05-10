@@ -15,8 +15,6 @@ public interface MenuTypeConstant {
         Integer MENU_TYPE_MENU = 1;
         // 按钮
         Integer MENU_TYPE_BUTTON = 2;
-        // 外部链接
-        Integer MENU_TYPE_EXTERNAL = 3;
     }
 
     /**

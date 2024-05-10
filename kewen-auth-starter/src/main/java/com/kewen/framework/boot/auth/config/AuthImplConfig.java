@@ -1,11 +1,11 @@
 package com.kewen.framework.boot.auth.config;
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.sys.SysAnnotationAuthHandler;
-import com.kewen.framework.auth.sys.composite.SysDataAuthComposite;
-import com.kewen.framework.auth.sys.composite.SysMenuAuthComposite;
-import com.kewen.framework.auth.sys.composite.impl.MemorySysMenuAuthComposite;
-import com.kewen.framework.auth.sys.composite.impl.SysDataAuthCompositeImpl;
+import com.kewen.framework.auth.sys.AnnotationAuthHandlerImpl;
+import com.kewen.framework.auth.sys.composite.SysAuthDataComposite;
+import com.kewen.framework.auth.sys.composite.SysAuthMenuComposite;
+import com.kewen.framework.auth.sys.composite.impl.MemorySysAuthMenuComposite;
+import com.kewen.framework.auth.sys.composite.impl.SysAuthDataCompositeImpl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 /**
  *  impl 实现相关
@@ -25,7 +24,7 @@ import org.springframework.context.annotation.Lazy;
 @Configuration
 @MapperScan({"com.kewen.framework.auth.sys.mp.mapper","com.kewen.framework.auth.sys.composite.mapper"})
 @ComponentScan("com.kewen.framework.auth.sys.mp.service.impl")
-@ConditionalOnClass(SysAnnotationAuthHandler.class)
+@ConditionalOnClass(AnnotationAuthHandlerImpl.class)
 public class AuthImplConfig {
 
     /**
@@ -45,7 +44,7 @@ public class AuthImplConfig {
         return new FactoryBean<AnnotationAuthHandler>() {
             @Override
             public AnnotationAuthHandler getObject() throws Exception {
-                return new SysAnnotationAuthHandler();
+                return new AnnotationAuthHandlerImpl();
             }
 
             @Override
@@ -60,9 +59,9 @@ public class AuthImplConfig {
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(SysDataAuthComposite.class)
-    SysDataAuthComposite sysDataAuthComposite(){
-        return new SysDataAuthCompositeImpl();
+    @ConditionalOnMissingBean(SysAuthDataComposite.class)
+    SysAuthDataComposite sysDataAuthComposite(){
+        return new SysAuthDataCompositeImpl();
     }
 
     /**
@@ -70,9 +69,9 @@ public class AuthImplConfig {
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(SysMenuAuthComposite.class)
-    SysMenuAuthComposite memorySysMenuAuthComposite(){
-        return new MemorySysMenuAuthComposite();
+    @ConditionalOnMissingBean(SysAuthMenuComposite.class)
+    SysAuthMenuComposite memorySysMenuAuthComposite(){
+        return new MemorySysAuthMenuComposite();
     }
 
 

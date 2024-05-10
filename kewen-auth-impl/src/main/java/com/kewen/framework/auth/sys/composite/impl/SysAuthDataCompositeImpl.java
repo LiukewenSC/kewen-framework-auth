@@ -1,17 +1,17 @@
 package com.kewen.framework.auth.sys.composite.impl;
 
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kewen.framework.auth.core.BaseAuth;
-import com.kewen.framework.auth.sys.composite.SysDataAuthComposite;
+import com.kewen.framework.auth.sys.composite.SysAuthDataComposite;
 import com.kewen.framework.auth.sys.composite.mapper.SysUserCompositeMapper;
-import com.kewen.framework.auth.sys.mp.entity.SysApplicationAuth;
-import com.kewen.framework.auth.sys.mp.service.SysApplicationAuthMpService;
+import com.kewen.framework.auth.sys.mp.entity.SysAuthData;
+import com.kewen.framework.auth.sys.mp.service.SysAuthDataMpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
  * @since 2023-12-28
  */
 @Component
-public class SysDataAuthCompositeImpl implements SysDataAuthComposite {
+public class SysAuthDataCompositeImpl implements SysAuthDataComposite {
 
     @Autowired
-    private SysApplicationAuthMpService applicationAuthService;
+    private SysAuthDataMpService applicationAuthService;
 
     @Autowired
     SysUserCompositeMapper sysUserCompositeMapper;
@@ -38,14 +38,14 @@ public class SysDataAuthCompositeImpl implements SysDataAuthComposite {
     public void editDataAuths(Long dataId, String module, String operate, Collection<BaseAuth> baseAuths) {
         //移除原有的
         applicationAuthService.remove(
-                new LambdaQueryWrapper<SysApplicationAuth>().eq(SysApplicationAuth::getBusinessId,dataId)
+                new LambdaQueryWrapper<SysAuthData>().eq(SysAuthData::getBusinessId,dataId)
         );
         //批量插入新的
         if (!CollectionUtils.isEmpty(baseAuths)){
             applicationAuthService.saveBatch(
                     baseAuths.stream()
                             .map(a->
-                                    new SysApplicationAuth()
+                                    new SysAuthData()
                                             .setBusinessId(dataId)
                                             .setModule(module)
                                             .setOperate(operate)

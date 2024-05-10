@@ -140,3 +140,7 @@ public class UserController {
 ## `kewen-auth-sample`
 
 启动示例
+
+# 工程过程记录
+
+- sys_menu用mybatis-plus自动生成的代码，改动过，meta 属性添加了typeHandler

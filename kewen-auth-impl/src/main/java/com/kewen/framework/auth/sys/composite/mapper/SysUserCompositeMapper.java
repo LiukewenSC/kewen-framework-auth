@@ -26,5 +26,6 @@ public interface SysUserCompositeMapper {
      */
     Integer hasAuth(@Param("auths") Collection<BaseAuth> auths, @Param("module") String module, @Param("operate") String operate, @Param("businessId") Long businessId);
 
+    void selectMenuAuths();
 
 }

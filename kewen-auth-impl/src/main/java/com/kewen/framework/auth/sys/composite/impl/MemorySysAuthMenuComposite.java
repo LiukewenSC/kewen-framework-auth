@@ -2,18 +2,19 @@ package com.kewen.framework.auth.sys.composite.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.LoadingCache;
 import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.extension.model.DefaultAuthObject;
-import com.kewen.framework.auth.sys.composite.SysMenuAuthComposite;
+import com.kewen.framework.auth.sys.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.sys.model.MenuTypeConstant;
 import com.kewen.framework.auth.sys.model.req.MenuSaveReq;
 import com.kewen.framework.auth.sys.model.resp.MenuResp;
 import com.kewen.framework.auth.sys.model.resp.MenuRespBase;
-import com.kewen.framework.auth.sys.mp.entity.SysApplicationAuth;
+import com.kewen.framework.auth.sys.mp.entity.SysAuthMenu;
 import com.kewen.framework.auth.sys.mp.entity.SysMenu;
-import com.kewen.framework.auth.sys.mp.entity.SysMenuAuth;
-import com.kewen.framework.auth.sys.mp.service.SysApplicationAuthMpService;
-import com.kewen.framework.auth.sys.mp.service.SysMenuAuthMpService;
+import com.kewen.framework.auth.sys.mp.service.SysAuthMenuMpService;
 import com.kewen.framework.auth.sys.mp.service.SysMenuMpService;
 import com.kewen.framework.auth.util.BeanUtil;
 import com.kewen.framework.auth.util.TreeUtil;
@@ -24,12 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -39,28 +42,24 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class MemorySysMenuAuthComposite implements SysMenuAuthComposite {
+public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     @Autowired
     private SysMenuMpService sysMenuService;
     @Autowired
-    private SysMenuAuthMpService menuAuthService;
-
+    private SysAuthMenuMpService menuAuthService;
 
     /**
-     * 接口为懒加载， 第一次调用 getSysMenuAuths() 方法生效，不要直接调用属性
+     * 菜单、权限的缓存
      */
-    private List<SysMenuAuth> sysMenuAuths;
-    /**
-     * 接口为懒加载， 第一次调用 sysMenus() 方法生效，不要直接调用属性
-     */
-    private List<SysMenu> sysMenus ;
+    Cache<Object, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
-    private boolean usedCache = false;
+
+
 
     @Override
     public boolean hasMenuAuth(Collection<BaseAuth> authorities, String url) {
         //SysMenu sysMenu = menuService.getMenuByUrl(url);
-        Optional<SysMenu> sysMenuOptional = getSysMenus().stream().filter(m -> Objects.equals(m.getUrl(),url)).findFirst();
+        Optional<SysMenu> sysMenuOptional = getSysMenus().stream().filter(m -> Objects.equals(m.getPath(),url)).findFirst();
         if (!sysMenuOptional.isPresent()){
             return false;
         }
@@ -71,14 +70,14 @@ public class MemorySysMenuAuthComposite implements SysMenuAuthComposite {
     @Override
     public List<MenuResp> getMenuTree() {
         List<SysMenu> sysMenus = getSysMenus();
-        Map<Long, List<SysMenuAuth>> authByMenuMap = getSysMenuAuths().stream()
-                .collect(Collectors.groupingBy(SysMenuAuth::getMenuId));
+        Map<Long, List<SysAuthMenu>> authByMenuMap = getSysMenuAuths().stream()
+                .collect(Collectors.groupingBy(SysAuthMenu::getMenuId));
         List<MenuResp> collect = sysMenus.stream()
                 .map(l -> BeanUtil.toBean(l, MenuResp.class))
                 .peek(m-> {
-                    List<SysMenuAuth> sysMenuAuths = authByMenuMap.get(m.getId());
-                    if (sysMenuAuths!=null){
-                        List<BaseAuth> authList = sysMenuAuths.stream()
+                    List<SysAuthMenu> SysAuthMenus = authByMenuMap.get(m.getId());
+                    if (SysAuthMenus!=null){
+                        List<BaseAuth> authList = SysAuthMenus.stream()
                                 .map(a -> new BaseAuth(a.getAuthority(), a.getDescription()))
                                 .collect(Collectors.toList());
                         DefaultAuthObject authObject = new DefaultAuthObject();
@@ -112,14 +111,14 @@ public class MemorySysMenuAuthComposite implements SysMenuAuthComposite {
     public void editMenuAuthorities(Long menuId, Collection<BaseAuth> baseAuths) {
         //移除原有的
         menuAuthService.remove(
-                new LambdaQueryWrapper<SysMenuAuth>().eq(SysMenuAuth::getMenuId,menuId)
+                new LambdaQueryWrapper<SysAuthMenu>().eq(SysAuthMenu::getMenuId,menuId)
         );
         //批量插入新的
         if (!CollectionUtils.isEmpty(baseAuths)){
             menuAuthService.saveBatch(
                     baseAuths.stream()
                             .map(a->
-                                    new SysMenuAuth()
+                                    new SysAuthMenu()
                                             .setMenuId(menuId)
                                             .setAuthority(a.getAuth())
                                             .setDescription(a.getDescription())
@@ -164,8 +163,8 @@ public class MemorySysMenuAuthComposite implements SysMenuAuthComposite {
         sysMenuService.removeBatchByIds(menuIds);
         //移除菜单权限
         menuAuthService.remove(
-                new LambdaQueryWrapper<SysMenuAuth>()
-                        .in(SysMenuAuth::getMenuId,menuIds)
+                new LambdaQueryWrapper<SysAuthMenu>()
+                        .in(SysAuthMenu::getMenuId,menuIds)
         );
     }
 
@@ -236,44 +235,35 @@ public class MemorySysMenuAuthComposite implements SysMenuAuthComposite {
     }
 
     /**
-     * 懒加载获取菜单列表
+     * 获取菜单列表
      * @return
      */
     private List<SysMenu> getSysMenus(){
-        if (!usedCache){
-            return sysMenuService.list();
+        try {
+            return (List<SysMenu>)cache.get("menus", new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    return sysMenuService.list();
+                }
+            });
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
-        if (this.sysMenus !=null){
-            return this.sysMenus;
-        }
-        List<SysMenu> sysMenus = sysMenuService.list();
-        if (sysMenus==null){
-            this.sysMenus=Collections.emptyList();
-        }
-        this.sysMenus=sysMenus;
-        return this.sysMenus;
     }
-
     /**
-     * 懒加载获取菜单权限列表
+     * 获取菜单权限
      * @return
      */
-    private List<SysMenuAuth> getSysMenuAuths(){
-        if (!usedCache){
-            return menuAuthService.list();
+    private List<SysAuthMenu> getSysMenuAuths(){
+        try {
+            return (List<SysAuthMenu>)cache.get("menus", new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    return menuAuthService.list();
+                }
+            });
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
-        if (this.sysMenuAuths !=null){
-            return this.sysMenuAuths;
-        }
-        List<SysMenuAuth> sysMenuAuths = menuAuthService.list();
-        if (sysMenuAuths==null){
-            this.sysMenuAuths=Collections.emptyList();
-        }
-        this.sysMenuAuths=sysMenuAuths;
-        return this.sysMenuAuths;
     }
-
-
-
-
 }

@@ -14,7 +14,7 @@ import java.util.List;
  * @author kewen
  * @since 2022-12-01
  */
-public interface SysMenuAuthComposite {
+public interface SysAuthMenuComposite {
     /**
      * 校验用户的菜单权限
      * @param authorities 用户权限字符串

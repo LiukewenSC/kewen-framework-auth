@@ -17,17 +17,6 @@ import java.util.List;
 @Data
 public class MenuResp extends MenuRespBase implements TreeUtil.TreeBase<MenuResp,Long>{
 
-    private DefaultAuthObject authObject;
-
     private List<MenuResp> children;
 
-
-    @Override
-    public void setChildren(List<MenuResp> children) {
-        this.children = children;
-    }
-
-    public List<MenuResp> getChildren() {
-        return children;
-    }
 }

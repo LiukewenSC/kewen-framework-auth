@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.sys.mp.service;
 
+import com.kewen.framework.auth.sys.mp.entity.SysAuthData;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.kewen.framework.auth.sys.mp.entity.SysApplicationAuth;
 
 
 /**
@@ -10,8 +10,8 @@ import com.kewen.framework.auth.sys.mp.entity.SysApplicationAuth;
  * </p>
  *
  * @author kewen
- * @since 2023-04-07
+ * @since 2024-05-10
  */
-public interface SysApplicationAuthMpService extends IService<SysApplicationAuth> {
+public interface SysAuthDataMpService extends IService<SysAuthData> {
 
 }
