@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.extension.model;
+package com.kewen.framework.auth.support.model;
 
 import com.kewen.framework.auth.extension.AbstractIdNameAuthEntity;
 import lombok.Data;
@@ -11,21 +11,25 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class User extends AbstractIdNameAuthEntity<Long> {
+public class Dept extends AbstractIdNameAuthEntity<Long> {
 
 
-    public User() {
+    public Dept() {
         super();
     }
 
-    public User(Long id , String name) {
+    public Dept(Long id , String name) {
         this.id=id;
         this.name=name;
     }
 
 
+    /**
+     * 权限标记
+     * @return
+     */
     @Override
     public String flag() {
-        return "USER";
+        return "DEPT";
     }
 }

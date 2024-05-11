@@ -1,9 +1,12 @@
-package com.kewen.framework.auth.extension.model;
+package com.kewen.framework.auth.support;
 
 
 import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.extension.AbstractAuthObject;
 import com.kewen.framework.auth.extension.IAuthEntityProvider;
+import com.kewen.framework.auth.support.model.Dept;
+import com.kewen.framework.auth.support.model.Role;
+import com.kewen.framework.auth.support.model.User;
 import lombok.Data;
 
 import java.util.*;
@@ -14,7 +17,7 @@ import java.util.*;
  * @since 2023-12-27
  */
 @Data
-public class DefaultAuthObject extends AbstractAuthObject {
+public class SimpleAuthObject extends AbstractAuthObject {
 
     /**
      * 用户集合

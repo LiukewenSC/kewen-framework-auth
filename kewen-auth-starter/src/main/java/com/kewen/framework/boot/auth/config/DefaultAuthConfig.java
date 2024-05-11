@@ -1,8 +1,7 @@
 package com.kewen.framework.boot.auth.config;
 
 import com.kewen.framework.auth.core.context.UserAuthContextContainer;
-import com.kewen.framework.auth.support.ThreadLocalUserAuthContextContainer;
-import com.kewen.framework.auth.extension.model.DefaultAuthObject;
+import com.kewen.framework.auth.support.SimpleThreadLocalUserAuthContextContainer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +20,8 @@ public class DefaultAuthConfig {
      */
     @Bean
     @ConditionalOnMissingBean(UserAuthContextContainer.class)
-    UserAuthContextContainer<DefaultAuthObject> userAuthContextContainer(){
-        return new ThreadLocalUserAuthContextContainer();
+    SimpleThreadLocalUserAuthContextContainer userAuthContextContainer(){
+        return new SimpleThreadLocalUserAuthContextContainer();
     }
 
 }

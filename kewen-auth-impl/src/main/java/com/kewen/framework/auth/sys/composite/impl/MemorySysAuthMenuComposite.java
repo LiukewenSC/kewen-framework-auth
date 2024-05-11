@@ -4,9 +4,8 @@ package com.kewen.framework.auth.sys.composite.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.LoadingCache;
 import com.kewen.framework.auth.core.BaseAuth;
-import com.kewen.framework.auth.extension.model.DefaultAuthObject;
+import com.kewen.framework.auth.support.SimpleAuthObject;
 import com.kewen.framework.auth.sys.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.sys.model.MenuTypeConstant;
 import com.kewen.framework.auth.sys.model.req.MenuSaveReq;
@@ -20,7 +19,6 @@ import com.kewen.framework.auth.util.BeanUtil;
 import com.kewen.framework.auth.util.TreeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -41,12 +39,13 @@ import java.util.stream.Collectors;
  * @since 2022-12-01 10:21
  */
 @Slf4j
-@Component
 public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     @Autowired
     private SysMenuMpService sysMenuService;
     @Autowired
     private SysAuthMenuMpService menuAuthService;
+
+    private boolean isCache = false;
 
     /**
      * 菜单、权限的缓存
@@ -80,7 +79,7 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
                         List<BaseAuth> authList = SysAuthMenus.stream()
                                 .map(a -> new BaseAuth(a.getAuthority(), a.getDescription()))
                                 .collect(Collectors.toList());
-                        DefaultAuthObject authObject = new DefaultAuthObject();
+                        SimpleAuthObject authObject = new SimpleAuthObject();
                         authObject.setProperties(authList);
                     }
                 })
@@ -239,6 +238,9 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
      * @return
      */
     private List<SysMenu> getSysMenus(){
+        if (!isCache){
+            return sysMenuService.list();
+        }
         try {
             return (List<SysMenu>)cache.get("menus", new Callable<Object>() {
                 @Override
@@ -255,8 +257,11 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
      * @return
      */
     private List<SysAuthMenu> getSysMenuAuths(){
+        if (!isCache){
+            return menuAuthService.list();
+        }
         try {
-            return (List<SysAuthMenu>)cache.get("menus", new Callable<Object>() {
+            return (List<SysAuthMenu>)cache.get("menuAuths", new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
                     return menuAuthService.list();

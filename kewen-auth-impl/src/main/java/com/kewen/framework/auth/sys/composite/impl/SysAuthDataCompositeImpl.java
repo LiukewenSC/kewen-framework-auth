@@ -4,11 +4,10 @@ package com.kewen.framework.auth.sys.composite.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.sys.composite.SysAuthDataComposite;
-import com.kewen.framework.auth.sys.composite.mapper.SysUserCompositeMapper;
+import com.kewen.framework.auth.sys.composite.mapper.SysUserUnionCompositeMapper;
 import com.kewen.framework.auth.sys.mp.entity.SysAuthData;
 import com.kewen.framework.auth.sys.mp.service.SysAuthDataMpService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
@@ -18,19 +17,18 @@ import java.util.stream.Collectors;
  * @author kewen
  * @since 2023-12-28
  */
-@Component
 public class SysAuthDataCompositeImpl implements SysAuthDataComposite {
 
     @Autowired
     private SysAuthDataMpService applicationAuthService;
 
     @Autowired
-    SysUserCompositeMapper sysUserCompositeMapper;
+    SysUserUnionCompositeMapper sysUserUnionCompositeMapper;
 
 
     @Override
     public boolean hasDataAuth(Collection<BaseAuth> auths, String module, String operate, Long dataId) {
-        Integer integer = sysUserCompositeMapper.hasAuth(auths, module, operate, dataId);
+        Integer integer = sysUserUnionCompositeMapper.hasAuth(auths, module, operate, dataId);
         return integer > 0;
     }
 

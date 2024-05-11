@@ -1,11 +1,11 @@
 package com.kewen.framework.auth.sys.composite.mapper;
 
 import com.kewen.framework.auth.core.BaseAuth;
+import com.kewen.framework.auth.support.SimpleAuthObject;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author kewen
@@ -13,7 +13,7 @@ import java.util.List;
  * @since 2023-04-07
  */
 @Mapper
-public interface SysUserCompositeMapper {
+public interface SysUserUnionCompositeMapper {
 
 
     /**
@@ -28,4 +28,10 @@ public interface SysUserCompositeMapper {
 
     void selectMenuAuths();
 
+    /**
+     * 查找用户的角色、机构等
+     * @param id
+     * @return
+     */
+    SimpleAuthObject getUserAuthObject(@Param("id") Long id);
 }

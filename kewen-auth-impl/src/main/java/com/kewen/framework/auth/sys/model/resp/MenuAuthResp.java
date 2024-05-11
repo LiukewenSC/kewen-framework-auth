@@ -1,6 +1,6 @@
 package com.kewen.framework.auth.sys.model.resp;
 
-import com.kewen.framework.auth.extension.model.DefaultAuthObject;
+import com.kewen.framework.auth.support.SimpleAuthObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,6 +8,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class MenuAuthResp extends MenuResp {
 
-    private DefaultAuthObject authObject;
+    private SimpleAuthObject authObject;
 
 }

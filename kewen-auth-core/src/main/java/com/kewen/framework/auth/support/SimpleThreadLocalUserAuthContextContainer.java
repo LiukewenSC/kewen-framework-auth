@@ -2,7 +2,6 @@ package com.kewen.framework.auth.support;
 
 import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.core.context.UserAuthContextContainer;
-import com.kewen.framework.auth.extension.model.DefaultAuthObject;
 
 import java.util.Collection;
 
@@ -11,23 +10,23 @@ import java.util.Collection;
  * @author kewen
  * @since 2023-12-28
  */
-public class ThreadLocalUserAuthContextContainer<T extends DefaultAuthObject> implements UserAuthContextContainer<T> {
+public class SimpleThreadLocalUserAuthContextContainer implements UserAuthContextContainer<SimpleAuthObject> {
 
 
-    private static final ThreadLocal<Object> AUTH_OBJECT_THREAD_LOCAL = new InheritableThreadLocal<>();
+    private static final ThreadLocal<SimpleAuthObject> AUTH_OBJECT_THREAD_LOCAL = new InheritableThreadLocal<>();
 
     @Override
     public Collection<BaseAuth> getAuths() {
-        return ((T) AUTH_OBJECT_THREAD_LOCAL.get()).listBaseAuth();
+        return AUTH_OBJECT_THREAD_LOCAL.get().listBaseAuth();
     }
 
     @Override
-    public void setAuthObject(T authObject) {
+    public void setAuthObject(SimpleAuthObject authObject) {
         AUTH_OBJECT_THREAD_LOCAL.set(authObject);
     }
 
     @Override
-    public T getAuthObject() {
-        return ((T) AUTH_OBJECT_THREAD_LOCAL.get());
+    public SimpleAuthObject getAuthObject() {
+        return ( AUTH_OBJECT_THREAD_LOCAL.get());
     }
 }

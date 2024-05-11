@@ -12,6 +12,6 @@ public class WebSampleConfig implements WebMvcConfigurer {
     LoginHandlerInterceptor loginHandlerInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginHandlerInterceptor);
+        registry.addInterceptor(loginHandlerInterceptor).excludePathPatterns("/user/login");
     }
 }

@@ -4,8 +4,10 @@ import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.sys.AnnotationAuthHandlerImpl;
 import com.kewen.framework.auth.sys.composite.SysAuthDataComposite;
 import com.kewen.framework.auth.sys.composite.SysAuthMenuComposite;
+import com.kewen.framework.auth.sys.composite.SysUserComposite;
 import com.kewen.framework.auth.sys.composite.impl.MemorySysAuthMenuComposite;
 import com.kewen.framework.auth.sys.composite.impl.SysAuthDataCompositeImpl;
+import com.kewen.framework.auth.sys.composite.impl.SysUserCompositeImpl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -73,6 +75,19 @@ public class AuthImplConfig {
     SysAuthMenuComposite memorySysMenuAuthComposite(){
         return new MemorySysAuthMenuComposite();
     }
+
+
+
+    /**
+     * 用户相关
+     * @return
+     */
+    @Bean
+    @ConditionalOnMissingBean(SysUserComposite.class)
+    SysUserComposite sysUserComposite(){
+        return new SysUserCompositeImpl();
+    }
+
 
 
 }

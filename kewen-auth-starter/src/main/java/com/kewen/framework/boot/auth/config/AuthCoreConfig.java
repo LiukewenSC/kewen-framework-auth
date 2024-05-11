@@ -87,13 +87,6 @@ public class AuthCoreConfig {
 
 
     /*--------------------------------------core.annotation.menu下配置--------------------------------------*/
-
-    /**
-     * 用户上下文容器
-     */
-    @Autowired
-    UserAuthContextContainer currentAuthUserContextContainer;
-
     /**
      * 创建用户上下文
      * @return
@@ -101,7 +94,6 @@ public class AuthCoreConfig {
     @Bean
     CurrentUserAuthContext currentUserAuthContext() {
         CurrentUserAuthContext context = new CurrentUserAuthContext();
-        context.setContainer(currentAuthUserContextContainer);
         return context;
     }
 

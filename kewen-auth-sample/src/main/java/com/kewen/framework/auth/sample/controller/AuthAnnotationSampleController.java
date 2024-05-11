@@ -1,22 +1,18 @@
 package com.kewen.framework.auth.sample.controller;
 
 import com.kewen.framework.auth.core.IAuthObject;
-import com.kewen.framework.auth.core.annotation.data.authedit.AuthDataEditBusiness;
-import com.kewen.framework.auth.core.annotation.data.edit.BusinessData;
-import com.kewen.framework.auth.sample.mp.entity.TestauthAnnotationBusiness;
 import com.kewen.framework.auth.core.annotation.data.CheckDataOperation;
 import com.kewen.framework.auth.core.annotation.data.DataRange;
 import com.kewen.framework.auth.core.annotation.data.EditDataAuth;
+import com.kewen.framework.auth.core.annotation.data.authedit.AuthDataEditBusiness;
+import com.kewen.framework.auth.core.annotation.data.edit.BusinessData;
 import com.kewen.framework.auth.core.annotation.menu.CheckMenuAccess;
+import com.kewen.framework.auth.sample.mp.entity.TestauthAnnotationBusiness;
 import com.kewen.framework.auth.sample.mp.service.TestauthAnnotationBusinessMpService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

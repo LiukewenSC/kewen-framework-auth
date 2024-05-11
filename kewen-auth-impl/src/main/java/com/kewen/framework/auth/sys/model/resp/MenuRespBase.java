@@ -2,7 +2,6 @@ package com.kewen.framework.auth.sys.model.resp;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -13,7 +12,6 @@ import com.kewen.framework.auth.sys.model.MenuTypeConstant;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 菜单返回结构
