@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class UserController {
     SysAuthMenuComposite sysAuthMenuComposite;
 
     @PostMapping("/login")
-    public Result<LoginResp> login(@RequestBody LoginReq req){
+    public Result<LoginResp> login(@Valid @RequestBody LoginReq req){
         UserAuthObject userAuthObject = sysUserComposite.login(req.getUsername(), req.getPassword());
         LoginResp loginResp = new LoginResp();
         BeanUtil.copyProperties(userAuthObject,loginResp);
