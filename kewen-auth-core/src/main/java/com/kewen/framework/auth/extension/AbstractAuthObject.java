@@ -6,6 +6,7 @@ import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.core.IAuthObject;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +54,6 @@ public abstract class AbstractAuthObject implements IAuthObject {
             throw new RuntimeException(e);
         }
     }
-
     @SneakyThrows
     public IAuthEntityProvider parseBaseAuth(BaseAuth baseAuth) {
         String[] strings = baseAuth.getAuth().split(AuthConstant.AUTH_SPLIT);

@@ -9,6 +9,7 @@ import com.kewen.framework.auth.support.SimpleAuthObject;
 import com.kewen.framework.auth.sys.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.sys.model.MenuTypeConstant;
 import com.kewen.framework.auth.sys.model.req.MenuSaveReq;
+import com.kewen.framework.auth.sys.model.resp.MenuAuthResp;
 import com.kewen.framework.auth.sys.model.resp.MenuResp;
 import com.kewen.framework.auth.sys.model.resp.MenuRespBase;
 import com.kewen.framework.auth.sys.mp.entity.SysAuthMenu;
@@ -22,12 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -67,12 +63,12 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     }
 
     @Override
-    public List<MenuResp> getMenuTree() {
+    public List<MenuAuthResp> getMenuTree() {
         List<SysMenu> sysMenus = getSysMenus();
         Map<Long, List<SysAuthMenu>> authByMenuMap = getSysMenuAuths().stream()
                 .collect(Collectors.groupingBy(SysAuthMenu::getMenuId));
-        List<MenuResp> collect = sysMenus.stream()
-                .map(l -> BeanUtil.toBean(l, MenuResp.class))
+        List<MenuAuthResp> collect = sysMenus.stream()
+                .map(l -> BeanUtil.toBean(l, MenuAuthResp.class))
                 .peek(m-> {
                     List<SysAuthMenu> SysAuthMenus = authByMenuMap.get(m.getId());
                     if (SysAuthMenus!=null){
@@ -81,6 +77,7 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
                                 .collect(Collectors.toList());
                         SimpleAuthObject authObject = new SimpleAuthObject();
                         authObject.setProperties(authList);
+                        m.setAuthObject(authObject);
                     }
                 })
                 .collect(Collectors.toList());
@@ -90,9 +87,9 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     @Override
     public List<MenuResp> getCurrentUserMenuTree(Collection<BaseAuth> authorities) {
         //得到全部树
-        List<MenuResp> trees = getMenuTree();
+        List<MenuAuthResp> trees = getMenuTree();
         //克隆副本
-        List<MenuResp> menuTree = BeanUtil.cloneList(trees);
+        List<MenuResp> menuTree = convertMenuAuthResp2MenuResp(trees);
         //将不属于自己的移除
         Iterator<MenuResp> iterator = menuTree.iterator();
         while (iterator.hasNext()) {
@@ -104,6 +101,19 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
         }
         return menuTree;
     }
+    private List<MenuResp> convertMenuAuthResp2MenuResp(List<MenuAuthResp> menuAuthResps){
+        ArrayList<MenuResp> list = new ArrayList<>();
+        for (MenuAuthResp menuAuthResp : menuAuthResps) {
+            MenuResp menuResp = new MenuResp();
+            BeanUtil.copy(menuAuthResp,menuResp);
+            if (!CollectionUtils.isEmpty(menuResp.getChildren())){
+                menuResp.setChildren(convertMenuAuthResp2MenuResp(menuAuthResp.getChildren()));
+            }
+            list.add(menuResp);
+        }
+        return list;
+    }
+
 
 
     @Override
@@ -127,8 +137,6 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     }
 
 
-
-
     @Override
     @Transactional
     public void addMenu(MenuSaveReq req) {
@@ -148,13 +156,13 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     @Override
     @Transactional
     public void deleteMenu(Long id) {
-        List<MenuResp> menuTrees = getMenuTree();
-        MenuResp menuResp = TreeUtil.fetchSubTree(menuTrees,id);
+        List<MenuAuthResp> menuTrees = getMenuTree();
+        MenuAuthResp menuResp = TreeUtil.fetchSubTree(menuTrees,id);
         if (menuResp==null){
             throw new RuntimeException("菜单为空");
         }
         //获取平菜单列表
-        List<MenuResp> deleteMenus = TreeUtil.unTransfer(menuResp);
+        List<MenuAuthResp> deleteMenus = TreeUtil.unTransfer(menuResp);
         //找到需要删除的菜单id
         List<Long> menuIds = deleteMenus.stream().map(MenuRespBase::getId).collect(Collectors.toList());
 

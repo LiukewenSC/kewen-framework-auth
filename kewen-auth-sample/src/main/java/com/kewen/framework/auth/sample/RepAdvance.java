@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.sample;
 
+import com.kewen.framework.auth.exception.AuthException;
 import com.kewen.framework.auth.sample.model.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class RepAdvance {
 
+    @ExceptionHandler(AuthException.class)
+    public Result exception(AuthException e){
+        log.error(e.getMessage(),e);
+        return Result.fail(HttpStatus.UNAUTHORIZED.value(),e.getMessage());
+    }
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result exception(Throwable e){

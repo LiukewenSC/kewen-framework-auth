@@ -13,7 +13,6 @@ public class Result<T> {
     private Boolean success = true;
     private String message = "成功";
     private T data;
-
     public static <T> Result<T> success(T data){
         Result<T> result = new Result<T>();
         result.setData(data);
@@ -23,6 +22,13 @@ public class Result<T> {
         Result  result = new Result();
         result.setSuccess(false);
         result.setCode(500);
+        result.setMessage(message);
+        return result;
+    }
+    public static Result fail(int code ,String message){
+        Result  result = new Result();
+        result.setSuccess(false);
+        result.setCode(code);
         result.setMessage(message);
         return result;
     }

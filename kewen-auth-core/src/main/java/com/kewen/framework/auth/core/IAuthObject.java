@@ -1,5 +1,7 @@
 package com.kewen.framework.auth.core;
 
+import org.springframework.util.CollectionUtils;
+
 import java.util.Collection;
 
 /**
@@ -10,6 +12,9 @@ import java.util.Collection;
  */
 public interface IAuthObject {
 
+    default boolean isEmpty(){
+        return CollectionUtils.isEmpty(listBaseAuth());
+    }
     /**
      * 获取得到基本权限
      * @return

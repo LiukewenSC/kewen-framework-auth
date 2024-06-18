@@ -70,6 +70,9 @@ public class MenuRespBase {
     @TableField("icon")
     protected String icon;
 
+    @TableField("hidden")
+    protected Boolean hidden;
+
     /**
      * 类型： 1-菜单 2-按钮
      * {@link MenuTypeConstant.TYPE}

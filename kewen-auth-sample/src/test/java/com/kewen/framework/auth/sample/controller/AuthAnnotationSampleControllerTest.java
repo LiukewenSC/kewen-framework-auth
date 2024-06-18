@@ -2,8 +2,8 @@ package com.kewen.framework.auth.sample.controller;
 
 
 import cn.hutool.core.io.FileUtil;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.kewen.framework.auth.sys.mp.entity.SysMenu;
 import com.kewen.framework.auth.sys.mp.service.SysMenuMpService;
 import org.junit.Test;

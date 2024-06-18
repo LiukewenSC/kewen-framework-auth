@@ -79,6 +79,9 @@ public class SysMenu extends Model<SysMenu> {
     @TableField("icon")
     protected String icon;
 
+    @TableField("hidden")
+    protected Boolean hidden;
+
     /**
      * 类型： 1-菜单 2-按钮 3-外部链接
      * {@link MenuTypeConstant.TYPE}

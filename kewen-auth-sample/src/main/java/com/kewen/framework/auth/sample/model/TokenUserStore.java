@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TokenUserStore {
 
-    private static Cache<String, UserAuthObject> cache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+    private static Cache<String, UserAuthObject> cache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.HOURS).build();
 
     public static void set(String token, UserAuthObject user){
         cache.put(token, user);

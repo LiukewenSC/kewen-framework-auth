@@ -17,6 +17,6 @@ import java.util.List;
 @Data
 public class MenuResp extends MenuRespBase implements TreeUtil.TreeBase<MenuResp,Long>{
 
-    private List<MenuResp> children;
+    protected List<MenuResp> children;
 
 }

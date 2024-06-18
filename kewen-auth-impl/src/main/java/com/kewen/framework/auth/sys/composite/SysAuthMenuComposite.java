@@ -4,7 +4,9 @@ package com.kewen.framework.auth.sys.composite;
 
 import com.kewen.framework.auth.core.BaseAuth;
 import com.kewen.framework.auth.sys.model.req.MenuSaveReq;
+import com.kewen.framework.auth.sys.model.resp.MenuAuthResp;
 import com.kewen.framework.auth.sys.model.resp.MenuResp;
+import com.kewen.framework.auth.sys.mp.entity.SysAuthMenu;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +29,7 @@ public interface SysAuthMenuComposite {
      * 获取树形结构菜单
      * @return 树形结构的菜单返回对象
      */
-    List<MenuResp> getMenuTree();
+    List<MenuAuthResp> getMenuTree();
 
     /**
      * 获取当前用户有权限的菜单
@@ -43,8 +45,6 @@ public interface SysAuthMenuComposite {
      * @param auths 权限结构
      */
     void editMenuAuthorities(Long menuId, Collection<BaseAuth> auths);
-
-
 
 
 

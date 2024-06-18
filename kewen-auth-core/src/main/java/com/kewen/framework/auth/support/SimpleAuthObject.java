@@ -8,6 +8,7 @@ import com.kewen.framework.auth.support.model.Dept;
 import com.kewen.framework.auth.support.model.Role;
 import com.kewen.framework.auth.support.model.User;
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -41,6 +42,7 @@ public class SimpleAuthObject extends AbstractAuthObject {
     public void addRoles(Role... roles){
         this.roles.addAll(Arrays.asList(roles));
     }
+
 
     @Override
     public Collection<BaseAuth> listBaseAuth() {
