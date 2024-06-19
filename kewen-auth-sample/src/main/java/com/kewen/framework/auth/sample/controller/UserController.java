@@ -15,8 +15,10 @@ import com.kewen.framework.auth.sys.model.UserAuthObject;
 import com.kewen.framework.auth.sys.model.req.MenuSaveReq;
 import com.kewen.framework.auth.sys.model.resp.MenuAuthResp;
 import com.kewen.framework.auth.sys.model.resp.MenuResp;
+import com.kewen.framework.auth.sys.mp.entity.SysDept;
 import com.kewen.framework.auth.sys.mp.entity.SysRole;
 import com.kewen.framework.auth.sys.mp.entity.SysUser;
+import com.kewen.framework.auth.sys.mp.service.SysDeptMpService;
 import com.kewen.framework.auth.sys.mp.service.SysRoleMpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +43,9 @@ public class UserController {
 
     @Autowired
     SysRoleMpService sysRoleMpService;
+    
+    @Autowired
+    SysDeptMpService sysDeptMpService;
 
     @PostMapping("/login")
     public Result<LoginResp> login(@Valid @RequestBody LoginReq req){
@@ -75,6 +80,11 @@ public class UserController {
     @GetMapping("/roles")
     public Result getRoles(){
         List<SysRole> list = sysRoleMpService.list();
+        return Result.success(list);
+    }
+    @GetMapping("/depts")
+    public Result depts(){
+        List<SysDept> list = sysDeptMpService.list();
         return Result.success(list);
     }
 
