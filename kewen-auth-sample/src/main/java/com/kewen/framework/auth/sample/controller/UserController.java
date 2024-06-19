@@ -2,13 +2,10 @@ package com.kewen.framework.auth.sample.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kewen.framework.auth.core.BaseAuth;
-import com.kewen.framework.auth.core.annotation.data.EditDataAuth;
 import com.kewen.framework.auth.core.context.CurrentUserAuthContext;
-import com.kewen.framework.auth.sample.model.LoginReq;
-import com.kewen.framework.auth.sample.model.LoginResp;
-import com.kewen.framework.auth.sample.model.Result;
-import com.kewen.framework.auth.sample.model.TokenUserStore;
+import com.kewen.framework.auth.sample.model.*;
 import com.kewen.framework.auth.sys.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.sys.composite.impl.SysUserCompositeImpl;
 import com.kewen.framework.auth.sys.model.UserAuthObject;
@@ -20,7 +17,9 @@ import com.kewen.framework.auth.sys.mp.entity.SysRole;
 import com.kewen.framework.auth.sys.mp.entity.SysUser;
 import com.kewen.framework.auth.sys.mp.service.SysDeptMpService;
 import com.kewen.framework.auth.sys.mp.service.SysRoleMpService;
+import com.kewen.framework.auth.sys.mp.service.SysUserMpService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -46,6 +45,9 @@ public class UserController {
     
     @Autowired
     SysDeptMpService sysDeptMpService;
+
+    @Autowired
+    SysUserMpService sysUserMpService;
 
     @PostMapping("/login")
     public Result<LoginResp> login(@Valid @RequestBody LoginReq req){
@@ -86,6 +88,18 @@ public class UserController {
     public Result depts(){
         List<SysDept> list = sysDeptMpService.list();
         return Result.success(list);
+    }
+    @GetMapping("/pageUser")
+    public Result pageUser(@Validated PageReq pageReq){
+        Page<SysUser> userPage = new Page<>(pageReq.getPage() ,pageReq.getSize());
+        Page<SysUser> page = sysUserMpService.page(userPage);
+        List<SysUser> records = page.getRecords();
+        PageResult<SysUser> result = new PageResult<>();
+        result.setPage(pageReq.getPage());
+        result.setSize(pageReq.getSize());
+        result.setTotal((int)page.getTotal());
+        result.setData(records);
+        return Result.success(result);
     }
 
 }
