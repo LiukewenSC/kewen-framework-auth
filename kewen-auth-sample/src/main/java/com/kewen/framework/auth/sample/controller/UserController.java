@@ -101,5 +101,25 @@ public class UserController {
         result.setData(records);
         return Result.success(result);
     }
-
+    @PostMapping("/add")
+    public Result add(@RequestBody SysUser sysUser){
+        boolean b = sysUserMpService.save(sysUser);
+        return Result.success(b);
+    }
+    @PostMapping("/update")
+    public Result update(@RequestBody SysUser sysUser){
+        if (sysUser.getId()==null){
+            throw new RuntimeException("用户ID为空");
+        }
+        boolean b = sysUserMpService.updateById(sysUser);
+        return Result.success(b);
+    }
+    @PostMapping("/delete")
+    public Result delete(@RequestBody IdReq idReq){
+        if (idReq.getId()==null){
+            throw new RuntimeException("用户ID为空");
+        }
+        boolean b = sysUserMpService.removeById(idReq.getId());
+        return Result.success(b);
+    }
 }
