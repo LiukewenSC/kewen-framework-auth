@@ -10,6 +10,7 @@ import java.util.Collection;
 
 /**
  * 默认的注解权限处理器的实现，根据数据库来处理
+ *
  * @author kewen
  * @since 2023-12-28
  */
@@ -22,7 +23,11 @@ public class AnnotationAuthHandlerImpl implements AnnotationAuthHandler<Long> {
 
     @Override
     public DataRangeDatabaseField getDataRangeDatabaseField() {
-        return new DataRangeDatabaseField();
+        DataRangeDatabaseField field = new DataRangeDatabaseField();
+        field.setTableName("sys_auth_data");
+        field.setDataIdColumn("data_id");
+        field.setAuthorityColumn("authority");
+        return field;
     }
 
     @Override

@@ -8,7 +8,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
@@ -29,16 +28,16 @@ public class DataRangeAspect {
     public Object around(ProceedingJoinPoint proceedingJoinPoint, DataRange checkDataRange) throws Throwable {
 
         Collection<BaseAuth> auths = CurrentUserAuthContext.getAuths();
-        DataRangeContext.AuthRange selectAuth = new DataRangeContext.AuthRange()
+        DataRangeContext.AuthRange authRange = new DataRangeContext.AuthRange()
                 .setModule(checkDataRange.module())
                 .setOperate(checkDataRange.operate())
                 .setTableAlias(checkDataRange.tableAlias())
-                .setBusinessColumn(checkDataRange.businessColumn())
+                .setDataColumn(checkDataRange.businessColumn())
                 .setAuthorities(auths)
                 .setMatchMethod(checkDataRange.matchMethod())
                 ;
 
-        DataRangeContext.set(selectAuth);
+        DataRangeContext.set(authRange);
         try {
             return proceedingJoinPoint.proceed();
         } finally {

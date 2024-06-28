@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.util;
+package com.kewen.framework.auth.sys.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

@@ -16,7 +16,7 @@ public interface AnnotationAuthHandler<ID> {
 
 
     /**
-     * 数据范围权限的数据库字段
+     * 数据权限的数据库、表字段
      * @return
      */
     DataRangeDatabaseField getDataRangeDatabaseField();

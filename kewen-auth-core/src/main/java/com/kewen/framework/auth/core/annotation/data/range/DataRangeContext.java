@@ -20,8 +20,8 @@ public class DataRangeContext {
     public static AuthRange get(){
         return local.get();
     }
-    public static void set(AuthRange auths){
-        local.set(auths);
+    public static void set(AuthRange authRange){
+        local.set(authRange);
     }
     public static void clear(){
         local.remove();
@@ -45,7 +45,7 @@ public class DataRangeContext {
         /**
          * 业务主键名 一般为 id
          */
-        private String businessColumn;
+        private String dataColumn;
 
         /**
          * 用户权限字符串

@@ -12,14 +12,15 @@ public class DataRangeDatabaseField {
     /**
      * 业务关联表名
      */
-    private String tableName ="sys_application_auth";
+    private String tableName;
     /**
      * 业务ID存储字段名
      */
-    private String businessIdColumn="business_id";
+    private String dataIdColumn;
 
     /**
      * 权限存储字段名
      */
-    private String authorityColumn="authority";
+    private String authorityColumn;
+
 }

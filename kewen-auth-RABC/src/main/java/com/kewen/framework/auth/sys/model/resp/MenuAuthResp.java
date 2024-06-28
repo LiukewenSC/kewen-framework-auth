@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.sys.model.resp;
 
 import com.kewen.framework.auth.support.SimpleAuthObject;
-import com.kewen.framework.auth.util.TreeUtil;
+import com.kewen.framework.auth.sys.utils.TreeUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

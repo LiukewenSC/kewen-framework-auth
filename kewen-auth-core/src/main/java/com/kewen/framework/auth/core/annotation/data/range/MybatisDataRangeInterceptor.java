@@ -64,8 +64,8 @@ public class MybatisDataRangeInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
 
-        DataRangeContext.AuthRange authRangeContext = DataRangeContext.get();
-        if (authRangeContext==null){
+        DataRangeContext.AuthRange authRange = DataRangeContext.get();
+        if (authRange==null){
             log.debug("DataRangeContext 为空，不做范围查询SQL增强处理");
             return invocation.proceed();
         }
@@ -90,7 +90,7 @@ public class MybatisDataRangeInterceptor implements Interceptor {
             SQLExpr whereExpr = query.getWhere();
             String mainTableAlias = query.getFrom().computeAlias();
             //准备注入sql
-            String authWhereCondition = parseAuthWhereConditionSQL(authRangeContext,mainTableAlias);
+            String authWhereCondition = parseAuthWhereConditionSQL(authRange,mainTableAlias);
 
 
             SQLExprParser constraintsParser = SQLParserUtils.createExprParser(authWhereCondition, JdbcUtils.MYSQL);
@@ -116,9 +116,9 @@ public class MybatisDataRangeInterceptor implements Interceptor {
         }
         return invocation.proceed();
     }
-    private String parseAuthWhereConditionSQL(DataRangeContext.AuthRange authContext,String mainTableAlias) {
+    private String parseAuthWhereConditionSQL(DataRangeContext.AuthRange authRange,String mainTableAlias) {
         StringBuilder builder = new StringBuilder();
-        for (BaseAuth baseAuth : authContext.getAuthorities()) {
+        for (BaseAuth baseAuth : authRange.getAuthorities()) {
             builder.append("'").append(baseAuth.getAuth()).append("'").append(",");
         }
         //去掉最后一个,
@@ -128,18 +128,18 @@ public class MybatisDataRangeInterceptor implements Interceptor {
         // table.primary_id in (select business_id from auth_table where authority in ( 'd_1','r_1' ) )
         // 其中 table.primary_id 则为需要匹配的业务主键ID
         String mainTableColumn;
-        if (StringUtils.isBlank(authContext.getTableAlias())) {
-            mainTableColumn = mainTableAlias + "." + authContext.getBusinessColumn();
+        if (StringUtils.isBlank(authRange.getTableAlias())) {
+            mainTableColumn = mainTableAlias + "." + authRange.getDataColumn();
         } else {
-            mainTableColumn = authContext.getTableAlias() + "." + authContext.getBusinessColumn();
+            mainTableColumn = authRange.getTableAlias() + "." + authRange.getDataColumn();
         }
-        if (authContext.getMatchMethod()==MatchMethod.IN){
+        if (authRange.getMatchMethod()==MatchMethod.IN){
             return String.format(" %s in (select %s from %s where module='%s' and operate= '%s' and %s in ( %s ) )",
                     mainTableColumn,
-                    getDataRangeDatabaseField().getBusinessIdColumn(),
+                    getDataRangeDatabaseField().getDataIdColumn(),
                     getDataRangeDatabaseField().getTableName(),
-                    authContext.getModule(),
-                    authContext.getOperate(),
+                    authRange.getModule(),
+                    authRange.getOperate(),
                     getDataRangeDatabaseField().getAuthorityColumn(),
                     authSept
             );
