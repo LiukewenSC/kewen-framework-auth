@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kewen.framework.auth.sys.composite.mapper.SysUserUnionCompositeMapper">
+<mapper namespace="com.kewen.framework.auth.rabc.composite.mapper.SysUserUnionCompositeMapper">
 
     <select id="hasAuth" resultType="java.lang.Integer">
-        select 1 from sys_application_auth
-        where business_id=#{businessId}
+        select 1 from sys_auth_data
+        where data_id=#{dataId}
         and module=#{module}
         and operate = #{operate}
         and authority in
@@ -18,16 +18,16 @@
         select * from sys_menu m left join sys_auth_menu a on m.id=a.menu_id
     </select>
 
-    <resultMap id="UserAuthObjectResult" type="com.kewen.framework.auth.support.SimpleAuthObject">
-        <collection property="users" ofType="com.kewen.framework.auth.support.model.User">
+    <resultMap id="UserAuthObjectResult" type="com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject">
+        <collection property="users" ofType="com.kewen.framework.auth.rabc.composite.model.User">
             <id property="id" column="user_id"/>
             <result property="name" column="user_id"/>
         </collection>
-        <collection property="depts" ofType="com.kewen.framework.auth.support.model.Dept">
+        <collection property="depts" ofType="com.kewen.framework.auth.rabc.composite.model.Dept">
             <id property="id" column="dept_id"/>
             <result property="name" column="dept_name"/>
         </collection>
-        <collection property="roles" ofType="com.kewen.framework.auth.support.model.Role">
+        <collection property="roles" ofType="com.kewen.framework.auth.rabc.composite.model.Role">
             <id property="id" column="role_id"/>
             <result property="name" column="role_name"/>
         </collection>

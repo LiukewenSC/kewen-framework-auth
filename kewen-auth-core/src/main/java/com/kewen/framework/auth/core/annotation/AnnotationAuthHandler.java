@@ -1,7 +1,6 @@
 package com.kewen.framework.auth.core.annotation;
 
-import com.kewen.framework.auth.core.BaseAuth;
-import com.kewen.framework.auth.core.IAuthObject;
+import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseField;
 
 import java.util.Collection;
@@ -15,15 +14,10 @@ import java.util.Collection;
 public interface AnnotationAuthHandler<ID> {
 
 
-    /**
-     * 数据权限的数据库、表字段
-     * @return
-     */
-    DataRangeDatabaseField getDataRangeDatabaseField();
-
 
     /**
      * 是否有菜单访问权限
+     *  对应菜单 范围权限 @AuthCheckMenuAccess
      * @param auths
      * @param url
      * @return
@@ -34,12 +28,17 @@ public interface AnnotationAuthHandler<ID> {
 
 
 
-
-
+    /**
+     * 数据权限的数据库、表字段
+     *  对应范围查询 @AuthDataRange
+     * @return
+     */
+    DataRangeDatabaseField getDataRangeDatabaseField();
 
 
     /**
      * 是否有某条数据的操作权限
+     *  对应操作范围权限 @AuthCheckDataOperation
      * @param auths 用户权限
      * @param module 模块
      * @param operate 操作
@@ -52,12 +51,12 @@ public interface AnnotationAuthHandler<ID> {
     /**
      * 编辑某条 数据权限
      * 但是这里要注意了，不应该编辑此接口本身的权限，否则就会出现自己把自己编辑没，或者把不应该有的人加入（其实就是属于越权了，本应该是上级做的事）
-     * @param businessId 业务id
+     *  对应编辑数据权限 @AuthEditDataAuth
+     * @param dataId 数据ID
      * @param module 模块
      * @param operate 操作
      * @param auths 权限结构
      */
-    void editDataAuths(ID businessId, String module, String operate, Collection<BaseAuth> auths);
-
+    void editDataAuths(ID dataId, String module, String operate, Collection<BaseAuth> auths);
 
 }

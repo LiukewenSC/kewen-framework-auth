@@ -14,8 +14,8 @@ import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.util.JdbcConstants;
 import com.alibaba.druid.util.JdbcUtils;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.data.DataRange;
-import com.kewen.framework.auth.core.BaseAuth;
+import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
+import com.kewen.framework.auth.core.model.BaseAuth;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -56,7 +56,7 @@ public class MybatisDataRangeInterceptor implements Interceptor {
 
     /**
      * 所有的sql都会进入此拦截器，需要只校验AuthRangeContext中有数据的，没有数据的说明不是@AuthRange 所拦截的，应当原样输出
-     * AuthRangeContext.get()有数据说明一定是从{@link DataRange}拦截的，并在{@link DataRangeAspect}中加入上下文数据且不为空
+     * AuthRangeContext.get()有数据说明一定是从{@link AuthDataRange}拦截的，并在{@link DataRangeAspect}中加入上下文数据且不为空
      * @param invocation
      * @return
      * @throws Throwable

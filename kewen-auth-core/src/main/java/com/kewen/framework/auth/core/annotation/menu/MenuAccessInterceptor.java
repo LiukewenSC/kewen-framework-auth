@@ -1,10 +1,9 @@
 package com.kewen.framework.auth.core.annotation.menu;
 
-import com.kewen.framework.auth.core.BaseAuth;
-import com.kewen.framework.auth.core.IAuthObject;
+import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.context.CurrentUserAuthContext;
-import com.kewen.framework.auth.exception.AuthException;
+import com.kewen.framework.auth.core.context.AuthUserContext;
+import com.kewen.framework.auth.core.exception.AuthorizationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,7 +14,7 @@ import java.util.Collection;
 
 /**
  * @descrpition 菜单权限校验拦截器，校验请求在菜单中配置的权限，
- *      当Controller中加入注解 {@link CheckMenuAccess} 时生效，否则直接跳过校验
+ *      当Controller中加入注解 {@link AuthCheckMenuAccess} 时生效，否则直接跳过校验
  * @author kewen
  * @since 2022-11-25
  */
@@ -30,7 +29,7 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
             return true;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        CheckMenuAccess checkEndpoint = handlerMethod.getMethodAnnotation(CheckMenuAccess.class);
+        AuthCheckMenuAccess checkEndpoint = handlerMethod.getMethodAnnotation(AuthCheckMenuAccess.class);
         //未添加权限注解，直接跳过校验
         if (checkEndpoint ==null){
             return true;
@@ -41,7 +40,7 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
             url = request.getRequestURI();
         }
         //获取当前用户的权限
-        Collection<BaseAuth> auths = CurrentUserAuthContext.getAuths();
+        Collection<BaseAuth> auths = AuthUserContext.getAuths();
 
         //检查是否有菜单访问权限
         boolean hasMenuAuth = annotationAuthHandler.hasMenuAccessAuth(
@@ -49,7 +48,7 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
                 url
         );
         if (!hasMenuAuth){
-            throw new AuthException("没有菜单访问权限");
+            throw new AuthorizationException("没有菜单访问权限");
         }
         return true;
     }

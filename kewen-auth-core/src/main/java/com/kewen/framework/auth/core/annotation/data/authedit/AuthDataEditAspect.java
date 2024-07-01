@@ -2,8 +2,8 @@ package com.kewen.framework.auth.core.annotation.data.authedit;
 
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.data.EditDataAuth;
-import com.kewen.framework.auth.exception.AuthException;
+import com.kewen.framework.auth.core.annotation.data.AuthEditDataAuth;
+import com.kewen.framework.auth.core.exception.AuthorizationException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -29,29 +29,29 @@ public class AuthDataEditAspect {
 
 
 
-    @Pointcut("@annotation(com.kewen.framework.auth.core.annotation.data.EditDataAuth)")
+    @Pointcut("@annotation(com.kewen.framework.auth.core.annotation.data.AuthEditDataAuth)")
     public void pointcut(){
 
     }
 
     @Around(value = "pointcut() && @annotation(checkDataAuthEdit)",argNames = "joinPoint,checkDataAuthEdit")
-    public Object around(ProceedingJoinPoint joinPoint, EditDataAuth checkDataAuthEdit){
+    public Object around(ProceedingJoinPoint joinPoint, AuthEditDataAuth checkDataAuthEdit){
         log.info("编辑业务权限，拦截方法:{}",joinPoint.toString());
         Object[] args = joinPoint.getArgs();
         if (args==null){
-            throw new AuthException("参数不能为空");
+            throw new AuthorizationException("参数不能为空");
         }
         Optional<AuthDataEditBusiness> first = Arrays.stream(args)
                 .filter(a -> a instanceof AuthDataEditBusiness)
                 .map(a ->(AuthDataEditBusiness)a)
                 .findFirst();
         if (!first.isPresent()){
-            throw new AuthException("参数没有找到接口 AuthDataEditBusiness 实现类");
+            throw new AuthorizationException("参数没有找到接口 AuthDataEditBusiness 实现类");
         }
         AuthDataEditBusiness authDataEditBusiness = first.get();
 
         annotationAuthAdaptor.editDataAuths(
-                authDataEditBusiness.getBusinessId(),
+                authDataEditBusiness.getDataId(),
                 checkDataAuthEdit.module(),
                 checkDataAuthEdit.operate(),
                 authDataEditBusiness.getAuthObject().listBaseAuth());

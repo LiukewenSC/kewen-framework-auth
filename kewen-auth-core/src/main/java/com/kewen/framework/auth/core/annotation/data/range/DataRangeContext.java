@@ -2,7 +2,7 @@ package com.kewen.framework.auth.core.annotation.data.range;
 
 
 
-import com.kewen.framework.auth.core.BaseAuth;
+import com.kewen.framework.auth.core.model.BaseAuth;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

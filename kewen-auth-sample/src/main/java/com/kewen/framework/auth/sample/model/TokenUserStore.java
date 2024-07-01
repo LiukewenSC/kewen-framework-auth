@@ -2,7 +2,7 @@ package com.kewen.framework.auth.sample.model;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.kewen.framework.auth.sys.model.UserAuthObject;
+import com.kewen.framework.auth.rabc.model.UserAuthObject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.TimeUnit;

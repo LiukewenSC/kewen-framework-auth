@@ -1,10 +1,10 @@
 package com.kewen.framework.auth.sample.config;
 
-import com.kewen.framework.auth.exception.AuthException;
+import com.kewen.framework.auth.core.context.AuthUserContext;
+import com.kewen.framework.auth.core.exception.AuthorizationException;
 import com.kewen.framework.auth.sample.model.TokenUserStore;
-import com.kewen.framework.auth.support.SimpleThreadLocalUserAuthContextContainer;
-import com.kewen.framework.auth.sys.composite.SysUserComposite;
-import com.kewen.framework.auth.sys.model.UserAuthObject;
+import com.kewen.framework.auth.rabc.composite.SysUserComposite;
+import com.kewen.framework.auth.rabc.model.UserAuthObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class LoginHandlerInterceptor implements HandlerInterceptor {
 
-    @Autowired
-    SimpleThreadLocalUserAuthContextContainer userAuthContextContainer;
 
     @Autowired
     SysUserComposite sysUserComposite;
@@ -29,11 +27,10 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
         UserAuthObject user = TokenUserStore.get(token);
 
         if (user == null) {
-            throw new AuthException("尚未登录，请登录");
+            throw new AuthorizationException("尚未登录，请登录");
         }
 
-
-        userAuthContextContainer.setAuthObject(user.getAuthObject());
+        AuthUserContext.setAuthObject(user.getAuthObject());
         return true;
     }
 }

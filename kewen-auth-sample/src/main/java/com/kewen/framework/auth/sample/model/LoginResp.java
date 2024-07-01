@@ -1,7 +1,6 @@
 package com.kewen.framework.auth.sample.model;
 
-import com.kewen.framework.auth.sys.model.UserAuthObject;
-import com.kewen.framework.auth.sys.mp.entity.SysUser;
+import com.kewen.framework.auth.rabc.model.UserAuthObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

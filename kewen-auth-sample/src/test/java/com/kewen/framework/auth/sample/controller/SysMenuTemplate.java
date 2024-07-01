@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.sample.controller;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.kewen.framework.auth.sys.mp.entity.SysMenu;
+import com.kewen.framework.auth.rabc.mp.entity.SysMenu;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

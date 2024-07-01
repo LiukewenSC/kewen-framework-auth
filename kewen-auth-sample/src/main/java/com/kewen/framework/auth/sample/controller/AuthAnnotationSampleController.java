@@ -1,12 +1,12 @@
 package com.kewen.framework.auth.sample.controller;
 
-import com.kewen.framework.auth.core.IAuthObject;
-import com.kewen.framework.auth.core.annotation.data.CheckDataOperation;
-import com.kewen.framework.auth.core.annotation.data.DataRange;
-import com.kewen.framework.auth.core.annotation.data.EditDataAuth;
+import com.kewen.framework.auth.core.model.IAuthObject;
+import com.kewen.framework.auth.core.annotation.data.AuthCheckDataOperation;
+import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
+import com.kewen.framework.auth.core.annotation.data.AuthEditDataAuth;
 import com.kewen.framework.auth.core.annotation.data.authedit.AuthDataEditBusiness;
 import com.kewen.framework.auth.core.annotation.data.edit.BusinessData;
-import com.kewen.framework.auth.core.annotation.menu.CheckMenuAccess;
+import com.kewen.framework.auth.core.annotation.menu.AuthCheckMenuAccess;
 import com.kewen.framework.auth.sample.mp.entity.TestauthAnnotationBusiness;
 import com.kewen.framework.auth.sample.mp.service.TestauthAnnotationBusinessMpService;
 import lombok.Data;
@@ -33,7 +33,7 @@ public class AuthAnnotationSampleController {
      * 测试数据范围
      * @return
      */
-    @DataRange(module = "testauth")
+    @AuthDataRange(module = "testauth")
     @GetMapping("/dataRange")
     public String testDataRange() {
         //直接测试菜单的权限就知道了，
@@ -48,7 +48,7 @@ public class AuthAnnotationSampleController {
      * @return
      */
     @PostMapping("/dataEdit")
-    @CheckDataOperation(module = "testedit")
+    @AuthCheckDataOperation(module = "testedit")
     public String testDataEdit(@RequestBody EditBusinessData editBusinessData) {
         System.out.println("successEdit");
         return "testDataEdit";
@@ -59,7 +59,7 @@ public class AuthAnnotationSampleController {
      * @return
      */
     @PostMapping("/dataAuthEdit")
-    @EditDataAuth(module = "testauth")
+    @AuthEditDataAuth(module = "testauth")
     public String testDataAuthEdit(@RequestBody EditAuthDataEditBusiness applicationBusiness) {
 
         return "testDataAuthEdit";
@@ -69,7 +69,7 @@ public class AuthAnnotationSampleController {
      * 测试菜单控制
      * @return
      */
-    @CheckMenuAccess
+    @AuthCheckMenuAccess
     @GetMapping("/checkMenu")
     public String testCheckMenu() {
 
@@ -92,7 +92,7 @@ public class AuthAnnotationSampleController {
         private Long id;
 
         @Override
-        public Long getBusinessId() {
+        public Long getDataId() {
             return id;
         }
 

@@ -141,6 +141,17 @@ public class UserController {
 
 启动示例
 
+# 配置文件
+
+```yml
+kewen-framework:
+   auth:
+      data-range-database-field:
+         table-name: sys_auth_data
+         dataIdColumn: data_id
+         authorityColumn: authority  
+```
+
 # 工程过程记录
 
 - sys_menu用mybatis-plus自动生成的代码，改动过，meta 属性添加了typeHandler，就别删了
