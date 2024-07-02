@@ -15,7 +15,7 @@ import java.util.Collection;
  * @author kewen
  * @since 2023-12-28
  */
-public class AnnotationAuthHandlerImpl implements AnnotationAuthHandler<Long> {
+public class RabcAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
 
     SysAuthMenuComposite sysAuthMenuComposite;
 
