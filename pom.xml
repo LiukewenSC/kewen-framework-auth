@@ -12,7 +12,7 @@
         <module>kewen-auth-core</module>
         <module>kewen-auth-sample</module>
         <module>kewen-auth-starter-rabc-web</module>
-        <module>kewen-auth-RABC</module>
+        <module>kewen-auth-rabc</module>
         <module>kewen-auth-starter-security-web</module>
         <module>kewen-auth-starter-web</module>
     </modules>
