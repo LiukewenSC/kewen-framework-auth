@@ -2,26 +2,22 @@ package com.kewen.framework.auth.web;
 
 import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.core.exception.AuthorizationException;
-import com.kewen.framework.auth.rabc.composite.SysUserComposite;
 import com.kewen.framework.auth.rabc.model.UserAuthObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Component
+
 public class LoginHandlerInterceptor implements HandlerInterceptor {
 
-
-    @Autowired
-    SysUserComposite sysUserComposite;
+    //默认token
+    private String tokenParameter;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader(tokenParameter);
 
         UserAuthObject user = TokenUserStore.get(token);
 
@@ -31,5 +27,9 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
 
         AuthUserContext.setAuthObject(user.getAuthObject());
         return true;
+    }
+
+    public void setTokenParameter(String tokenParameter) {
+        this.tokenParameter = tokenParameter;
     }
 }

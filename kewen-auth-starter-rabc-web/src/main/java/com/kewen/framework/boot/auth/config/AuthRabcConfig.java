@@ -50,25 +50,23 @@ public class AuthRabcConfig {
      * 在系统中没有自定义AnnotationAuthHandler时配置
      * @return
      */
-    @Bean(autowire = Autowire.BY_TYPE)
-    @ConditionalOnMissingBean(AnnotationAuthHandler.class)
-    public FactoryBean<AnnotationAuthHandler> annotationAuthHandler(){
-        return new FactoryBean<AnnotationAuthHandler>() {
-            @Override
-            public AnnotationAuthHandler getObject() throws Exception {
-                return new AnnotationAuthHandlerImpl();
-            }
-            @Override
-            public Class<?> getObjectType() {
-                return AnnotationAuthHandler.class;
-            }
-        };
-    }
-    /*@Bean(autowire = Autowire.BY_TYPE)
+    @Bean
     @ConditionalOnMissingBean(AnnotationAuthHandler.class)
     public AnnotationAuthHandler annotationAuthHandler(){
-        return new AnnotationAuthHandlerImpl();
-    }*/
+        AnnotationAuthHandlerImpl handler = new AnnotationAuthHandlerImpl();
+        handler.setDataRangeDatabaseField(dataRangeDatabaseField);
+        handler.setSysAuthDataComposite(sysAuthDataComposite);
+        handler.setSysAuthMenuComposite(sysAuthMenuComposite);
+        return handler;
+    }
+
+    @Autowired
+    SysAuthMenuComposite sysAuthMenuComposite;
+    @Autowired
+    SysAuthDataComposite sysAuthDataComposite;
+
+    @Autowired
+    DataRangeDatabaseField dataRangeDatabaseField;
 
     /**
      * 数据权限数据库字段

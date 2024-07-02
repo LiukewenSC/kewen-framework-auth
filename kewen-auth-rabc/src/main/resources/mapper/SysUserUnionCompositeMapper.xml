@@ -3,7 +3,7 @@
 <mapper namespace="com.kewen.framework.auth.rabc.composite.mapper.SysUserUnionCompositeMapper">
 
     <select id="hasAuth" resultType="java.lang.Integer">
-        select 1 from sys_auth_data
+        select count(1) from sys_auth_data
         where data_id=#{dataId}
         and module=#{module}
         and operate = #{operate}

@@ -48,4 +48,15 @@ public class AnnotationAuthHandlerImpl implements AnnotationAuthHandler<Long> {
         sysAuthDataComposite.editDataAuths(dataId, module, operate, auths);
     }
 
+    public void setSysAuthMenuComposite(SysAuthMenuComposite sysAuthMenuComposite) {
+        this.sysAuthMenuComposite = sysAuthMenuComposite;
+    }
+
+    public void setSysAuthDataComposite(SysAuthDataComposite sysAuthDataComposite) {
+        this.sysAuthDataComposite = sysAuthDataComposite;
+    }
+
+    public void setDataRangeDatabaseField(DataRangeDatabaseField dataRangeDatabaseField) {
+        this.dataRangeDatabaseField = dataRangeDatabaseField;
+    }
 }
