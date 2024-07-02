@@ -1,8 +1,17 @@
+logging:
+  level:
+    org.springframework.security: debug
+
 kewen-framework:
   auth:
     data-range-database-field:
       table-name: sys_auth_data
-      dataIdColumn: data_id
-      authorityColumn: authority
+      dataId-column: data_id
+      authority-column: authority
   environment:
     prod: false
+  security:
+    login:
+      login-url: /login
+      maximum-sessions: 1
+      max-sessions-prevents-login: true

@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.kewen.framework.auth.security.config.AuthWebConfig,\
-  com.kewen.framework.auth.security.config.AuthCoreConfig
+  com.kewen.framework.auth.security.config.AuthCoreConfig,\
+  com.kewen.framework.auth.security.config.SecurityConfig

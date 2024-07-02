@@ -14,7 +14,7 @@ public class JsonLoginAuthenticationFilterConfigurer<B extends HttpSecurityBuild
         extends AbstractAuthenticationFilterConfigurer<B, JsonLoginAuthenticationFilterConfigurer<B>, JsonLoginFilter> {
 
     public JsonLoginAuthenticationFilterConfigurer() {
-        super(new JsonLoginFilter(), "/login");
+        super(new JsonLoginFilter(), null);
     }
 
     @Override

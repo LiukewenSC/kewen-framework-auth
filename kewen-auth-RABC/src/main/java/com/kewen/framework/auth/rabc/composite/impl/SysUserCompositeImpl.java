@@ -27,36 +27,6 @@ public class SysUserCompositeImpl implements SysUserComposite {
     SysUserUnionCompositeMapper unionCompositeMapper;
 
     @Override
-    public UserAuthObject login(String username, String password) {
-        SysUser user = userMpService.getOne(
-                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
-                        .select()
-        );
-        if (user == null){
-            return null;
-        }
-        SysUserCredential credential = credentialMpService.getOne(
-
-                new LambdaQueryWrapper<SysUserCredential>().eq(SysUserCredential::getUserId, user.getId())
-                        .select()
-        );
-        if (credential == null){
-            return null;
-        }
-        if (!credential.getPassword().equals(password)){
-            return null;
-        }
-        //查找用户权限体
-        SimpleAuthObject authObject = unionCompositeMapper.getUserAuthObject(user.getId());
-
-        UserAuthObject userAuthObject = new UserAuthObject();
-
-        userAuthObject.setAuthObject(authObject);
-        userAuthObject.setSysUser(user);
-        return userAuthObject;
-    }
-
-    @Override
     public UserAuthObject loadByUsername(String username) {
 
         SysUser user = userMpService.getOne(

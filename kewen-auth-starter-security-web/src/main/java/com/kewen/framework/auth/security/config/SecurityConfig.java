@@ -1,11 +1,22 @@
 package com.kewen.framework.auth.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kewen.framework.auth.security.service.SecurityUser;
+import com.kewen.framework.auth.security.extension.DefaultSecurityResultConverter;
+import com.kewen.framework.auth.security.extension.SecurityResultConverter;
+import com.kewen.framework.auth.security.filter.AuthCompositeHandler;
+import com.kewen.framework.auth.security.filter.JsonLoginAuthenticationFilterConfigurer;
+import com.kewen.framework.auth.security.filter.AuthSuccessFailedDeniedHandler;
+import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
+import com.kewen.framework.auth.security.service.RabcSecurityUserDetailsService;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import com.kewen.framework.auth.security.token.TokenSessionFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -13,8 +24,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-
-import java.io.PrintWriter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * @author kewen
@@ -22,15 +34,42 @@ import java.io.PrintWriter;
  * @since 2023-02-23
  */
 @Configuration
+@EnableConfigurationProperties({SecurityLoginProperties.class})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    SecurityLoginProperties loginProperties;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
 
     @Bean
+    @ConditionalOnMissingBean(SecurityResultConverter.class)
+    SecurityResultConverter securityResultConverter(){
+        return new DefaultSecurityResultConverter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(AuthCompositeHandler.class)
+    AuthCompositeHandler authenticationCompositeHandler(){
+        return new AuthSuccessFailedDeniedHandler();
+    }
+
+    @Autowired
+    AuthCompositeHandler authCompositeHandler;
+
+
+
+
+    @Bean
+    @ConditionalOnClass(RabcSecurityUserDetailsService.class)
     SecurityUserDetailsService securityUserDetailsService(){
-        return new SecurityUserDetailsService();
+        return new RabcSecurityUserDetailsService();
     };
 
     @Bean
+    @ConditionalOnMissingBean(PasswordEncoder.class)
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -52,48 +91,45 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(securityUserDetailsService());
+        super.configure(auth);
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests().anyRequest().authenticated().and()
-                .formLogin()
-                .successHandler((request, response, authentication) -> {
-                    Object principal = authentication.getPrincipal();
-                    if (principal instanceof SecurityUser){
-                        SecurityUser user = (SecurityUser) principal;
-                        user.setToken(request.getSession().getId());
-                    }
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-                    PrintWriter writer = response.getWriter();
-                    writer.write(new ObjectMapper().writeValueAsString(principal));
-                    writer.flush();
-                    writer.close();
-                }).failureHandler((request, response, e) -> {
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-                    PrintWriter writer = response.getWriter();
-                    writer.write(new ObjectMapper().writeValueAsString(e.getMessage()));
-                    writer.flush();
-                    writer.close();
-                })
-                .and()
-                .exceptionHandling().accessDeniedHandler((request, response, e) -> {
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-                    PrintWriter writer = response.getWriter();
-                    writer.write(new ObjectMapper().writeValueAsString(e.getMessage()));
-                    writer.flush();
-                    writer.close();
-                }).and()
+                //.formLogin()  不再用表单登录了，采用Json登录方式，因此不需要再formLogin引入FormLoginConfigurer配置UsernamePasswordAuthenticationFilter
+                .apply(new JsonLoginAuthenticationFilterConfigurer<>())
+                    .loginProcessingUrl(loginProperties.getLoginUrl())
+                    .successHandler(authCompositeHandler)
+                    .failureHandler(authCompositeHandler)
+                    .and()
+                .exceptionHandling().accessDeniedHandler(authCompositeHandler).and()
                 .sessionManagement()
-                //.sessionFixation().changeSessionId()  //这里改为none则不会出现postman连续登录会报session过多
+                //.sessionFixation().changeSessionId()  //这里改为none则不会出现postman连续登录会报session过多 ， 要么就是允许挤下线
                 .sessionFixation().none()  //这里改为none则不会出现postman连续登录会报session过多
-                    .maximumSessions(2)
-                    .maxSessionsPreventsLogin(true).and()
+                    .maximumSessions(loginProperties.getMaximumSessions())
+                    .maxSessionsPreventsLogin(loginProperties.getMaxSessionsPreventsLogin()).and()
                     .and()
                 .csrf().disable()
+                //.cors().configurationSource(corsConfigurationSource()).and()
+                // 这里就是封装一层request以便获取session
                 .addFilterBefore(new TokenSessionFilter(), WebAsyncManagerIntegrationFilter.class)
         ;
+    }
+
+    private CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+
+        UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        corsConfigurationSource.registerCorsConfiguration("/**",corsConfiguration);
+        return corsConfigurationSource;
     }
 
 }
