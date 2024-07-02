@@ -1,16 +1,13 @@
-package com.kewen.framework.auth.sample.controller;
+package com.kewen.framework.auth.rabc.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.kewen.framework.auth.core.exception.AuthorizationException;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.context.AuthUserContext;
-import com.kewen.framework.auth.sample.exception.AuthenticationException;
-import com.kewen.framework.auth.sample.model.*;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.rabc.composite.impl.SysUserCompositeImpl;
-import com.kewen.framework.auth.rabc.model.UserAuthObject;
+import com.kewen.framework.auth.rabc.model.*;
 import com.kewen.framework.auth.rabc.model.req.MenuSaveReq;
 import com.kewen.framework.auth.rabc.model.resp.MenuAuthResp;
 import com.kewen.framework.auth.rabc.model.resp.MenuResp;
@@ -52,24 +49,7 @@ public class UserController {
     @Autowired
     SysUserMpService sysUserMpService;
 
-    @PostMapping("/login")
-    public Result<LoginResp> login(@Valid @RequestBody LoginReq req){
-        UserAuthObject userAuthObject = sysUserComposite.loadByUsername(req.getUsername());
-        boolean isLogin = Optional.ofNullable(userAuthObject)
-                .map(u -> u.getSysUserCredential())
-                .map(c -> c.getPassword())
-                .filter(p -> req.getPassword().equals(p))
-                .isPresent();
-        if (!isLogin){
-            throw new AuthenticationException("登录失败，用户名或密码错误");
-        }
-        LoginResp loginResp = new LoginResp();
-        BeanUtil.copyProperties(userAuthObject,loginResp);
-        String token = UUID.fastUUID().toString().replaceAll("-","");
-        TokenUserStore.set(token,userAuthObject);
-        loginResp.setToken(token);
-        return Result.success(loginResp);
-    }
+
     @GetMapping("/menus")
     public Result<List<MenuResp>> menus(){
         Collection<BaseAuth> auths = AuthUserContext.getAuths();

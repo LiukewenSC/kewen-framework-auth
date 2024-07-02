@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.sample.model;
+package com.kewen.framework.auth.rabc.model;
 
 import lombok.Data;
 

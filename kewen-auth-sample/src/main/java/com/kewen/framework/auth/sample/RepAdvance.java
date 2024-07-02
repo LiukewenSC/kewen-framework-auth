@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.sample;
 
 import com.kewen.framework.auth.core.exception.AuthorizationException;
-import com.kewen.framework.auth.sample.model.Result;
+import com.kewen.framework.auth.rabc.model.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

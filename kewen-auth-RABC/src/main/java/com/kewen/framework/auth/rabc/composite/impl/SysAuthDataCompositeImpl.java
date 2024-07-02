@@ -8,6 +8,7 @@ import com.kewen.framework.auth.rabc.composite.mapper.SysUserUnionCompositeMappe
 import com.kewen.framework.auth.rabc.mp.entity.SysAuthData;
 import com.kewen.framework.auth.rabc.mp.service.SysAuthDataMpService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  * @author kewen
  * @since 2023-12-28
  */
+@Service
 public class SysAuthDataCompositeImpl implements SysAuthDataComposite {
 
     @Autowired

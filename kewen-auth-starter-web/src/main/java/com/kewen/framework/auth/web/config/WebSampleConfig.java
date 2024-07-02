@@ -1,5 +1,6 @@
-package com.kewen.framework.auth.sample.config;
+package com.kewen.framework.auth.web.config;
 
+import com.kewen.framework.auth.web.LoginHandlerInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

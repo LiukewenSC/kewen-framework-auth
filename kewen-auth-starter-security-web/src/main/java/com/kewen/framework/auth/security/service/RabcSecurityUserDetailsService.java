@@ -39,7 +39,7 @@ public class RabcSecurityUserDetailsService implements SecurityUserDetailsServic
                  .setAvatarFileId(sysUser.getAvatarFileId())
                  .setPassword(credential.getPassword())
                  .setGender(sysUser.getGender())
-                 .setAuths(authObject.listBaseAuth())
+                 .setAuthObject(authObject)
                  .setPasswordExpiredTime(credential.getPasswordExpiredTime())
                  .setAccountLockedDeadline(credential.getAccountLockedDeadline())
                  .setEnabled(credential.getEnabled())

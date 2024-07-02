@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.security.token;
+package com.kewen.framework.auth.security.filter.token;
 
 import org.springframework.util.StringUtils;
 

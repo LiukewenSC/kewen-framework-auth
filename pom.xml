@@ -14,6 +14,7 @@
         <module>kewen-auth-starter-rabc-web</module>
         <module>kewen-auth-RABC</module>
         <module>kewen-auth-starter-security-web</module>
+        <module>kewen-auth-starter-web</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
     <properties>

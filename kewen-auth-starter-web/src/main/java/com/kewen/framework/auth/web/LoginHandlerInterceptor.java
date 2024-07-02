@@ -1,8 +1,7 @@
-package com.kewen.framework.auth.sample.config;
+package com.kewen.framework.auth.web;
 
 import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.core.exception.AuthorizationException;
-import com.kewen.framework.auth.sample.model.TokenUserStore;
 import com.kewen.framework.auth.rabc.composite.SysUserComposite;
 import com.kewen.framework.auth.rabc.model.UserAuthObject;
 import org.springframework.beans.factory.annotation.Autowired;

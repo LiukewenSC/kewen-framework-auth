@@ -1,5 +1,6 @@
-package com.kewen.framework.auth.security.filter;
+package com.kewen.framework.auth.security.configurer;
 
+import com.kewen.framework.auth.security.filter.JsonLoginFilter;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;

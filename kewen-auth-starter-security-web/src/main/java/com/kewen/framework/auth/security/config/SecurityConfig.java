@@ -3,13 +3,15 @@ package com.kewen.framework.auth.security.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.extension.DefaultSecurityResultConverter;
 import com.kewen.framework.auth.security.extension.SecurityResultConverter;
-import com.kewen.framework.auth.security.filter.AuthCompositeHandler;
-import com.kewen.framework.auth.security.filter.JsonLoginAuthenticationFilterConfigurer;
-import com.kewen.framework.auth.security.filter.AuthSuccessFailedDeniedHandler;
+import com.kewen.framework.auth.security.filter.response.AuthResultCompositeHandler;
+import com.kewen.framework.auth.security.configurer.JsonLoginAuthenticationFilterConfigurer;
+import com.kewen.framework.auth.security.filter.response.AuthResultSuccessFailedDeniedHandler;
+import com.kewen.framework.auth.security.filter.JsonLoginFilter;
 import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
 import com.kewen.framework.auth.security.service.RabcSecurityUserDetailsService;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
-import com.kewen.framework.auth.security.token.TokenSessionFilter;
+import com.kewen.framework.auth.security.filter.AuthUserContextFilter;
+import com.kewen.framework.auth.security.filter.TokenSessionRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -51,15 +53,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    @ConditionalOnMissingBean(AuthCompositeHandler.class)
-    AuthCompositeHandler authenticationCompositeHandler(){
-        return new AuthSuccessFailedDeniedHandler();
+    @ConditionalOnMissingBean(AuthResultCompositeHandler.class)
+    AuthResultCompositeHandler authenticationCompositeHandler(){
+        return new AuthResultSuccessFailedDeniedHandler();
     }
 
     @Autowired
-    AuthCompositeHandler authCompositeHandler;
-
-
+    AuthResultCompositeHandler authResultCompositeHandler;
 
 
     @Bean
@@ -73,7 +73,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
     /**
      * 加入监听器，session销毁时才会触发 spring容器的感知，否则 security监听不到销毁
@@ -103,10 +102,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //.formLogin()  不再用表单登录了，采用Json登录方式，因此不需要再formLogin引入FormLoginConfigurer配置UsernamePasswordAuthenticationFilter
                 .apply(new JsonLoginAuthenticationFilterConfigurer<>())
                     .loginProcessingUrl(loginProperties.getLoginUrl())
-                    .successHandler(authCompositeHandler)
-                    .failureHandler(authCompositeHandler)
+                    .usernameParameter(loginProperties.getUsernameParameter())
+                    .passwordParameter(loginProperties.getPasswordParameter())
+                    //.authenticationDetailsSource()  在认证前封装的Authentication中添加详细信息，如从request中拿到的ip,等信息
+                    .successHandler(authResultCompositeHandler)
+                    .failureHandler(authResultCompositeHandler)
                     .and()
-                .exceptionHandling().accessDeniedHandler(authCompositeHandler).and()
+                .exceptionHandling().accessDeniedHandler(authResultCompositeHandler).and()
                 .sessionManagement()
                 //.sessionFixation().changeSessionId()  //这里改为none则不会出现postman连续登录会报session过多 ， 要么就是允许挤下线
                 .sessionFixation().none()  //这里改为none则不会出现postman连续登录会报session过多
@@ -116,7 +118,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 //.cors().configurationSource(corsConfigurationSource()).and()
                 // 这里就是封装一层request以便获取session
-                .addFilterBefore(new TokenSessionFilter(), WebAsyncManagerIntegrationFilter.class)
+                .addFilterBefore(new TokenSessionRequestFilter(), WebAsyncManagerIntegrationFilter.class)
+                //这里添加权限用户上下文过滤器
+                .addFilterAfter(new AuthUserContextFilter(), JsonLoginFilter.class)
         ;
     }
 

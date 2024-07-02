@@ -21,6 +21,7 @@ import com.kewen.framework.auth.rabc.utils.TreeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
  * @author kewen
  * @since 2022-12-01 10:21
  */
+@Service
 @Slf4j
 public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     @Autowired

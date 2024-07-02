@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.sample.model;
+package com.kewen.framework.auth.web;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -18,6 +18,7 @@ public class TokenUserStore {
     public static void set(String token, UserAuthObject user){
         cache.put(token, user);
     }
+
     public static UserAuthObject get(String token){
         if (StringUtils.isEmpty(token)){
             return null;

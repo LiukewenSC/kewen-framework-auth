@@ -10,11 +10,13 @@ import com.kewen.framework.auth.rabc.mp.entity.SysUserCredential;
 import com.kewen.framework.auth.rabc.mp.service.SysUserCredentialMpService;
 import com.kewen.framework.auth.rabc.mp.service.SysUserMpService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author kewen
  * @since 2024-05-11
  */
+@Service
 public class SysUserCompositeImpl implements SysUserComposite {
 
     @Autowired

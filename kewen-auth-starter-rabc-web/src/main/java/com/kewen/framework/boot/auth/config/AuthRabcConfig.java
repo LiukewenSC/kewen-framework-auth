@@ -28,8 +28,15 @@ import org.springframework.context.annotation.Configuration;
  * @since 2023-12-28
  */
 @Configuration
-@MapperScan({"com.kewen.framework.auth.rabc.mp.mapper", "com.kewen.framework.auth.rabc.composite.mapper"})
-@ComponentScan("com.kewen.framework.auth.rabc.mp.service.impl")
+@MapperScan({
+        "com.kewen.framework.auth.rabc.mp.mapper",
+        "com.kewen.framework.auth.rabc.composite.mapper"
+})
+@ComponentScan({
+        "com.kewen.framework.auth.rabc.mp.service.impl",
+        "com.kewen.framework.auth.rabc.composite",
+        "com.kewen.framework.auth.rabc.controller"
+})
 @ConditionalOnClass(AnnotationAuthHandlerImpl.class)
 @EnableConfigurationProperties(DataRangeDatabaseFieldProperties.class)
 public class AuthRabcConfig {
@@ -57,6 +64,11 @@ public class AuthRabcConfig {
             }
         };
     }
+    /*@Bean(autowire = Autowire.BY_TYPE)
+    @ConditionalOnMissingBean(AnnotationAuthHandler.class)
+    public AnnotationAuthHandler annotationAuthHandler(){
+        return new AnnotationAuthHandlerImpl();
+    }*/
 
     /**
      * 数据权限数据库字段
@@ -70,39 +82,5 @@ public class AuthRabcConfig {
         databaseField.setAuthorityColumn(dataRangeDatabaseFieldProperties.getAuthorityColumn());
         return databaseField;
     }
-
-    /**
-     * 业务数据权限组合器
-     * @return
-     */
-    @Bean(autowire = Autowire.BY_TYPE)
-    @ConditionalOnMissingBean(SysAuthDataComposite.class)
-    SysAuthDataComposite sysDataAuthComposite(){
-        return new SysAuthDataCompositeImpl();
-    }
-
-    /**
-     * 菜单权限整合服务类
-     * @return
-     */
-    @Bean
-    @ConditionalOnMissingBean(SysAuthMenuComposite.class)
-    SysAuthMenuComposite memorySysMenuAuthComposite(){
-        return new MemorySysAuthMenuComposite();
-    }
-
-
-
-    /**
-     * 用户相关
-     * @return
-     */
-    @Bean
-    @ConditionalOnMissingBean(SysUserComposite.class)
-    SysUserComposite sysUserComposite(){
-        return new SysUserCompositeImpl();
-    }
-
-
 
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.kewen.framework.auth.core.model.BaseAuth;
+import com.kewen.framework.auth.core.model.IAuthObject;
 import com.kewen.framework.auth.rabc.mp.entity.SysUser;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Data
 @Accessors(chain = true)
-public class SecurityUser implements UserDetails {
+public class SecurityUser<T extends IAuthObject> implements UserDetails {
 
 
     private String token;
@@ -71,7 +72,7 @@ public class SecurityUser implements UserDetails {
     /**
      * 权限集合
      */
-    private Collection<BaseAuth> auths;
+    private T authObject;
 
     /**
      * 凭证过期时间 每次修改密码应修改过期时间 ， 为空表示系统无过期时间设定
@@ -130,7 +131,7 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return auths.stream()
+        return authObject.listBaseAuth().stream()
                 .map(BaseAuth::getAuth)
                 .map(a -> (GrantedAuthority) () -> a)
                 .collect(Collectors.toList());

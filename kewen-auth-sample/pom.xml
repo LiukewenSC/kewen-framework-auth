@@ -32,11 +32,11 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.kewen.framework.auth</groupId>
-            <artifactId>kewen-auth-starter-security-web</artifactId>
+            <artifactId>kewen-auth-starter-web</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.kewen.framework.auth</groupId>
             <artifactId>kewen-auth-starter-rabc-web</artifactId>

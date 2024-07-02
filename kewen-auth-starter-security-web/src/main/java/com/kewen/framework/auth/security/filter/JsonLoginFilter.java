@@ -14,7 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-
+/**
+ * @author kewen
+ * @descrpition JSON登录过滤器
+ * @since 2024-07-02
+ */
 public class JsonLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -35,7 +39,7 @@ public class JsonLoginFilter extends UsernamePasswordAuthenticationFilter {
             String password = map.get(getPasswordParameter());
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-
+            setDetails(request, authenticationToken);
             return getAuthenticationManager().authenticate(authenticationToken);
 
         } else {
