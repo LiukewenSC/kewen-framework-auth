@@ -5,7 +5,7 @@ import com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject;
 import com.kewen.framework.auth.rabc.model.UserAuthObject;
 import com.kewen.framework.auth.rabc.mp.entity.SysUser;
 import com.kewen.framework.auth.rabc.mp.entity.SysUserCredential;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kewen.framework.auth.security.model.SecurityUser;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  */
 public class RabcSecurityUserDetailsService implements SecurityUserDetailsService {
 
-    @Autowired
     SysUserComposite sysUserComposite;
 
     @Override
@@ -46,5 +45,10 @@ public class RabcSecurityUserDetailsService implements SecurityUserDetailsServic
                  .setCreateTime(sysUser.getCreateTime())
                  .setUpdateTime(sysUser.getUpdateTime())
          ;
+    }
+
+    public RabcSecurityUserDetailsService setSysUserComposite(SysUserComposite sysUserComposite) {
+        this.sysUserComposite = sysUserComposite;
+        return this;
     }
 }

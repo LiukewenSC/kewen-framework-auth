@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.security.filter;
 
 import com.kewen.framework.auth.core.context.AuthUserContext;
-import com.kewen.framework.auth.security.service.SecurityUser;
+import com.kewen.framework.auth.security.model.SecurityUser;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 

@@ -2,7 +2,7 @@ package com.kewen.framework.auth.security.filter.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.extension.SecurityResultConverter;
-import com.kewen.framework.auth.security.service.SecurityUser;
+import com.kewen.framework.auth.security.model.SecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -21,8 +21,11 @@ import java.io.PrintWriter;
  */
 public class AuthResultSuccessFailedDeniedHandler implements AuthResultCompositeHandler {
 
-    @Autowired
+
     SecurityResultConverter securityResultConverter;
+
+
+    ObjectMapper objectMapper;
 
     /**
      * 访问异常的处理
@@ -76,9 +79,18 @@ public class AuthResultSuccessFailedDeniedHandler implements AuthResultComposite
     private void writeResponseBody(HttpServletResponse response,Object result) throws IOException {
         response.setContentType("application/json;charset=utf-8");
         PrintWriter out = response.getWriter();
-        out.write(new ObjectMapper().writeValueAsString(result));
+        out.write(objectMapper.writeValueAsString(result));
         out.flush();
         out.close();
     }
 
+    public AuthResultSuccessFailedDeniedHandler setSecurityResultConverter(SecurityResultConverter securityResultConverter) {
+        this.securityResultConverter = securityResultConverter;
+        return this;
+    }
+
+    public AuthResultSuccessFailedDeniedHandler setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+        return this;
+    }
 }

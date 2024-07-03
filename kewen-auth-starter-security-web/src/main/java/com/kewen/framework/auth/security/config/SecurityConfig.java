@@ -1,6 +1,7 @@
 package com.kewen.framework.auth.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kewen.framework.auth.rabc.composite.SysUserComposite;
 import com.kewen.framework.auth.security.extension.DefaultSecurityResultConverter;
 import com.kewen.framework.auth.security.extension.SecurityResultConverter;
 import com.kewen.framework.auth.security.filter.response.AuthResultCompositeHandler;
@@ -52,20 +53,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new DefaultSecurityResultConverter();
     }
 
+    @Autowired
+    SecurityResultConverter securityResultConverter;
+
     @Bean
     @ConditionalOnMissingBean(AuthResultCompositeHandler.class)
     AuthResultCompositeHandler authenticationCompositeHandler(){
-        return new AuthResultSuccessFailedDeniedHandler();
+        return new AuthResultSuccessFailedDeniedHandler()
+                .setObjectMapper(objectMapper)
+                .setSecurityResultConverter(securityResultConverter);
     }
 
     @Autowired
     AuthResultCompositeHandler authResultCompositeHandler;
 
 
+    @Autowired
+    SysUserComposite sysUserComposite;
+
     @Bean
     @ConditionalOnClass(RabcSecurityUserDetailsService.class)
     SecurityUserDetailsService securityUserDetailsService(){
-        return new RabcSecurityUserDetailsService();
+        RabcSecurityUserDetailsService service = new RabcSecurityUserDetailsService();
+        service.setSysUserComposite(sysUserComposite);
+        return service;
     };
 
     @Bean

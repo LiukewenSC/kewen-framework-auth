@@ -1,20 +1,14 @@
-package com.kewen.framework.auth.security.service;
+package com.kewen.framework.auth.security.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.model.IAuthObject;
-import com.kewen.framework.auth.rabc.mp.entity.SysUser;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Data
