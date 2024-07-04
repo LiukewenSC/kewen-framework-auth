@@ -8,7 +8,7 @@ import com.kewen.framework.auth.core.model.IAuthObject;
  * @author kewen
  * @since 2022-12-19
  */
-public interface AuthDataEditBusiness<ID> {
+public interface IdDataAuthEdit<ID> {
 
     /**
      * 获取业务ID

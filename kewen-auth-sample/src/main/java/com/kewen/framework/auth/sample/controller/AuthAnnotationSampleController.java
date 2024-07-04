@@ -4,8 +4,8 @@ import com.kewen.framework.auth.core.model.IAuthObject;
 import com.kewen.framework.auth.core.annotation.data.AuthCheckDataOperation;
 import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
 import com.kewen.framework.auth.core.annotation.data.AuthEditDataAuth;
-import com.kewen.framework.auth.core.annotation.data.authedit.AuthDataEditBusiness;
-import com.kewen.framework.auth.core.annotation.data.edit.BusinessData;
+import com.kewen.framework.auth.core.annotation.data.authedit.IdDataAuthEdit;
+import com.kewen.framework.auth.core.annotation.data.edit.IdDataEdit;
 import com.kewen.framework.auth.core.annotation.menu.AuthCheckMenuAccess;
 import com.kewen.framework.auth.sample.mp.entity.TestauthAnnotationBusiness;
 import com.kewen.framework.auth.sample.mp.service.TestauthAnnotationBusinessMpService;
@@ -33,14 +33,14 @@ public class AuthAnnotationSampleController {
      * 测试数据范围
      * @return
      */
-    @AuthDataRange(module = "testauth")
+    @AuthDataRange(module = "testrange")
     @GetMapping("/dataRange")
-    public String testDataRange() {
+    public Object testDataRange() {
         //直接测试菜单的权限就知道了，
         List<TestauthAnnotationBusiness> list = testauthAnnotationBusinessMpService.list();
         System.out.println(list);
         Assert.isTrue(list.size()==1, "菜单列表为空");
-        return "testDataRange";
+        return list;
     }
 
     /**
@@ -49,9 +49,9 @@ public class AuthAnnotationSampleController {
      */
     @PostMapping("/dataEdit")
     @AuthCheckDataOperation(module = "testedit")
-    public String testDataEdit(@RequestBody EditBusinessData editBusinessData) {
+    public String testDataEdit(@RequestBody EditIdDataEdit editBusinessData) {
         System.out.println("successEdit");
-        return "testDataEdit";
+        return "测试编辑通过，可以编辑数据";
     }
 
     /**
@@ -59,8 +59,8 @@ public class AuthAnnotationSampleController {
      * @return
      */
     @PostMapping("/dataAuthEdit")
-    @AuthEditDataAuth(module = "testauth")
-    public String testDataAuthEdit(@RequestBody EditAuthDataEditBusiness applicationBusiness) {
+    @AuthEditDataAuth(module = "testauthedit")
+    public String testDataAuthEdit(@RequestBody EditIdDataAuthEdit applicationBusiness) {
 
         return "testDataAuthEdit";
     }
@@ -77,7 +77,7 @@ public class AuthAnnotationSampleController {
     }
 
     @Data
-    public static class EditBusinessData implements BusinessData {
+    public static class EditIdDataEdit implements IdDataEdit<Long> {
 
         private Long id;
 
@@ -87,7 +87,7 @@ public class AuthAnnotationSampleController {
         }
     }
     @Data
-    public static class EditAuthDataEditBusiness implements AuthDataEditBusiness<Long> {
+    public static class EditIdDataAuthEdit implements IdDataAuthEdit<Long> {
 
         private Long id;
 

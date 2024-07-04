@@ -41,11 +41,11 @@ public class DataCheckAspect {
         if (args==null){
             throw new AuthorizationException("参数不能为空");
         }
-        Optional<Object> first = Arrays.stream(args).filter(a -> a instanceof BusinessData).findFirst();
+        Optional<Object> first = Arrays.stream(args).filter(a -> a instanceof IdDataEdit).findFirst();
         if (!first.isPresent()){
             throw new AuthorizationException("参数没有找到接口ApplicationBusiness实现类");
         }
-        BusinessData business = (BusinessData) first.get();
+        IdDataEdit business = (IdDataEdit) first.get();
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
         boolean hasAuth = annotationAuthHandler.hasDataOperateAuths(auths, authAnn.module(), authAnn.operate(), business.getDataId());
         if (!hasAuth){
