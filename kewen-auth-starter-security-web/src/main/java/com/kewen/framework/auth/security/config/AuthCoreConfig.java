@@ -66,7 +66,7 @@ public class AuthCoreConfig {
     @Bean
     MybatisDataRangeInterceptor mybatisDataRangeInterceptor(){
         MybatisDataRangeInterceptor interceptor = new MybatisDataRangeInterceptor();
-        interceptor.setAnnotationAuthHandler(annotationAuthHandler);
+        //interceptor.setAnnotationAuthHandler(annotationAuthHandler);
         return interceptor;
     }
 

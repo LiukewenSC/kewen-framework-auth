@@ -32,7 +32,7 @@ public class DataRangeAspect {
                 .setModule(checkAuthDataRange.module())
                 .setOperate(checkAuthDataRange.operate())
                 .setTableAlias(checkAuthDataRange.tableAlias())
-                .setDataColumn(checkAuthDataRange.businessColumn())
+                .setDataColumn(checkAuthDataRange.dataIdColumn())
                 .setAuthorities(auths)
                 .setMatchMethod(checkAuthDataRange.matchMethod())
                 ;

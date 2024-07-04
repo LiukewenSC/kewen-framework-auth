@@ -45,7 +45,7 @@ public @interface AuthDataRange {
      * 业务主键column名 用于拼接 t.id
      * @return
      */
-    String businessColumn() default "id";
+    String dataIdColumn() default "id";
 
     /**
      * 默认统一的

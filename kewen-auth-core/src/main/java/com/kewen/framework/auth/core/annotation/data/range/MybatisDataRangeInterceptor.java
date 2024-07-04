@@ -27,6 +27,11 @@ import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 
 import java.sql.Connection;
 import java.util.Properties;
@@ -45,14 +50,35 @@ import java.util.Properties;
  */
 @Slf4j
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
-public class MybatisDataRangeInterceptor implements Interceptor {
+public class MybatisDataRangeInterceptor implements Interceptor,ApplicationContextAware {
 
-
-    private AnnotationAuthHandler annotationAuthHandler;
-
-    public DataRangeDatabaseField getDataRangeDatabaseField() {
-        return annotationAuthHandler.getDataRangeDatabaseField();
+    public MybatisDataRangeInterceptor() {
     }
+
+    /**
+     * Mybatis的插件先于spring容器的完全初始化 ,因此不能直接通过注入等方式获取到容器中的Bean，需要在第一次使用的时候才进行初始化
+     * 可以先加载ApplicationContext，再使用时加载AnnotationAuthHandler，
+     * 也可以注入的时候添加@Lazy注解
+     * @Autowired
+     * @Lazy
+     * private AnnotationAuthHandler annotationAuthHandler
+     */
+    private ApplicationContext applicationContext;
+    private AnnotationAuthHandler annotationAuthHandler;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext=applicationContext;
+    }
+    public DataRangeDatabaseField getDataRangeDatabaseField() {
+        return getAnnotationAuthHandler().getDataRangeDatabaseField();
+    }
+    private synchronized AnnotationAuthHandler getAnnotationAuthHandler(){
+        if(annotationAuthHandler==null){
+            this.annotationAuthHandler = applicationContext.getBean(AnnotationAuthHandler.class);
+        }
+        return annotationAuthHandler;
+    }
+
 
     /**
      * 所有的sql都会进入此拦截器，需要只校验AuthRangeContext中有数据的，没有数据的说明不是@AuthRange 所拦截的，应当原样输出
@@ -157,7 +183,9 @@ public class MybatisDataRangeInterceptor implements Interceptor {
     public void setProperties(Properties properties) {
     }
 
+    @Lazy
     public void setAnnotationAuthHandler(AnnotationAuthHandler annotationAuthHandler) {
         this.annotationAuthHandler = annotationAuthHandler;
     }
+
 }
