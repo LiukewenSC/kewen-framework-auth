@@ -77,15 +77,14 @@ spring.datasource.password=framework123456_
 spring.datasource.hikari.connection-test-query=SELECT 1 from dual
 ```
 
-执行完以上两步骤就可以使用了，但是这里没有对异常返回的统一处理，建议在配置一个异常解析器
+执行完以上两步骤就可以使用了，但是这里没有对异常返回的统一处理，建议再配置一个异常解析器
 
 ```java
 /**
- * 可以继承 ResponseEntityExceptionHandler，继承了之后会多出来默认的异常解析处理，也可
+ * 可以继承 ResponseEntityExceptionHandler，继承了之后会多出来默认的异常解析处理
  */
-@RestControllerAdvice
 @Slf4j
-
+@RestControllerAdvice
 //public class SampleRepopseAdvance extends ResponseEntityExceptionHandler {
 public class SampleResponseAdvance {
     
@@ -99,7 +98,7 @@ public class SampleResponseAdvance {
 ```
 
 
-### 使用说明
+## 使用说明
 
 #### 接口实现
 
