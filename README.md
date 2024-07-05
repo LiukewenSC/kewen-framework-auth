@@ -16,6 +16,69 @@
 
 本模块仅做了权限流程的抽象，并未对其实现，需要用户自行实现，也可以引入`kewen-auth-impl`默认实现模块
 
+# 使用
+
+## 入门 快速搭建工程
+
+1. 首先创建工程，Pom形式如下，
+   - 需要指定<parent>标签管理依赖
+   - dependencies中指定必要的依赖，这里直接以SpringSecurity引入
+
+其实主要就是引入两个依赖 `kewen-auth-starter-security-web`和`kewen-auth-starter-rabc`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>com.kewen.framework.auth</groupId>
+      <artifactId>kewen-auth-parent</artifactId>
+      <version>1.0-SNAPSHOT</version>
+   </parent>
+
+   <groupId>com.kewen.self</groupId>
+   <artifactId>kewen.self.backend</artifactId>
+   <version>1.0-SNAPSHOT</version>
+
+   <properties>
+      <maven.compiler.source>8</maven.compiler.source>
+      <maven.compiler.target>8</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>com.kewen.framework.auth</groupId>
+         <artifactId>kewen-auth-starter-security-web</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.kewen.framework.auth</groupId>
+         <artifactId>kewen-auth-starter-rabc</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>mysql</groupId>
+         <artifactId>mysql-connector-java</artifactId>
+      </dependency>
+   </dependencies>
+</project>
+```
+
+2. 配置 application.properties 文件
+
+```properties
+server.port=8081
+spring.datasource.url=jdbc:mysql://liukewensc.mysql.rds.aliyuncs.com:3306/kewen_framework_auth_template
+spring.datasource.username=open_framework
+spring.datasource.password=framework123456_
+spring.datasource.hikari.connection-test-query=SELECT 1 from dual
+```
+
+执行完以上两步骤就可以使用了
+
 ### 使用说明
 
 #### 接口实现

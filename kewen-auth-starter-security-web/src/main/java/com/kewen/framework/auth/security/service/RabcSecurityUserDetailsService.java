@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
 /**
- * 基于Rabc的权限实现体系，前提是要引入了 <kewen-auth-starter-rabc-web>
+ * 基于Rabc的权限实现体系，前提是要引入了 <kewen-auth-starter-rabc>
  * @author kewen
  * @since 2024-07-02
  */

@@ -8,8 +8,6 @@ kewen-framework:
       table-name: sys_auth_data
       dataId-column: data_id
       authority-column: authority
-  environment:
-    prod: false
   security:
     login:
       login-url: /login
