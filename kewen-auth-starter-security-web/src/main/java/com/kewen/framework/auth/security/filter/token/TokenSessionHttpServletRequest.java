@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.security.filter.token;
 
+import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,15 +20,16 @@ public class TokenSessionHttpServletRequest extends HttpServletRequestWrapper {
 
     private final boolean isToken;
 
+    String tokenParameter;
     /**
      * Constructs a request object wrapping the given request.
      *
      * @param request The request to wrap
      * @throws IllegalArgumentException if the request is null
      */
-    public TokenSessionHttpServletRequest(HttpServletRequest request) {
+    public TokenSessionHttpServletRequest(HttpServletRequest request,String tokenParameter) {
         super(request);
-        String token = request.getHeader("token");
+        String token = request.getHeader(tokenParameter);
         tokenThreadLocal.set(token);
         isToken = token != null;
     }

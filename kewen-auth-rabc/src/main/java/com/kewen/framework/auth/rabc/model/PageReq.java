@@ -7,8 +7,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PageReq {
     @NotNull
-    private Integer page;
+    private Long page;
     @NotNull
-    private Integer size;
+    private Long size;
     private String name;
 }

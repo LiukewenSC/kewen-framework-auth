@@ -23,18 +23,18 @@ public class SampleResponseAdvance {
     @ExceptionHandler(AuthorizationException.class)
     public Result exception(AuthorizationException e){
         log.error(e.getMessage(),e);
-        return Result.fail(HttpStatus.UNAUTHORIZED.value(),e.getMessage());
+        return Result.failed(HttpStatus.UNAUTHORIZED.value(),e.getMessage());
     }
     @ExceptionHandler(AccessDeniedException.class)
     public Result accessDeniedException(AccessDeniedException e){
         log.error(e.getMessage(),e);
-        return Result.fail(HttpStatus.UNAUTHORIZED.value(),e.getMessage());
+        return Result.failed(HttpStatus.UNAUTHORIZED.value(),e.getMessage());
     }
 
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result exception(Throwable e){
         log.error("全局异常拦截Throwable： "+e.getMessage(),e);
-        return Result.fail(e.getMessage());
+        return Result.failed(e.getMessage());
     }
 }

@@ -88,7 +88,7 @@ public class UserController {
         PageResult<SysUser> result = new PageResult<>();
         result.setPage(pageReq.getPage());
         result.setSize(pageReq.getSize());
-        result.setTotal((int)page.getTotal());
+        result.setTotal(page.getTotal());
         result.setData(records);
         return Result.success(result);
     }

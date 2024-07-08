@@ -96,7 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 //.cors().configurationSource(corsConfigurationSource()).and()
                 // 这里就是封装一层request以便获取session
-                .addFilterBefore(new TokenSessionRequestFilter(), WebAsyncManagerIntegrationFilter.class)
+                .addFilterBefore(new TokenSessionRequestFilter(loginProperties.getTokenParameter()), WebAsyncManagerIntegrationFilter.class)
                 //这里添加权限用户上下文过滤器
                 .addFilterAfter(new AuthUserContextFilter(), JsonLoginFilter.class)
         ;

@@ -29,18 +29,18 @@ public class SecurityAuthenticationExceptionResolverHandler implements Authentic
 
     HandlerExceptionResolver handlerExceptionResolver;
 
+    /**
+     * AuthenticationEntryPoint 的实现
+     * 处理未进入登录但后续需要验证登录的异常
+     */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         resolver(request, response, exception);
     }
 
     /**
+     * AccessDeniedHandler 的实现
      * 访问异常的处理
-     *
-     * @param request               that resulted in an <code>AccessDeniedException</code>
-     * @param response              so that the user agent can be advised of the failure
-     * @param exception that caused the invocation
-     * @throws IOException
      * @throws ServletException
      */
     @Override
@@ -48,7 +48,20 @@ public class SecurityAuthenticationExceptionResolverHandler implements Authentic
         resolver(request, response, exception);
     }
 
+    /**
+     * 认证失败的处理
+     * AuthenticationFailureHandler 的实现
+     */
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        resolver(request, response, exception);
+    }
+
+    /**
+     * 具体解析器的处理逻辑
+     */
     private void resolver(HttpServletRequest request, HttpServletResponse response, Exception exception) {
+        //拿到容器中配置的HandlerExceptionResolver，并调用其解析逻辑，这个类本身就会扫描`@ControllerAdvice`并加入HandlerExceptionResolver中
         ModelAndView modelAndView = handlerExceptionResolver.resolveException(request, response, null, exception);
         //没有解析到，没有解析到那就默认返回
         if (modelAndView == null) {
@@ -63,21 +76,6 @@ public class SecurityAuthenticationExceptionResolverHandler implements Authentic
                 throw new AuthenticationServiceException("SecurityExceptionResolverHandler 解析返回异常", e);
             }
         }
-    }
-
-    /**
-     * 认证失败的处理
-     *
-     * @param request   the request during which the authentication attempt occurred.
-     * @param response  the response.
-     * @param exception the exception which was thrown to reject the authentication
-     *                  request.
-     * @throws IOException
-     * @throws ServletException
-     */
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        resolver(request, response, exception);
     }
 
     public SecurityAuthenticationExceptionResolverHandler setHandlerExceptionResolver(HandlerExceptionResolver handlerExceptionResolver) {

@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.sample.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kewen.framework.auth.core.model.IAuthObject;
 import com.kewen.framework.auth.core.annotation.data.AuthCheckDataOperation;
 import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
@@ -7,6 +8,9 @@ import com.kewen.framework.auth.core.annotation.data.AuthEditDataAuth;
 import com.kewen.framework.auth.core.annotation.data.authedit.IdDataAuthEdit;
 import com.kewen.framework.auth.core.annotation.data.edit.IdDataEdit;
 import com.kewen.framework.auth.core.annotation.menu.AuthCheckMenuAccess;
+import com.kewen.framework.auth.rabc.model.PageReq;
+import com.kewen.framework.auth.rabc.model.PageResult;
+import com.kewen.framework.auth.rabc.model.Result;
 import com.kewen.framework.auth.sample.mp.entity.TestauthAnnotationBusiness;
 import com.kewen.framework.auth.sample.mp.service.TestauthAnnotationBusinessMpService;
 import lombok.Data;
@@ -24,7 +28,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/test")
-public class AuthAnnotationSampleController {
+public class TestAuthAnnotationController {
 
     @Autowired
     TestauthAnnotationBusinessMpService testauthAnnotationBusinessMpService;
@@ -41,6 +45,26 @@ public class AuthAnnotationSampleController {
         System.out.println(list);
         Assert.isTrue(list.size()==1, "菜单列表为空");
         return list;
+    }
+
+
+    /**
+     * 测试数据范围
+     * @return
+     */
+    @AuthDataRange(module = "testrange")
+    @GetMapping("/pageDataRange")
+    public Object pageDataRange(PageReq pageReq) {
+        //直接测试菜单的权限就知道了，
+        Page<TestauthAnnotationBusiness> page = new Page<>(pageReq.getPage(),pageReq.getSize());
+        Page<TestauthAnnotationBusiness> pageResult = testauthAnnotationBusinessMpService.page(page);
+        Assert.isTrue(!pageResult.getRecords().isEmpty(), "菜单列表为空");
+        PageResult<TestauthAnnotationBusiness> result = new PageResult<>();
+        result.setTotal(pageResult.getTotal());
+        result.setData(pageResult.getRecords());
+        result.setPage(pageReq.getPage());
+        result.setSize(pageResult.getSize());
+        return Result.success(result);
     }
 
     /**

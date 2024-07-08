@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.sample.handler;
+package com.kewen.framework.auth.sample.Response;
 
 import com.kewen.framework.auth.rabc.model.Result;
 import com.kewen.framework.auth.security.model.SecurityUser;

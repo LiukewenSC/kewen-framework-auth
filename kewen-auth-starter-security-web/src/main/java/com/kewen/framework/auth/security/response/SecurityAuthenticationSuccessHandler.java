@@ -2,6 +2,8 @@ package com.kewen.framework.auth.security.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.model.SecurityUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -19,6 +21,7 @@ import java.io.PrintWriter;
  */
 public class SecurityAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(SecurityAuthenticationSuccessHandler.class);
     private ObjectMapper objectMapper;
     private AuthenticationSuccessResultResolver resultResolver;
 
@@ -49,6 +52,8 @@ public class SecurityAuthenticationSuccessHandler implements AuthenticationSucce
         Object result= principal;
         if (resultResolver !=null){
             result = resultResolver.resolver(request,response,user);
+        } else {
+            log.warn("No ResultResolver available , you will return original SecurityUser");
         }
         writeResponseBody(response, result);
     }

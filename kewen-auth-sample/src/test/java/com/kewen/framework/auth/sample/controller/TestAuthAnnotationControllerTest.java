@@ -26,7 +26,7 @@ import java.util.List;
  */
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
-public class AuthAnnotationSampleControllerTest {
+public class TestAuthAnnotationControllerTest {
 
     @Autowired
     SysMenuMpService sysMenuMpService;

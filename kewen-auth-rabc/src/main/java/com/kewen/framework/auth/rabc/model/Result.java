@@ -17,14 +17,14 @@ public class Result<T> {
         result.setData(data);
         return result;
     }
-    public static Result fail(String message){
+    public static Result failed(String message){
         Result  result = new Result();
         result.setSuccess(false);
         result.setCode(500);
         result.setMessage(message);
         return result;
     }
-    public static Result fail(int code ,String message){
+    public static Result failed(int code , String message){
         Result  result = new Result();
         result.setSuccess(false);
         result.setCode(code);

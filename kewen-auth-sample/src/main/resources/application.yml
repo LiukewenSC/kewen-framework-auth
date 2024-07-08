@@ -15,4 +15,4 @@ kewen-framework:
       max-sessions-prevents-login: true
       username-parameter: username
       password-parameter: password
-      token-parameter: token
+      token-parameter: Authorization

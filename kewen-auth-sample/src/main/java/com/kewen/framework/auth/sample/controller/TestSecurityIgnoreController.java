@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SecurityIgnore
 @RequestMapping("/hello")
-public class SampleSecurityIgnoreController {
+public class TestSecurityIgnoreController {
 
     @RequestMapping("/hello")
     public Result hello(){

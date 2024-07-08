@@ -7,8 +7,8 @@ import java.util.List;
 @Data
 public class PageResult<T> {
 
-    private int page;
-    private int size;
-    private int total;
+    private Long page;
+    private Long size;
+    private Long total;
     private List<T> data;
 }

@@ -34,15 +34,11 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!--这里可以不用web工程，但是目前还是使用比较好，因为也没想过用 webflux-->
+        <!--目前主要用于 SpringSecurity统一返回处理器的引入，Jackson序列化返回-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>-->
     </dependencies>
 
 </project>

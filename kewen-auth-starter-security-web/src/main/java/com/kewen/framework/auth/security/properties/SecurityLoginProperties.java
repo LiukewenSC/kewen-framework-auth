@@ -19,7 +19,7 @@ public class SecurityLoginProperties {
     private String loginUrl = "/login";
     private String usernameParameter = "username";
     private String passwordParameter = "password";
-    private String tokenParameter = "token";
+    private String tokenParameter = "Authorization";
 
     /**
      * 允许的最大session数量
