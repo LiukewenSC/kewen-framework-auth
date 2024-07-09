@@ -6,4 +6,6 @@ public interface SysUserComposite{
 
     UserAuthObject loadByUsername(String username);
 
+    boolean updatePassword(String username, String newPassword);
+
 }

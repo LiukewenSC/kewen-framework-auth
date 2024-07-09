@@ -4,6 +4,7 @@ import com.kewen.framework.auth.rabc.model.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,13 +19,19 @@ public class ExceptionAdviceHandler {
         return Result.failed(500, t.getMessage());
     }
     @ExceptionHandler(AccessDeniedException.class)
-    public Result accessDeniedException(Throwable t){
+    public Result accessDeniedException(AccessDeniedException t){
         logger.error("访问异常：{}", t.getMessage(), t);
         return Result.failed(401, t.getMessage());
     }
     @ExceptionHandler(AuthenticationException.class)
-    public Result authenticationException(Throwable t){
+    public Result authenticationException(AuthenticationException t){
         logger.error("授权异常：{}", t.getMessage(), t);
         return Result.failed(401, t.getMessage());
     }
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public Result insufficientAuthenticationException(InsufficientAuthenticationException t){
+        logger.error("授权异常：{}", t.getMessage(), t);
+        return Result.failed(401, t.getMessage());
+    }
+
 }

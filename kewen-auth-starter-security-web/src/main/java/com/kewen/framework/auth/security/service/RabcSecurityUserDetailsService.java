@@ -6,6 +6,7 @@ import com.kewen.framework.auth.rabc.model.UserAuthObject;
 import com.kewen.framework.auth.rabc.mp.entity.SysUser;
 import com.kewen.framework.auth.rabc.mp.entity.SysUserCredential;
 import com.kewen.framework.auth.security.model.SecurityUser;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
@@ -45,6 +46,15 @@ public class RabcSecurityUserDetailsService implements SecurityUserDetailsServic
                  .setCreateTime(sysUser.getCreateTime())
                  .setUpdateTime(sysUser.getUpdateTime())
          ;
+    }
+
+    @Override
+    public UserDetails updatePassword(UserDetails user, String newPassword) {
+        boolean b = sysUserComposite.updatePassword(user.getUsername(), newPassword);
+        if (!b){
+            throw new RuntimeException("密码更新失败");
+        }
+        return user;
     }
 
     public RabcSecurityUserDetailsService setSysUserComposite(SysUserComposite sysUserComposite) {

@@ -1,10 +1,15 @@
 package com.kewen.framework.auth.security.service;
 
 import com.kewen.framework.auth.security.model.SecurityUser;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public interface SecurityUserDetailsService extends UserDetailsService {
+public interface SecurityUserDetailsService extends UserDetailsService, UserDetailsPasswordService {
     @Override
-    SecurityUser loadUserByUsername(String username) throws UsernameNotFoundException;
+    UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+
+    @Override
+    UserDetails updatePassword(UserDetails user, String newPassword);
 }
