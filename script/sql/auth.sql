@@ -199,7 +199,7 @@ DROP TABLE IF EXISTS `sys_user_credential`;
 CREATE TABLE `sys_user_credential`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` bigint NOT NULL COMMENT '用户表的id',
-  `password` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户密码,可以为空，为拓展免密登录做准备',
+  `password` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户密码，每次新配置用户都可以配置成{noop}123456,可以为空，为拓展免密登录做准备 ',
   `remark` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
   `password_expired_time` datetime NULL DEFAULT NULL COMMENT '凭证过期时间 每次修改密码应修改过期时间 ， 为空表示系统无过期时间设定',
   `account_locked_deadline` datetime NULL DEFAULT NULL COMMENT '账号锁定截止时间，为空或早于当前时间则为不锁定',
@@ -213,7 +213,9 @@ CREATE TABLE `sys_user_credential`  (
 -- ----------------------------
 -- Records of sys_user_credential
 -- ----------------------------
-INSERT INTO `sys_user_credential` VALUES (1, 1, '$2a$10$G74t5HhUl1O1vNIDnSnfpeMGvhM3hM5IskPX1Mlt.OIUN2s9x63LS', '123456', NULL, NULL, 1, '2024-05-11 11:26:26', '2024-07-02 12:51:13');
+-- 这个密码会在第一次登录之后更新成{bcrypt}$2a$10$uCJpehGeWfvENTq.6LVrquPrGhZ9/QJXHmXmkNlu9cvnevFra1YdW
+-- 每次新配置用户都可以配置成{noop}123456
+INSERT INTO `sys_user_credential` VALUES (1, 1, '{noop}123456', '123456', NULL, NULL, 1, '2024-05-11 11:26:26', '2024-07-02 12:51:13');
 
 -- ----------------------------
 -- Table structure for sys_user_dept

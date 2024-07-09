@@ -83,7 +83,7 @@ public class SysUserCompositeImpl implements SysUserComposite {
        return credentialMpService.update(
                 new LambdaUpdateWrapper<SysUserCredential>()
                         .eq(SysUserCredential::getUserId, user.getId())
-                        .eq(SysUserCredential::getPassword, newPassword)
+                        .set(SysUserCredential::getPassword, newPassword)
         );
 
 
