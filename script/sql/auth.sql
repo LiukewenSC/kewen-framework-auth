@@ -122,7 +122,7 @@ INSERT INTO `sys_menu` VALUES (3, '文档', 0, '/docs', NULL, 'docs', NULL, 'el-
 INSERT INTO `sys_menu` VALUES (4, '组织机构管理', 0, '/organization', '/organization/user', 'layout/publics', NULL, 'el-icon-s-help', 0, 1, 2, NULL, '2024-05-10 14:56:39', '2024-06-21 08:34:49', 0);
 INSERT INTO `sys_menu` VALUES (5, '部门管理', 4, '/organization/dept', NULL, 'organization/dept', NULL, 'el-icon-s-platform', 0, 1, 1, NULL, '2024-05-10 14:56:39', '2024-06-21 08:34:29', 0);
 INSERT INTO `sys_menu` VALUES (6, '用户管理', 4, '/organization/user', NULL, 'organization/User', NULL, 'el-icon-s-platform', 0, 1, 1, NULL, '2024-05-10 14:56:39', '2024-06-24 16:47:04', 0);
-INSERT INTO `sys_menu` VALUES (7, '角色管理', 4, '/organization/role', NULL, 'organizaion/role', NULL, 'el-icon-s-custom', 0, 1, 1, NULL, '2024-05-10 14:56:39', '2024-06-21 08:34:41', 0);
+INSERT INTO `sys_menu` VALUES (7, '角色管理', 4, '/organization/role', NULL, 'organization/role', NULL, 'el-icon-s-custom', 0, 1, 1, NULL, '2024-05-10 14:56:39', '2024-06-21 08:34:41', 0);
 INSERT INTO `sys_menu` VALUES (8, '个人中心', 0, '/profile', NULL, 'profile', '{\"hidden\": true}', 'el-icon-star-on', 1, 1, 2, NULL, '2024-05-10 14:56:39', '2024-06-14 16:45:17', 0);
 INSERT INTO `sys_menu` VALUES (9, '路由嵌套', 0, '/route', '/menu', 'layout/publics', NULL, 'el-icon-s-data', 0, 1, 2, NULL, '2024-05-10 14:56:39', '2024-06-19 08:37:28', 0);
 INSERT INTO `sys_menu` VALUES (10, '菜单管理', 9, '/menu', NULL, 'menu', NULL, 'el-icon-s-operation', 0, 1, 1, NULL, '2024-05-10 14:56:39', '2024-06-19 08:34:48', 0);
