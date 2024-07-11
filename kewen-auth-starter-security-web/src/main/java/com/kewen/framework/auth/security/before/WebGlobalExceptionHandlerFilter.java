@@ -38,9 +38,8 @@ public class WebGlobalExceptionHandlerFilter  implements BeforeSecurityFilter {
         } catch (ServletException e) {
             throw new RuntimeException(e);
         } catch (Exception ex){
+            log.warn("security前处理异常，一般说明SpringSecurity过滤器出异常了");
             resolver(request,response,ex);
-        } finally {
-            log.warn("security前处理异常");
         }
     }
     private void resolver(HttpServletRequest request, HttpServletResponse response, Exception ex){

@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+
 /**
  * 认证成功处理器
  * @author kewen
@@ -47,6 +49,7 @@ public class SecurityAuthenticationSuccessHandler implements AuthenticationSucce
         }
         SecurityUser user = (SecurityUser) principal;
         user.setToken(request.getSession().getId());
+        user.setLoginTime(LocalDateTime.now());
         //清空密码
         user.setPassword("");
         Object result= principal;

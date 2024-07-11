@@ -1,7 +1,9 @@
 package com.kewen.framework.auth.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.configurer.JsonLoginAuthenticationFilterConfigurer;
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
+import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
 import com.kewen.framework.auth.security.filter.JsonLoginFilter;
 import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
@@ -9,6 +11,7 @@ import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessH
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import com.kewen.framework.auth.security.filter.AuthUserContextFilter;
 import com.kewen.framework.auth.security.filter.TokenSessionRequestFilter;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +48,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     PermitUrlContainer permitUrlContainer;
+
+    @Autowired
+    ObjectProvider<AuthenticationSuccessResultResolver> resultResolverProvider ;
+
+    @Autowired
+    ObjectMapper objectMapper;
     /**
      * 加入监听器，session销毁时才会触发 spring容器的感知，否则 security监听不到销毁
      * @return
@@ -102,7 +111,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 这里就是封装一层request以便获取session
                 //.addFilterBefore(new TokenSessionRequestFilter(loginProperties.getTokenParameter()), WebAsyncManagerIntegrationFilter.class)
                 //这里添加权限用户上下文过滤器
-                .addFilterAfter(new AuthUserContextFilter(), JsonLoginFilter.class)
+                .addFilterAfter(new AuthUserContextFilter(loginProperties.getCurrentUserUrl(),resultResolverProvider,objectMapper), JsonLoginFilter.class)
         ;
     }
 

@@ -11,6 +11,7 @@ kewen-framework:
   security:
     login:
       login-url: /login
+      current-user-url: /currentUser
       maximum-sessions: 1
       max-sessions-prevents-login: true
       username-parameter: username

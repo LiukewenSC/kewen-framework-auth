@@ -19,6 +19,7 @@ public class SecurityLoginProperties {
     private String loginUrl = "/login";
     private String usernameParameter = "username";
     private String passwordParameter = "password";
+    private String currentUserUrl = "/currentUser";
     private String tokenParameter = "Authorization";
 
     /**

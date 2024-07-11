@@ -68,6 +68,8 @@ public class SecurityUser<T extends IAuthObject> implements UserDetails {
      */
     private T authObject;
 
+    private LocalDateTime loginTime;
+
     /**
      * 凭证过期时间 每次修改密码应修改过期时间 ， 为空表示系统无过期时间设定
      */

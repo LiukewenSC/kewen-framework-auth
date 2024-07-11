@@ -13,7 +13,6 @@
         <module>kewen-auth-rabc</module>
         <module>kewen-auth-starter-rabc</module>
         <module>kewen-auth-starter-security-web</module>
-        <module>kewen-auth-starter-web</module>
         <module>kewen-auth-sample</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
