@@ -2,7 +2,8 @@ package com.kewen.framework.auth.sample.Response;
 
 import com.kewen.framework.auth.rabc.model.Result;
 import com.kewen.framework.auth.security.model.SecurityUser;
-import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
+import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
  * @since 2024-07-05
  */
 @Component
-public class SampleAuthenticationSuccessResultResolver implements AuthenticationSuccessResultResolver {
+public class SampleResponseBodyResultResolver implements ResponseBodyResultResolver {
 
     @Override
-    public Object resolver(HttpServletRequest request, HttpServletResponse response, SecurityUser user) {
-        return Result.success(user);
+    public Object resolver(HttpServletRequest request, HttpServletResponse response,@Nullable Object data) {
+        return Result.success(data);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,13 +22,13 @@ import java.time.LocalDateTime;
  * @author kewen
  * @since 2024-07-04
  */
-public class SecurityAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class SecurityAuthenticationSuccessHandler implements AuthenticationSuccessHandler , LogoutSuccessHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityAuthenticationSuccessHandler.class);
     private ObjectMapper objectMapper;
-    private AuthenticationSuccessResultResolver resultResolver;
+    private ResponseBodyResultResolver resultResolver;
 
-    public SecurityAuthenticationSuccessHandler(ObjectProvider<AuthenticationSuccessResultResolver> resultResolverProvider ,ObjectMapper objectMapper) {
+    public SecurityAuthenticationSuccessHandler(ObjectProvider<ResponseBodyResultResolver> resultResolverProvider , ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.resultResolver = resultResolverProvider.getIfAvailable();
     }
@@ -66,5 +67,22 @@ public class SecurityAuthenticationSuccessHandler implements AuthenticationSucce
         out.write(objectMapper.writeValueAsString(result));
         out.flush();
         out.close();
+    }
+
+    /**
+     * 退出登录返回
+     * @param request
+     * @param response
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
+    @Override
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        Object result = null;
+        if (resultResolver !=null){
+            result = resultResolver.resolver(request,response,null);
+        }
+        writeResponseBody(response, result);
     }
 }

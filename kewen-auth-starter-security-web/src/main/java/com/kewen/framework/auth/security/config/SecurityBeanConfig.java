@@ -6,18 +6,14 @@ import com.kewen.framework.auth.security.before.BeforeSecurityFilter;
 import com.kewen.framework.auth.security.before.WebGlobalExceptionHandlerFilter;
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
 import com.kewen.framework.auth.security.before.BeforeSecurityFilterProxy;
-import com.kewen.framework.auth.security.filter.AuthUserContextFilter;
-import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
-import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
+import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.service.RabcSecurityUserDetailsService;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -61,7 +57,7 @@ public class SecurityBeanConfig {
 
     @Bean
     SecurityAuthenticationSuccessHandler securityAuthenticationSuccessHandler(
-            ObjectProvider<AuthenticationSuccessResultResolver> resultResolverProvider,ObjectMapper objectMapper){
+            ObjectProvider<ResponseBodyResultResolver> resultResolverProvider, ObjectMapper objectMapper){
         return new SecurityAuthenticationSuccessHandler(resultResolverProvider,objectMapper);
     }
 

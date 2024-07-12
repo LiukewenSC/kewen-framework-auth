@@ -2,11 +2,10 @@ package com.kewen.framework.auth.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.core.context.AuthUserContext;
-import com.kewen.framework.auth.rabc.mp.entity.SysUser;
+import com.kewen.framework.auth.security.exception.NoLoginException;
 import com.kewen.framework.auth.security.model.SecurityUser;
-import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
+import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,9 +30,9 @@ public class AuthUserContextFilter extends OncePerRequestFilter {
 
     private String currentUserUrl;
     private ObjectMapper objectMapper;
-    private AuthenticationSuccessResultResolver resultResolver;
+    private ResponseBodyResultResolver resultResolver;
 
-    public AuthUserContextFilter(String currentUserUrl, ObjectProvider<AuthenticationSuccessResultResolver> resultResolverProvider , ObjectMapper objectMapper) {
+    public AuthUserContextFilter(String currentUserUrl, ObjectProvider<ResponseBodyResultResolver> resultResolverProvider , ObjectMapper objectMapper) {
         this.currentUserUrl = currentUserUrl;
         this.resultResolver = resultResolverProvider.getIfAvailable();
         this.objectMapper = objectMapper;
@@ -49,7 +48,7 @@ public class AuthUserContextFilter extends OncePerRequestFilter {
         //如果是查询当前用户，则直接返回，没有查询到则报错需要登录
         if (currentUserUrl.equals(request.getRequestURI())) {
             if (!principalOptional.isPresent() || !(principalOptional.get() instanceof SecurityUser)) {
-                throw new AuthenticationServiceException("No SecurityUser found");
+                throw new NoLoginException("No SecurityUser found");
             }
             Object currentUser = principalOptional.get();
             Object resolver = resultResolver.resolver(request, response, ((SecurityUser) currentUser));

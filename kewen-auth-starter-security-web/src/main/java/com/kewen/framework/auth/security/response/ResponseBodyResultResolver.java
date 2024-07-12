@@ -1,6 +1,7 @@
 package com.kewen.framework.auth.security.response;
 
 import com.kewen.framework.auth.security.model.SecurityUser;
+import org.springframework.lang.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
  * @author kewen
  * @since 2024-07-04
  */
-public interface AuthenticationSuccessResultResolver {
+public interface ResponseBodyResultResolver {
     /**
-     * 处理用户的额外信息如用户删除一些字段，或者是添加额外的返回信息等,封装统一返回结构等
+     * 处理返回格式
      * @param request  请求
      * @param response 响应，注意不要开关流
-     * @param user 认证成功的用户信息
+     * @param data 准备返回的数据，可以为空
      * @return 准备写流的数据
      */
-    Object resolver(HttpServletRequest request, HttpServletResponse response, SecurityUser user);
+    Object resolver(HttpServletRequest request, HttpServletResponse response, @Nullable Object data);
 }

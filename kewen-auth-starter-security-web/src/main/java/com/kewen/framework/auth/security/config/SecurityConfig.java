@@ -3,14 +3,13 @@ package com.kewen.framework.auth.security.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.configurer.JsonLoginAuthenticationFilterConfigurer;
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
-import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
+import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
 import com.kewen.framework.auth.security.filter.JsonLoginFilter;
 import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import com.kewen.framework.auth.security.filter.AuthUserContextFilter;
-import com.kewen.framework.auth.security.filter.TokenSessionRequestFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     PermitUrlContainer permitUrlContainer;
 
     @Autowired
-    ObjectProvider<AuthenticationSuccessResultResolver> resultResolverProvider ;
+    ObjectProvider<ResponseBodyResultResolver> resultResolverProvider ;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -90,6 +89,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     //.authenticationDetailsSource()  在认证前封装的Authentication中添加详细信息，如从request中拿到的ip,等信息
                     .successHandler(successHandler)
                     .failureHandler(exceptionResolverHandler)
+                    .and()
+                .logout()
+                    .logoutSuccessHandler(successHandler)
                     .and()
                 .exceptionHandling()
                     .accessDeniedHandler(exceptionResolverHandler)
