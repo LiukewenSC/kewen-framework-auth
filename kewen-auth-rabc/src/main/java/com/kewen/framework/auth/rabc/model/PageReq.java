@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.rabc.model;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

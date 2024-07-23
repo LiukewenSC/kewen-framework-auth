@@ -81,7 +81,11 @@ public class SysMenu extends Model<SysMenu> {
 
     @TableField("hidden")
     protected Boolean hidden;
-
+    /**
+     * 后台请求链接
+     */
+    @TableField("url")
+    protected String url;
     /**
      * 类型： 1-菜单 2-按钮 3-外部链接
      * {@link MenuTypeConstant.TYPE}
