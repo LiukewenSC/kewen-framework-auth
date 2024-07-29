@@ -11,7 +11,7 @@ import java.lang.annotation.*;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD,ElementType.TYPE})
 public @interface AuthMenu {
 
     /**
@@ -20,5 +20,9 @@ public @interface AuthMenu {
      */
     String path() default "";
 
+    /**
+     * 名字
+     * @return
+     */
     String name() default "";
 }
