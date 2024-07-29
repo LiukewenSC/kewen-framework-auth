@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.kewen.framework.auth.rabc.model.MenuTypeConstant;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -21,15 +20,15 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author kewen
- * @since 2024-05-10
+ * @since 2024-07-29
  */
 @Getter
 @Setter
 @Accessors(chain = true)
-@TableName(value = "sys_menu",autoResultMap = true)
-public class SysMenu extends Model<SysMenu> {
+@TableName("sys_menu_route")
+public class SysMenuRoute extends Model<SysMenuRoute> {
 
-    protected static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * 主键id
@@ -38,13 +37,13 @@ public class SysMenu extends Model<SysMenu> {
     protected Long id;
 
     /**
-     * 菜单名
+     * 路由名
      */
     @TableField("name")
     protected String name;
 
     /**
-     * 父id
+     * 父路由id
      */
     @TableField("parent_id")
     protected Long parentId;
@@ -79,25 +78,23 @@ public class SysMenu extends Model<SysMenu> {
     @TableField("icon")
     protected String icon;
 
+    /**
+     * 是否隐藏菜单，隐藏了则只有路由加载，不在菜单列表加载
+     */
     @TableField("hidden")
     protected Boolean hidden;
+
     /**
-     * 后台请求链接
+     * 请求地址id
      */
-    @TableField("url")
-    protected String url;
+    @TableField("request_path_id")
+    protected Long requestPathId;
+
     /**
      * 类型： 1-菜单 2-按钮 3-外部链接
-     * {@link MenuTypeConstant.TYPE}
      */
     @TableField("type")
     protected Integer type;
-
-    /**
-     * 权限类型 1-基于父菜单权限 2-基于本身权限
-     */
-    @TableField("auth_type")
-    protected Integer authType;
 
     /**
      * 描述

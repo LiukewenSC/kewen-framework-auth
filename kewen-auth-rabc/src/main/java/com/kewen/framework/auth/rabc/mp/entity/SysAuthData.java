@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author kewen
- * @since 2024-05-10
+ * @since 2024-07-29
  */
 @Getter
 @Setter
@@ -40,16 +40,16 @@ public class SysAuthData extends Model<SysAuthData> {
     private String module;
 
     /**
-     * 业务ID 应用中业务的主键ID
-     */
-    @TableField("data_id")
-    private Long data_id;
-
-    /**
      * 操作类型 unified modify delete 等,应用可以自定义操作名称
      */
     @TableField("operate")
     private String operate;
+
+    /**
+     * 数据ID 应用中业务的主键ID
+     */
+    @TableField("data_id")
+    private Long dataId;
 
     /**
      * 权限字符串

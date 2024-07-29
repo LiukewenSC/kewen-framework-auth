@@ -12,6 +12,9 @@ public class Result<T> {
     private Boolean success = true;
     private String message = "成功";
     private T data;
+    public static <T> Result<T> success(){
+        return success(null);
+    }
     public static <T> Result<T> success(T data){
         Result<T> result = new Result<T>();
         result.setData(data);

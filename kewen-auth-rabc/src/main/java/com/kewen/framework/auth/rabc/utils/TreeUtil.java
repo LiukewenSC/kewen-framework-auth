@@ -2,14 +2,12 @@ package com.kewen.framework.auth.rabc.utils;
 
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * @description  
+ * 树转换工具
  * @author LiuKewen
  * @date 2022/1/6 12:51
  */
@@ -127,14 +125,70 @@ public class TreeUtil {
     }
 
 
+    /**
+     *  从一颗整树上面移除掉不满足条件的元素，如果有叶子节点，那么枝条节点是不会被移除的
+     * @param collections 需要移除的集合
+     * @param predicate 叶子节点元素匹配的条件， 即什么情况下需要移除
+     * @param <T>
+     */
+    public static <T extends TreeChildren<T>> void removeIfUnmatch(Collection<T> collections, Predicate<T> predicate){
+        Iterator<T> iterator = collections.iterator();
+        while (iterator.hasNext()){
+            T next = iterator.next();
+            boolean needRemove = removeIfUnmatch(next, predicate);
+            if (needRemove){
+                iterator.remove();
+            }
+        }
+    }
+    /**
+     *  从一颗整树上面移除掉不满足条件的元素，如果有叶子节点，那么枝条节点是不会被移除的
+     * @param t 需要移除子元素的树
+     * @param predicate 叶子节点元素匹配的条件， 即什么情况下需要移除
+     * @param <T>
+     */
+    public static <T extends TreeChildren<T>> boolean removeIfUnmatch(T t, Predicate<T> predicate){
+        List<T> children = t.getChildren();
+        //有子元素节点优先处理子元素节点
+        if (!CollectionUtils.isEmpty(children)){
+            removeIfUnmatch(children,predicate);
+        }
+        //判断还有子集没有，有子集则自己本身不被移除
+        if (!CollectionUtils.isEmpty(children)){
+            return false;
+        } else {
+            boolean needRemove = predicate.test(t);
+            return needRemove;
+        }
+    }
+
+    /**
+     * 将一个带子集的集合转换为另一个带子集的集合
+     *  其中，相同字段用的是BeanUtil.toBean() 做深度克隆转换
+     * @param collection
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T extends TreeChildren<T>> List<T> convertList(Collection<? extends TreeChildren> collection, Class<T> clazz){
+        ArrayList<T> list = new ArrayList<>();
+        for (TreeChildren col : collection) {
+            T bean = BeanUtil.toBean(col, clazz);
+            if (!CollectionUtils.isEmpty(col.getChildren())){
+                bean.setChildren(convertList(col.getChildren(), clazz));
+            }
+            list.add(bean);
+        }
+        return list;
+    }
 
 
     /**
-     * @description 树形对象
+     * 树形对象
      * @author LiuKewen
      * @date 2022/1/6 12:52
      */
-    public interface TreeBase<T, ID> {
+    public interface TreeBase<T, ID> extends TreeChildren<T> {
 
         /**
          * 当前id
@@ -170,9 +224,17 @@ public class TreeUtil {
             //否则父菜单等于本id，则为顶层菜单
             return p == parentId;
         }
+    }
+
+    /**
+     * 包含子元素的树定义
+     * @param <T>
+     */
+    public interface TreeChildren<T>{
 
         void setChildren(List<T> children);
 
         List<T> getChildren();
     }
+
 }

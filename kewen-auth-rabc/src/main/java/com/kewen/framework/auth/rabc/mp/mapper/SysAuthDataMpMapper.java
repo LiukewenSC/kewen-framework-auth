@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author kewen
- * @since 2024-05-10
+ * @since 2024-07-29
  */
 @Mapper
 public interface SysAuthDataMpMapper extends BaseMapper<SysAuthData> {

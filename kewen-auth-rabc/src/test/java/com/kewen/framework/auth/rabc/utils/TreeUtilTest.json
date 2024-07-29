@@ -1,0 +1,59 @@
+[
+  {
+    "id": 1,
+    "parentId": 0,
+    "children": [
+      {
+        "id": 11,
+        "parentId": 1,
+        "children": [
+          {
+            "id": 111,
+            "parentId": 11
+          }
+        ]
+      },{
+        "id": 12,
+        "parentId": 1,
+        "children": [
+          {
+            "id": 122,
+            "parentId": 12
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "parentId": 0,
+    "children": [
+      {
+        "id": 22,
+        "parentId": 2,
+        "children": [
+          {
+            "id": 222,
+            "parentId": 22
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "parentId": 0,
+    "children": [
+      {
+        "id": 33,
+        "parentId": 3,
+        "children": [
+          {
+            "id": 333,
+            "parentId": 33
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -2,6 +2,10 @@ package com.kewen.framework.auth.rabc.mp.service;
 
 import com.kewen.framework.auth.rabc.mp.entity.SysAuthMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+
+import java.util.List;
 
 
 /**
@@ -10,7 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author kewen
- * @since 2024-05-10
+ * @since 2024-07-29
  */
 public interface SysAuthMenuMpService extends IService<SysAuthMenu> {
 

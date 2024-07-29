@@ -12,15 +12,13 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface AuthCheckMenuAccess {
+public @interface AuthMenu {
 
     /**
      * 路径，为空则以输入Controller的RequestMapping为准
      * @return
      */
-    @AliasFor("value")
-    String url() default "";
+    String path() default "";
 
-    @AliasFor("url")
-    String value() default "";
+    String name() default "";
 }

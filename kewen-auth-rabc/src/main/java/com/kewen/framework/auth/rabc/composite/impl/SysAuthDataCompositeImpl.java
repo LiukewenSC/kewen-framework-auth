@@ -38,7 +38,7 @@ public class SysAuthDataCompositeImpl implements SysAuthDataComposite {
     public void editDataAuths(Long dataId, String module, String operate, Collection<BaseAuth> baseAuths) {
         //移除原有的
         applicationAuthService.remove(
-                new LambdaQueryWrapper<SysAuthData>().eq(SysAuthData::getData_id,dataId)
+                new LambdaQueryWrapper<SysAuthData>().eq(SysAuthData::getDataId,dataId)
         );
         //批量插入新的
         if (!CollectionUtils.isEmpty(baseAuths)){
@@ -46,7 +46,7 @@ public class SysAuthDataCompositeImpl implements SysAuthDataComposite {
                     baseAuths.stream()
                             .map(a->
                                     new SysAuthData()
-                                            .setData_id(dataId)
+                                            .setDataId(dataId)
                                             .setModule(module)
                                             .setOperate(operate)
                                             .setAuthority(a.getAuth())

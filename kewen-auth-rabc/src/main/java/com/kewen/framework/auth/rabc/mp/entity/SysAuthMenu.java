@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author kewen
- * @since 2024-05-10
+ * @since 2024-07-29
  */
 @Getter
 @Setter
@@ -34,10 +34,10 @@ public class SysAuthMenu extends Model<SysAuthMenu> {
     private Long id;
 
     /**
-     * 菜单id
+     * 菜单请求id
      */
-    @TableField("menu_id")
-    private Long menuId;
+    @TableField("request_id")
+    private Long requestId;
 
     /**
      * 权限字符串

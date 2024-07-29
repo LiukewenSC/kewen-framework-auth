@@ -2,11 +2,7 @@ package com.kewen.framework.auth.rabc.controller;
 
 import com.kewen.framework.auth.rabc.model.*;
 import com.kewen.framework.auth.rabc.mp.entity.SysDept;
-import com.kewen.framework.auth.rabc.mp.entity.SysRole;
-import com.kewen.framework.auth.rabc.mp.entity.SysUser;
 import com.kewen.framework.auth.rabc.mp.service.SysDeptMpService;
-import com.kewen.framework.auth.rabc.mp.service.SysRoleMpService;
-import com.kewen.framework.auth.rabc.mp.service.SysUserMpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rabc/dept")
-public class RabcOrganizationDeptController {
+public class RabcDeptController {
 
     @Autowired
     SysDeptMpService sysDeptMpService;

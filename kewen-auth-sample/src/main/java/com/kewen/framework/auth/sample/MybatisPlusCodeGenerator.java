@@ -37,12 +37,12 @@ public class MybatisPlusCodeGenerator {
          * 工程绝对路径地址，指定到src上面一层;
          * 为空则表示用代码生成器在的路径
          */
-        public static final String ABSOLUTE_PATH="D:\\Projects\\kewen-framework-auth\\kewen-auth-impl";
+        public static final String ABSOLUTE_PATH="D:\\Projects\\kewen-framework-auth\\kewen-auth-rabc";
 
         /**
          * 基础包名
          */
-        public static final String BASE_PACKAGE = "com.kewen.framework.auth.sys";
+        public static final String BASE_PACKAGE = "com.kewen.framework.auth.rabc";
         /**
          * 模块名
          */
@@ -53,7 +53,7 @@ public class MybatisPlusCodeGenerator {
         public static final boolean ENABLE_SWAGGER = false;
         //public static final List<String> IGNORE_TABLE_PREFIX = Arrays.asList("bak_","sys_log");
         public static final List<String> IGNORE_TABLE_PREFIX = null;
-        public static final List<String> CONTAINS_TABLE_PREFIX = Arrays.asList("sys_auth_");
+        public static final List<String> CONTAINS_TABLE_PREFIX = Arrays.asList("sys_");
         //public static final List<String> CONTAINS_TABLE_PREFIX =null;
 
         /**

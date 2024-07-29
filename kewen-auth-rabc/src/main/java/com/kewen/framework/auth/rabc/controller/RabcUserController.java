@@ -1,31 +1,35 @@
 package com.kewen.framework.auth.rabc.controller;
 
+import com.kewen.framework.auth.core.annotation.menu.AuthMenu;
 import com.kewen.framework.auth.rabc.model.*;
-import com.kewen.framework.auth.rabc.mp.entity.SysDept;
-import com.kewen.framework.auth.rabc.mp.entity.SysRole;
 import com.kewen.framework.auth.rabc.mp.entity.SysUser;
-import com.kewen.framework.auth.rabc.mp.service.SysDeptMpService;
-import com.kewen.framework.auth.rabc.mp.service.SysRoleMpService;
 import com.kewen.framework.auth.rabc.mp.service.SysUserMpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+/**
+ * 用户
+ *
+ * @author kewen
+ * @since 2024-07-29
+ */
 @RestController
-@RequestMapping("/user")
-public class RabcOrganizationUserController {
+@RequestMapping("/rabc/user")
+public class RabcUserController {
 
     @Autowired
     SysUserMpService sysUserMpService;
 
     @GetMapping("/list")
+    @AuthMenu(name = "用户列表")
     public Result listUser(){
         List<SysUser> list = sysUserMpService.list();
         return Result.success(list);
     }
-    @GetMapping("/pageUser")
+    @GetMapping("/page")
+    @AuthMenu
     public Result pageUser(@Validated PageReq pageReq){
         PageResult<SysUser> result = PageConverter.pageAndConvert(pageReq,sysUserMpService);
         return Result.success(result);

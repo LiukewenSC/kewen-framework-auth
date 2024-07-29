@@ -1,18 +1,18 @@
 package com.kewen.framework.auth.rabc.mp.mapper;
 
+import com.kewen.framework.auth.rabc.mp.entity.SysMenuRequest;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.kewen.framework.auth.rabc.mp.entity.SysPosition;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- * 岗位表 Mapper 接口
+ * 菜单表 Mapper 接口
  * </p>
  *
  * @author kewen
- * @since 2023-04-07
+ * @since 2024-07-29
  */
 @Mapper
-public interface SysPositionMpMapper extends BaseMapper<SysPosition> {
+public interface SysMenuRequestMpMapper extends BaseMapper<SysMenuRequest> {
 
 }

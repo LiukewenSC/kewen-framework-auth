@@ -14,7 +14,7 @@ import java.util.Collection;
 
 /**
  * @descrpition 菜单权限校验拦截器，校验请求在菜单中配置的权限，
- *      当Controller中加入注解 {@link AuthCheckMenuAccess} 时生效，否则直接跳过校验
+ *      当Controller中加入注解 {@link AuthMenu} 时生效，否则直接跳过校验
  * @author kewen
  * @since 2022-11-25
  */
@@ -29,13 +29,13 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
             return true;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        AuthCheckMenuAccess checkEndpoint = handlerMethod.getMethodAnnotation(AuthCheckMenuAccess.class);
+        AuthMenu checkEndpoint = handlerMethod.getMethodAnnotation(AuthMenu.class);
         //未添加权限注解，直接跳过校验
         if (checkEndpoint ==null){
             return true;
         }
         //校验url，优先校验注解url，如果为空则校验请求路径（即controller的Path）
-        String url= checkEndpoint.url();
+        String url= checkEndpoint.path();
         if (StringUtils.isBlank(url)) {
             url = request.getRequestURI();
         }

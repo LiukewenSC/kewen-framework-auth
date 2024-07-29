@@ -1,7 +1,11 @@
 package com.kewen.framework.auth.rabc.mp.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.kewen.framework.auth.rabc.mp.entity.SysUser;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+
+import java.util.List;
 
 
 /**
@@ -10,7 +14,7 @@ import com.kewen.framework.auth.rabc.mp.entity.SysUser;
  * </p>
  *
  * @author kewen
- * @since 2023-04-07
+ * @since 2024-07-29
  */
 public interface SysUserMpService extends IService<SysUser> {
 

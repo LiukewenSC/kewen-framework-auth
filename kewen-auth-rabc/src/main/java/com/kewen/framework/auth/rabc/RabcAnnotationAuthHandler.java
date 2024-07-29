@@ -26,8 +26,8 @@ public class RabcAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
 
 
     @Override
-    public boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String url) {
-        return sysAuthMenuComposite.hasMenuAuth(auths, url);
+    public boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String path) {
+        return sysAuthMenuComposite.hasMenuAuth(auths, path);
     }
 
 

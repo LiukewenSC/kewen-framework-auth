@@ -5,7 +5,7 @@ import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.rabc.composite.impl.SysUserCompositeImpl;
 import com.kewen.framework.auth.rabc.model.*;
-import com.kewen.framework.auth.rabc.model.resp.MenuResp;
+import com.kewen.framework.auth.rabc.model.resp.MenuRouteResp;
 import com.kewen.framework.auth.rabc.mp.service.SysDeptMpService;
 import com.kewen.framework.auth.rabc.mp.service.SysRoleMpService;
 import com.kewen.framework.auth.rabc.mp.service.SysUserMpService;
@@ -40,9 +40,9 @@ public class RabcCurrentUserController {
 
 
     @GetMapping("/menus")
-    public Result<List<MenuResp>> menus(){
+    public Result<List<MenuRouteResp>> routeTrees(){
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
-        List<MenuResp> menuTree = sysAuthMenuComposite.getCurrentUserMenuTree(auths);
+        List<MenuRouteResp> menuTree = sysAuthMenuComposite.getAuthsMenuRouteTree(auths);
         return Result.success(menuTree);
     }
 

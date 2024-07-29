@@ -3,9 +3,9 @@ package com.kewen.framework.auth.rabc.composite;
 
 
 import com.kewen.framework.auth.core.model.BaseAuth;
-import com.kewen.framework.auth.rabc.model.req.MenuSaveReq;
-import com.kewen.framework.auth.rabc.model.resp.MenuAuthResp;
-import com.kewen.framework.auth.rabc.model.resp.MenuResp;
+import com.kewen.framework.auth.rabc.model.req.MenuRequestSaveReq;
+import com.kewen.framework.auth.rabc.model.resp.MenuRequestAndAuthResp;
+import com.kewen.framework.auth.rabc.model.resp.MenuRouteResp;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,23 +19,30 @@ public interface SysAuthMenuComposite {
     /**
      * 校验用户的菜单权限
      * @param authorities 用户权限字符串
-     * @param url 菜单url链接
+     * @param requestPath 请求路径
      * @return 是否有权限
      */
-    boolean hasMenuAuth(Collection<BaseAuth> authorities, String url) ;
+    boolean hasMenuAuth(Collection<BaseAuth> authorities, String requestPath) ;
 
     /**
      * 获取树形结构菜单
      * @return 树形结构的菜单返回对象
      */
-    List<MenuAuthResp> getMenuTree();
+    List<MenuRequestAndAuthResp> getMenuRequestAuthTree();
 
     /**
-     * 获取当前用户有权限的菜单
+     * 获取权限集的请求菜单树
      * @param authorities
      * @return
      */
-    List<MenuResp> getCurrentUserMenuTree(Collection<BaseAuth> authorities);
+    List<MenuRequestAndAuthResp> getAuthsMenuRequestAuthTree(Collection<BaseAuth> authorities);
+
+    /**
+     * 获取权限集对应的有权限的路由
+     * @param authorities
+     * @return
+     */
+    List<MenuRouteResp> getAuthsMenuRouteTree(Collection<BaseAuth> authorities);
 
 
     /**
@@ -45,10 +52,6 @@ public interface SysAuthMenuComposite {
      */
     void editMenuAuthorities(Long menuId, Collection<BaseAuth> auths);
 
-
-
-    void addMenu(MenuSaveReq req);
-    void updateMenu(MenuSaveReq req);
-    void deleteMenu(Long req);
+    void updateMenu(MenuRequestSaveReq req);
 
 }

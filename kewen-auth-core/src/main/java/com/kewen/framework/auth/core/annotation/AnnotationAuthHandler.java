@@ -19,10 +19,10 @@ public interface AnnotationAuthHandler<ID> {
      * 是否有菜单访问权限
      *  对应菜单 范围权限 @AuthCheckMenuAccess
      * @param auths
-     * @param url
+     * @param path
      * @return
      */
-    boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String url) ;
+    boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String path) ;
 
 
 

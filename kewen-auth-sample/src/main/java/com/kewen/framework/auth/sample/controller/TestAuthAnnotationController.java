@@ -7,7 +7,7 @@ import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
 import com.kewen.framework.auth.core.annotation.data.AuthEditDataAuth;
 import com.kewen.framework.auth.core.annotation.data.authedit.IdDataAuthEdit;
 import com.kewen.framework.auth.core.annotation.data.edit.IdDataEdit;
-import com.kewen.framework.auth.core.annotation.menu.AuthCheckMenuAccess;
+import com.kewen.framework.auth.core.annotation.menu.AuthMenu;
 import com.kewen.framework.auth.rabc.model.PageReq;
 import com.kewen.framework.auth.rabc.model.PageResult;
 import com.kewen.framework.auth.rabc.model.Result;
@@ -93,7 +93,7 @@ public class TestAuthAnnotationController {
      * 测试菜单控制
      * @return
      */
-    @AuthCheckMenuAccess
+    @AuthMenu
     @GetMapping("/checkMenu")
     public String testCheckMenu() {
 

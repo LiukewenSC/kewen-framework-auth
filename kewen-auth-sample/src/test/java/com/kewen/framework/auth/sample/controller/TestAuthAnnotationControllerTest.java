@@ -4,8 +4,8 @@ package com.kewen.framework.auth.sample.controller;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.kewen.framework.auth.rabc.mp.entity.SysMenu;
-import com.kewen.framework.auth.rabc.mp.service.SysMenuMpService;
+import com.kewen.framework.auth.rabc.mp.entity.SysMenuRoute;
+import com.kewen.framework.auth.rabc.mp.service.SysMenuRouteMpService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,15 @@ import java.util.List;
 public class TestAuthAnnotationControllerTest {
 
     @Autowired
-    SysMenuMpService sysMenuMpService;
+    SysMenuRouteMpService sysMenuMpService;
 
     private long autoId = 0L;
-    @Test
+
+    /**
+     * 使用json初始化数据库信息，需要使用的时候加上注解即可
+     * @throws IOException
+     */
+    //@Test
     public void initMenuByJson() throws IOException {
         File file = FileUtil.file("../../../script/sql/menu.json");
 
@@ -43,41 +48,31 @@ public class TestAuthAnnotationControllerTest {
         SysMenuTemplate o = JSON.parseObject(Files.newInputStream(file.toPath()), SysMenuTemplate.class);
 
 
-        List<SysMenu> convert = convert(o);
+        List<SysMenuRoute> convert = convert(o);
 
 
         sysMenuMpService.saveBatch(convert);
 
         System.out.println(o);
 
-        List<SysMenu> list = sysMenuMpService.list();
+        List<SysMenuRoute> list = sysMenuMpService.list();
 
         System.out.println(JSONObject.toJSONString(list));
 
 
     }
-    private List<SysMenu> convert(SysMenuTemplate req){
-        ArrayList<SysMenu> list = new ArrayList<>();
+    private List<SysMenuRoute> convert(SysMenuTemplate req){
+        ArrayList<SysMenuRoute> list = new ArrayList<>();
         req.setId(++autoId);
         list.add(req);
         List<SysMenuTemplate> children = req.getChildren();
         if (!CollectionUtils.isEmpty(children)){
             for (SysMenuTemplate child : children) {
                 child.setParentId(req.getId());
-                List<SysMenu> convert = convert(child);
+                List<SysMenuRoute> convert = convert(child);
                 list.addAll(convert);
             }
         }
         return list;
-    }
-
-    public static void main(String[] args) {
-        File file = FileUtil.file("../../../script/sql/menu.json");
-
-        System.out.println(file.exists());
-
-        System.out.println(file.getAbsolutePath());
-
-
     }
 }

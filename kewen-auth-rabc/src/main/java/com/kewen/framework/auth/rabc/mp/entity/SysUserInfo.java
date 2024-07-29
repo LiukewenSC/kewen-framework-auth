@@ -5,40 +5,75 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 /**
  * <p>
- * 岗位表
+ * 用户信息表
  * </p>
  *
  * @author kewen
- * @since 2023-04-07
+ * @since 2024-07-29
  */
 @Getter
 @Setter
 @Accessors(chain = true)
-@TableName("sys_position")
-public class SysPosition extends Model<SysPosition> {
+@TableName("sys_user_info")
+public class SysUserInfo extends Model<SysUserInfo> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 岗位id
+     * 主键id
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 岗位名
+     * 用户账号
      */
-    @TableField("name")
-    private String name;
+    @TableField("user_id")
+    private Long userId;
+
+    /**
+     * github账号
+     */
+    @TableField("github_account")
+    private String githubAccount;
+
+    /**
+     * gitee账号
+     */
+    @TableField("gitee_account")
+    private String giteeAccount;
+
+    /**
+     * 微信账号
+     */
+    @TableField("wechat_account")
+    private String wechatAccount;
+
+    /**
+     * 职业
+     */
+    @TableField("profession")
+    private String profession;
+
+    /**
+     * 个人简介
+     */
+    @TableField("introduction")
+    private String introduction;
+
+    /**
+     * 个人简历
+     */
+    @TableField("resume")
+    private String resume;
 
     /**
      * 创建时间

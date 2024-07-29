@@ -4,6 +4,7 @@ import com.kewen.framework.auth.rabc.mp.entity.SysAuthMenu;
 import com.kewen.framework.auth.rabc.mp.mapper.SysAuthMenuMpMapper;
 import com.kewen.framework.auth.rabc.mp.service.SysAuthMenuMpService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author kewen
- * @since 2024-05-10
+ * @since 2024-07-29
  */
 @Service
 public class SysAuthMenuMpServiceImpl extends ServiceImpl<SysAuthMenuMpMapper, SysAuthMenu> implements SysAuthMenuMpService {

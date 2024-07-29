@@ -22,10 +22,10 @@ public interface MenuTypeConstant {
      */
     interface AUTH_TYPE {
         // 基于父菜单权限
-        Integer PARENT = 1;
+        Integer PARENT = 2;
 
         // 基于自身权限
-        Integer OWNER = 2;
+        Integer OWNER = 1;
     }
 
 }
