@@ -5,10 +5,9 @@ import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseFiel
 import com.kewen.framework.auth.rabc.RabcAnnotationAuthHandler;
 import com.kewen.framework.auth.rabc.composite.SysAuthDataComposite;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
-import com.kewen.framework.boot.auth.init.InitMenuAuth;
+import com.kewen.framework.boot.auth.init.InitMenuAuthCommandLineRunner;
 import com.kewen.framework.boot.auth.properties.DataRangeDatabaseFieldProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,8 +59,8 @@ public class AuthRabcConfig {
     }
 
     @Bean
-    InitMenuAuth initMenuAuth(){
-        return new InitMenuAuth();
+    InitMenuAuthCommandLineRunner initMenuAuth(){
+        return new InitMenuAuthCommandLineRunner();
     }
 
 }

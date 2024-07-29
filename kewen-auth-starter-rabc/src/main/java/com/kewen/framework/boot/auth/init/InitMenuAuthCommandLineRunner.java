@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class InitMenuAuth implements CommandLineRunner, ApplicationContextAware {
+public class InitMenuAuthCommandLineRunner implements CommandLineRunner, ApplicationContextAware {
 
     @Autowired
     SysMenuRequestMpService sysMenuRequestMpService;
