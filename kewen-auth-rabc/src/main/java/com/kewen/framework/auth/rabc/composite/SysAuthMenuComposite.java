@@ -3,8 +3,8 @@ package com.kewen.framework.auth.rabc.composite;
 
 
 import com.kewen.framework.auth.core.model.BaseAuth;
-import com.kewen.framework.auth.rabc.model.req.MenuRequestSaveReq;
-import com.kewen.framework.auth.rabc.model.resp.MenuRequestAndAuthResp;
+import com.kewen.framework.auth.rabc.model.req.MenuApiSaveReq;
+import com.kewen.framework.auth.rabc.model.resp.MenuApiAndAuthResp;
 import com.kewen.framework.auth.rabc.model.resp.MenuRouteResp;
 
 import java.util.Collection;
@@ -28,14 +28,14 @@ public interface SysAuthMenuComposite {
      * 获取树形结构菜单
      * @return 树形结构的菜单返回对象
      */
-    List<MenuRequestAndAuthResp> getMenuRequestAuthTree();
+    List<MenuApiAndAuthResp> getMenuRequestAuthTree();
 
     /**
      * 获取权限集的请求菜单树
      * @param authorities
      * @return
      */
-    List<MenuRequestAndAuthResp> getAuthsMenuRequestAuthTree(Collection<BaseAuth> authorities);
+    List<MenuApiAndAuthResp> getAuthsMenuRequestAuthTree(Collection<BaseAuth> authorities);
 
     /**
      * 获取权限集对应的有权限的路由
@@ -47,11 +47,11 @@ public interface SysAuthMenuComposite {
 
     /**
      * 编辑菜单权限
-     * @param menuId 菜单id
+     * @param apiId 菜单id
      * @param auths 权限结构
      */
-    void editMenuAuthorities(Long menuId, Collection<BaseAuth> auths);
+    void editMenuAuthorities(Long apiId, Collection<BaseAuth> auths);
 
-    void updateMenu(MenuRequestSaveReq req);
+    void updateMenu(MenuApiSaveReq req);
 
 }

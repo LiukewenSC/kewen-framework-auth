@@ -30,15 +30,16 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         AuthMenu checkEndpoint = handlerMethod.getMethodAnnotation(AuthMenu.class);
+        if (checkEndpoint == null){
+            checkEndpoint = handlerMethod.getMethod().getDeclaringClass().getAnnotation(AuthMenu.class);
+        }
         //未添加权限注解，直接跳过校验
         if (checkEndpoint ==null){
             return true;
         }
         //校验url，优先校验注解url，如果为空则校验请求路径（即controller的Path）
-        String url= checkEndpoint.path();
-        if (StringUtils.isBlank(url)) {
-            url = request.getRequestURI();
-        }
+        String url = request.getRequestURI();
+
         //获取当前用户的权限
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
 

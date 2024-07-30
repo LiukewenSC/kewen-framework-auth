@@ -22,8 +22,8 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-@TableName("sys_menu_request")
-public class SysMenuRequest extends Model<SysMenuRequest> {
+@TableName("sys_menu_api")
+public class SysMenuApi extends Model<SysMenuApi> {
 
     private static final long serialVersionUID = 1L;
 

@@ -6,17 +6,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/TestAnnoClassMenuController")
-@AuthMenu(name = "测试Class菜单权限注解")
-public class TestAnnoClassMenuController {
+@RequestMapping("/testAuthMenuClassMethodController")
+@AuthMenu(name = "测试在Method和Controller上加注解权限")
+public class TestAuthMenuController {
 
     @GetMapping("/hello")
+    @AuthMenu(name = "你好1")
     public String hello(String name) {
         return "hello " + name;
     }
+
     @GetMapping("/hello2")
+    @AuthMenu(name = "你好2")
     public String hello2() {
         return "hello2 ";
     }
 
+    @GetMapping("/hello3")
+    @AuthMenu(name = "你好3")
+    public String hello3() {
+        return "hello3";
+    }
 }

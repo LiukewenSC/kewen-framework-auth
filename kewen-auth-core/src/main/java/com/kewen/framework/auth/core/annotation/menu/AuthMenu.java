@@ -15,14 +15,8 @@ import java.lang.annotation.*;
 public @interface AuthMenu {
 
     /**
-     * 路径，为空则以输入Controller的RequestMapping为准
-     * @return
-     */
-    String path() default "";
-
-    /**
      * 名字
      * @return
      */
-    String name() default "";
+    String name();
 }

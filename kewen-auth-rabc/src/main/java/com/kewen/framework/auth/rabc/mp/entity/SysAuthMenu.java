@@ -36,8 +36,8 @@ public class SysAuthMenu extends Model<SysAuthMenu> {
     /**
      * 菜单请求id
      */
-    @TableField("request_id")
-    private Long requestId;
+    @TableField("api_id")
+    private Long apiId;
 
     /**
      * 权限字符串

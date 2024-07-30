@@ -93,7 +93,7 @@ public class TestAuthAnnotationController {
      * 测试菜单控制
      * @return
      */
-    @AuthMenu
+    @AuthMenu(name = "测试菜单控制")
     @GetMapping("/checkMenu")
     public String testCheckMenu() {
 

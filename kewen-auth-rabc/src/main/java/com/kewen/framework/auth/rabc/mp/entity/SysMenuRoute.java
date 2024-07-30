@@ -87,8 +87,8 @@ public class SysMenuRoute extends Model<SysMenuRoute> {
     /**
      * 请求地址id
      */
-    @TableField("request_path_id")
-    protected Long requestPathId;
+    @TableField("api_id")
+    protected Long apiId;
 
     /**
      * 类型： 1-菜单 2-按钮 3-外部链接

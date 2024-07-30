@@ -2,7 +2,6 @@ package com.kewen.framework.auth.rabc.model.resp;
 
 
 
-import com.kewen.framework.auth.rabc.mp.entity.SysMenuRequest;
 import com.kewen.framework.auth.rabc.mp.entity.SysMenuRoute;
 import com.kewen.framework.auth.rabc.utils.BeanUtil;
 import com.kewen.framework.auth.rabc.utils.TreeUtil;

@@ -17,6 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rabc/user")
+@AuthMenu(name = "用户相关")
 public class RabcUserController {
 
     @Autowired
@@ -29,12 +30,13 @@ public class RabcUserController {
         return Result.success(list);
     }
     @GetMapping("/page")
-    @AuthMenu
+    @AuthMenu(name = "分页")
     public Result pageUser(@Validated PageReq pageReq){
         PageResult<SysUser> result = PageConverter.pageAndConvert(pageReq,sysUserMpService);
         return Result.success(result);
     }
     @PostMapping("/add")
+    @AuthMenu(name = "新增")
     public Result add(@RequestBody SysUser sysUser){
         boolean b = sysUserMpService.save(sysUser);
         return Result.success(b);

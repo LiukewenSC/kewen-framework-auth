@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.rabc.model.req;
 
 import com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject;
-import com.kewen.framework.auth.rabc.mp.entity.SysMenuRequest;
+import com.kewen.framework.auth.rabc.mp.entity.SysMenuApi;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,6 +12,6 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class MenuRequestSaveReq extends SysMenuRequest {
+public class MenuApiSaveReq extends SysMenuApi {
     SimpleAuthObject authObject;
 }

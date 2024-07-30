@@ -1,6 +1,6 @@
 package com.kewen.framework.auth.rabc.mp.mapper;
 
-import com.kewen.framework.auth.rabc.mp.entity.SysMenuRequest;
+import com.kewen.framework.auth.rabc.mp.entity.SysMenuApi;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2024-07-29
  */
 @Mapper
-public interface SysMenuRequestMpMapper extends BaseMapper<SysMenuRequest> {
+public interface SysMenuApiMpMapper extends BaseMapper<SysMenuApi> {
 
 }
