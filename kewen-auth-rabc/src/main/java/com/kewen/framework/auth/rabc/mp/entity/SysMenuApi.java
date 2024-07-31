@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -31,10 +34,11 @@ public class SysMenuApi extends Model<SysMenuApi> {
      * 主键id
      */
     @TableId(value = "id", type = IdType.AUTO)
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     /**
-     * 请求名称
+     * 请求api名称
      */
     @TableField("name")
     private String name;
