@@ -40,7 +40,6 @@ public class TestAuthAnnotationController {
     @AuthDataRange(module = "testrange")
     @GetMapping("/dataRange")
     public Object testDataRange() {
-        //直接测试菜单的权限就知道了，
         List<TestauthAnnotationBusiness> list = testauthAnnotationBusinessMpService.list();
         System.out.println(list);
         Assert.isTrue(list.size()==1, "菜单列表为空");
@@ -55,10 +54,9 @@ public class TestAuthAnnotationController {
     @AuthDataRange(module = "testrange")
     @GetMapping("/pageDataRange")
     public Object pageDataRange(PageReq pageReq) {
-        //直接测试菜单的权限就知道了，
         Page<TestauthAnnotationBusiness> page = new Page<>(pageReq.getPage(),pageReq.getSize());
         Page<TestauthAnnotationBusiness> pageResult = testauthAnnotationBusinessMpService.page(page);
-        Assert.isTrue(!pageResult.getRecords().isEmpty(), "菜单列表为空");
+        Assert.isTrue(!pageResult.getRecords().isEmpty(), "测试的表数据为空");
         PageResult<TestauthAnnotationBusiness> result = new PageResult<>();
         result.setTotal(pageResult.getTotal());
         result.setData(pageResult.getRecords());
@@ -95,9 +93,17 @@ public class TestAuthAnnotationController {
      */
     @AuthMenu(name = "测试菜单控制")
     @GetMapping("/checkMenu")
-    public String testCheckMenu() {
-
-        return "testCheckMenu";
+    public Result testCheckMenu() {
+        return Result.success("成功通过注解AuthMenu完成控制");
+    }
+    /**
+     * 测试菜单控制
+     * @return
+     */
+    @AuthMenu(name = "测试菜单控制")
+    @GetMapping("/checkMenuNone")
+    public String testCheckMenuNone() {
+        return "没有权限执行";
     }
 
     @Data

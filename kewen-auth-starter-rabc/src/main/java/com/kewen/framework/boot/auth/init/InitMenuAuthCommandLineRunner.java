@@ -86,6 +86,7 @@ public class InitMenuAuthCommandLineRunner implements CommandLineRunner, Applica
                     ).collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(requestList)) {
                 sysMenuPathMpService.saveBatch(requestList);
+                log.info("添加的接口有: {}",requestList.stream().map(SysMenuApi::getPath).collect(Collectors.joining(";")));
             } else {
                 log.info("没有生成新的API接口");
             }
@@ -112,6 +113,7 @@ public class InitMenuAuthCommandLineRunner implements CommandLineRunner, Applica
             HandlerMethod handlerMethod = entry.getValue();
             AuthMenu authMenu;
             boolean hasAuthMenu = false;
+            boolean hasAddClassVirtualPath = false;
 
 
             //处理类上的注解
@@ -122,7 +124,7 @@ public class InitMenuAuthCommandLineRunner implements CommandLineRunner, Applica
                 hasAuthMenu = true;
             } else {
                 //类上没有@AuthMenu注解，就直接生成一个以controller的类建立上下级关系
-                controllerName = "/" + controllerClass.getSimpleName();
+                controllerName =controllerClass.getSimpleName();
             }
 
             //获取controller的 路径，如果都没有标注RequestMapping或者没有路径，那就算了，不做上下级的虚拟路径了
@@ -132,7 +134,7 @@ public class InitMenuAuthCommandLineRunner implements CommandLineRunner, Applica
                 controllerPath = annRequestMapping.value()[0];
                 //这里如果Controller只有@RequestMapping，但是没有加路径或者为/根路径的话，也不添加做虚拟路径
                 if (StringUtils.isNotBlank(controllerPath) && !controllerPath.equals("/")) {
-                    menuApiMap.putIfAbsent(controllerPath, ApiEntity.of(controllerPath, controllerName));
+                    hasAddClassVirtualPath = true;
                 }
             } else {
                 controllerPath = null;
@@ -149,7 +151,13 @@ public class InitMenuAuthCommandLineRunner implements CommandLineRunner, Applica
                 //类上有注解，但是方法上没有注解
                 methodName = controllerName + ">" + handlerMethod.getMethod().getName();
             }
+
+            //判断有菜单API注解才执行
             if (hasAuthMenu) {
+                //有权限注解，而且需要添加controller虚拟路径才添加
+                if (hasAddClassVirtualPath){
+                    menuApiMap.putIfAbsent(controllerPath, ApiEntity.of(controllerPath, controllerName));
+                }
                 putMenuAuth(mappingInfo, methodName, controllerPath);
             }
         }

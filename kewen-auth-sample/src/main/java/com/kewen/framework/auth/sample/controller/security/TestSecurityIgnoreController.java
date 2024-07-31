@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.sample.controller;
+package com.kewen.framework.auth.sample.controller.security;
 
 import com.kewen.framework.auth.rabc.model.Result;
 import com.kewen.framework.auth.security.annotation.SecurityIgnore;

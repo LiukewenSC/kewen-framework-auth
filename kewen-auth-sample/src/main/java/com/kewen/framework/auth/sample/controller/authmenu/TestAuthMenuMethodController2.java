@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.sample.controller;
+package com.kewen.framework.auth.sample.controller.authmenu;
 
 
 import com.kewen.framework.auth.core.annotation.menu.AuthMenu;
