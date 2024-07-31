@@ -71,9 +71,9 @@ public class TestAuthAnnotationController {
      */
     @PostMapping("/dataEdit")
     @AuthCheckDataOperation(module = "testedit")
-    public String testDataEdit(@RequestBody EditIdDataEdit editBusinessData) {
+    public Result testDataEdit(@RequestBody EditIdDataEdit editBusinessData) {
         System.out.println("successEdit");
-        return "测试编辑通过，可以编辑数据";
+        return Result.success(editBusinessData);
     }
 
     /**
@@ -82,9 +82,10 @@ public class TestAuthAnnotationController {
      */
     @PostMapping("/dataAuthEdit")
     @AuthEditDataAuth(module = "testauthedit")
-    public String testDataAuthEdit(@RequestBody EditIdDataAuthEdit applicationBusiness) {
+    public Result<EditIdDataAuthEdit> testDataAuthEdit(@RequestBody EditIdDataAuthEdit applicationBusiness) {
+        System.out.println("successdataAuthEdit");
 
-        return "testDataAuthEdit";
+        return Result.success(applicationBusiness);
     }
 
     /**
@@ -110,6 +111,8 @@ public class TestAuthAnnotationController {
     public static class EditIdDataEdit implements IdDataEdit<Long> {
 
         private Long id;
+
+        private String name;
 
         @Override
         public Long getDataId() {
