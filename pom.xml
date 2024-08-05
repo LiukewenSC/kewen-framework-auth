@@ -9,11 +9,11 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>kewen-auth-core</module>
-        <module>kewen-auth-rabc</module>
-        <module>kewen-auth-starter-rabc</module>
-        <module>kewen-auth-starter-security-web</module>
-        <module>kewen-auth-sample</module>
+        <module>auth-core</module>
+        <module>auth-rabc</module>
+        <module>auth-starter-rabc</module>
+        <module>auth-starter-security-web</module>
+        <module>auth-sample</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
     <properties>
@@ -31,27 +31,27 @@
             <!--************工程定义相关************-->
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>kewen-auth-core</artifactId>
+                <artifactId>auth-core</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>kewen-auth-rabc</artifactId>
+                <artifactId>auth-rabc</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>kewen-auth-starter-rabc</artifactId>
+                <artifactId>auth-starter-rabc</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>kewen-auth-starter-security-web</artifactId>
+                <artifactId>auth-starter-security-web</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>kewen-auth-starter-web</artifactId>
+                <artifactId>auth-starter-web</artifactId>
                 <version>${framework-version}</version>
             </dependency>
 

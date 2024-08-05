@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kewen.framework.auth.rabc.composite.mapper.SysUserUnionCompositeMapper">
+
+    <select id="hasAuth" resultType="java.lang.Integer">
+        select count(1) from sys_auth_data
+        where data_id=#{dataId}
+        and business_function=#{businessFunction}
+        and operate = #{operate}
+        and authority in
+        <foreach collection="auths" open="(" close=")" item="baseAuth" separator=",">
+            #{baseAuth.auth}
+        </foreach>
+        limit 1
+    </select>
+
+    <select id="selectMenuAuths">
+        select * from sys_menu m left join sys_auth_menu a on m.id=a.menu_id
+    </select>
+
+    <resultMap id="UserAuthObjectResult" type="com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject">
+        <collection property="users" ofType="com.kewen.framework.auth.rabc.composite.model.User">
+            <id property="id" column="user_id"/>
+            <result property="name" column="user_id"/>
+        </collection>
+        <collection property="depts" ofType="com.kewen.framework.auth.rabc.composite.model.Dept">
+            <id property="id" column="dept_id"/>
+            <result property="name" column="dept_name"/>
+        </collection>
+        <collection property="roles" ofType="com.kewen.framework.auth.rabc.composite.model.Role">
+            <id property="id" column="role_id"/>
+            <result property="name" column="role_name"/>
+        </collection>
+    </resultMap>
+    <select id="getUserAuthObject" resultMap="UserAuthObjectResult" >
+        select u.id user_id, u.name user_name, d.id dept_id, d.name dept_name, r.id role_id, r.name role_name
+        from sys_user u
+                 left join sys_user_dept ud on u.id = ud.user_id
+                 left join sys_dept d on ud.dept_id = d.id
+                 left join sys_user_role ur on u.id = ur.user_id
+                 left join sys_role r on ur.role_id = r.id
+        where u.id = #{id}
+    </select>
+
+</mapper>
