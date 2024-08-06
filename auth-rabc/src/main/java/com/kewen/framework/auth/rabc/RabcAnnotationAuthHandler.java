@@ -2,12 +2,12 @@ package com.kewen.framework.auth.rabc;
 
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseField;
+import com.kewen.framework.auth.core.annotation.data.range.AuthDataTable;
 import com.kewen.framework.auth.rabc.composite.SysAuthDataComposite;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
-import lombok.Setter;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * 默认的注解权限处理器的实现，根据数据库来处理
@@ -21,7 +21,7 @@ public class RabcAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
 
     SysAuthDataComposite sysAuthDataComposite;
 
-    DataRangeDatabaseField dataRangeDatabaseField;
+    AuthDataTable authDataTable;
 
 
 
@@ -34,8 +34,8 @@ public class RabcAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
 
 
     @Override
-    public DataRangeDatabaseField getDataRangeDatabaseField() {
-        return dataRangeDatabaseField;
+    public AuthDataTable getAuthDataTable() {
+        return authDataTable;
     }
 
     @Override
@@ -44,8 +44,13 @@ public class RabcAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
     }
 
     @Override
-    public void editDataAuths(Long dataId, String businessFunction, String operate, Collection<BaseAuth> auths) {
-        sysAuthDataComposite.editDataAuths(dataId, businessFunction, operate, auths);
+    public void editDataAuths(String businessFunction, Long dataId, String operate, Collection<BaseAuth> auths) {
+        sysAuthDataComposite.editDataAuths(businessFunction,dataId,  operate, auths);
+    }
+
+    @Override
+    public Collection<BaseAuth> getDataAuths(String businessFunction,Long dataId,  String operate) {
+        return sysAuthDataComposite.getDataAuths(businessFunction,dataId,operate);
     }
 
     public void setSysAuthMenuComposite(SysAuthMenuComposite sysAuthMenuComposite) {
@@ -56,7 +61,7 @@ public class RabcAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
         this.sysAuthDataComposite = sysAuthDataComposite;
     }
 
-    public void setDataRangeDatabaseField(DataRangeDatabaseField dataRangeDatabaseField) {
-        this.dataRangeDatabaseField = dataRangeDatabaseField;
+    public void setAuthDataTable(AuthDataTable authDataTable) {
+        this.authDataTable = authDataTable;
     }
 }

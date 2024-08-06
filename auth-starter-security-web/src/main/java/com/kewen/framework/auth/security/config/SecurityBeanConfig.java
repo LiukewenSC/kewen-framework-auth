@@ -6,6 +6,7 @@ import com.kewen.framework.auth.security.before.BeforeSecurityFilter;
 import com.kewen.framework.auth.security.before.WebGlobalExceptionHandlerFilter;
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
 import com.kewen.framework.auth.security.before.BeforeSecurityFilterProxy;
+import com.kewen.framework.auth.security.response.DefaultSecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessHandler;
@@ -56,9 +57,10 @@ public class SecurityBeanConfig {
 
 
     @Bean
+    @ConditionalOnMissingBean(SecurityAuthenticationSuccessHandler.class)
     SecurityAuthenticationSuccessHandler securityAuthenticationSuccessHandler(
             ObjectProvider<ResponseBodyResultResolver> resultResolverProvider, ObjectMapper objectMapper){
-        return new SecurityAuthenticationSuccessHandler(resultResolverProvider,objectMapper);
+        return new DefaultSecurityAuthenticationSuccessHandler(resultResolverProvider,objectMapper);
     }
 
 

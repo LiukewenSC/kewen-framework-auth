@@ -1,7 +1,8 @@
 package com.kewen.framework.boot.auth.config;
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseField;
+import com.kewen.framework.auth.core.annotation.AuthDataService;
+import com.kewen.framework.auth.core.annotation.data.range.AuthDataTable;
 import com.kewen.framework.auth.rabc.RabcAnnotationAuthHandler;
 import com.kewen.framework.auth.rabc.composite.SysAuthDataComposite;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
@@ -34,10 +35,22 @@ public class AuthRabcConfig {
     @ConditionalOnMissingBean(AnnotationAuthHandler.class)
     public AnnotationAuthHandler annotationAuthHandler(){
         RabcAnnotationAuthHandler handler = new RabcAnnotationAuthHandler();
-        handler.setDataRangeDatabaseField(dataRangeDatabaseField());
+        handler.setAuthDataTable(dataRangeDatabaseField());
         handler.setSysAuthDataComposite(sysAuthDataComposite);
         handler.setSysAuthMenuComposite(sysAuthMenuComposite);
         return handler;
+    }
+
+    /**
+     * 调用服务，可以从这里调用，就不再需要从注解 @AuthDataAuthEdit上执行了，提供了第二种可能
+     * @param annotationAuthHandler
+     * @return
+     */
+    @Bean
+    public AuthDataService authDataService(AnnotationAuthHandler annotationAuthHandler){
+        AuthDataService authDataService = new AuthDataService();
+        authDataService.setAnnotationAuthHandler(annotationAuthHandler);
+        return authDataService;
     }
 
     @Autowired
@@ -50,11 +63,17 @@ public class AuthRabcConfig {
      * @return
      */
     @Bean
-    DataRangeDatabaseField dataRangeDatabaseField(){
-        DataRangeDatabaseField databaseField = new DataRangeDatabaseField();
+    AuthDataTable dataRangeDatabaseField(){
+        AuthDataTable databaseField = new AuthDataTable();
+
+        /* todo 目前因为没有做 @AuthDataRange 和 @AuthDataAuthEdit的统一，因此此处是有问题的，暂时去掉只有范围查询的校验
         databaseField.setTableName(dataRangeDatabaseFieldProperties.getTableName());
         databaseField.setDataIdColumn(dataRangeDatabaseFieldProperties.getDataIdColumn());
         databaseField.setAuthorityColumn(dataRangeDatabaseFieldProperties.getAuthorityColumn());
+        */
+        databaseField.setTableName("sys_auth_data");
+        databaseField.setDataIdColumn("id");
+        databaseField.setAuthorityColumn("authority");
         return databaseField;
     }
 

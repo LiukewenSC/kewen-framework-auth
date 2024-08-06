@@ -28,7 +28,7 @@
 
 # 3. 快速开始
 
-框架通过maven引入，加载到自己的工程中即可。同时，框架也提供了一个示例工程`kewen-auth-sample`可以直接启动。启动完成后台工程就创建好了。
+框架通过maven引入，加载到自己的工程中即可。同时，框架也提供了一个示例工程`auth-sample`可以直接启动。启动完成后台工程就创建好了。
 此外，框架还搭配了我的另外一个前端模板项目`kewen-vue-admin`，可以fork到自己工程中然后启动。
 启动后前后端均可以直接登录访问，默认账号密码**admin/123456**
 
@@ -69,17 +69,17 @@
 - 启动
 
 **引入依赖**：引入相关的依赖
-需要把`kewen-auth-starter-security-web`和`kewen-auth-starter-rabc`都引进，前者有安全和登录相关的，后台有基于RABC的权限实现
+需要把`auth-starter-security-web`和`auth-starter-rabc`都引进，前者有安全和登录相关的，后台有基于RABC的权限实现
 
 ```xml
 <dependency>
    <groupId>com.kewen.framework.auth</groupId>
-   <artifactId>kewen-auth-starter-security-web</artifactId>
+   <artifactId>auth-starter-security-web</artifactId>
    <version>1.0-SNAPSHOT</version>
 </dependency>
 <dependency>
    <groupId>com.kewen.framework.auth</groupId>
-   <artifactId>kewen-auth-starter-rabc</artifactId>
+   <artifactId>auth-starter-rabc</artifactId>
    <version>1.0-SNAPSHOT</version>
 </dependency>
 <dependency>
@@ -126,7 +126,8 @@ kewen-framework-auth
 │    │    │    └─@AuthDataRange     数据范围权限
 │    │    ├─menu                    菜单相关包
 │    │    │    └─@AuthMenu          菜单校验注解
-│    │    └─AnnotationAuthHandler   权限相关主要抽象接口，需要子类实现
+│    │    ├─AnnotationAuthHandler   权限相关主要抽象接口，需要子类实现
+│    │    └─AuthDataService         权限服务层服务，可以直接在Service层调用处理权限
 │    ├─model                        权限模型包
 │    │    ├─BaseAuth                基础权限，数据库对应的模型结构
 │    │    ├─IAuthEntity             权限实体接口，与应用层面相关的抽象
@@ -452,52 +453,491 @@ public Result<EditIdDataAuthEdit> testDataAuthEdit(@RequestBody EditIdDataAuthEd
 }
 ```
 
-# 7. 注解原理（待编写）
+# 7. 示例功能
 
-## 7.1. `@AuthMenu`
+本文以会议室、会议室预约功能举例说明
 
-## 7.2. `@AuthDataRange`
+我们需要的功能有创建会议室、删除会议室、查看会议室可编辑列表、编辑会议室、查看会议室可预约列表、预约会议室
+我们将这些功能点进行分类，其中
 
-## 7.3. `@AuthDataOperation`
+- 创建会议室、删除会议室因为是数据有无的概念，应当由菜单权限控制，这是比编辑数据更高的权限要求
+- 查看可编辑列表、编辑会议室是对会议室的基本信息的操作，其权限应当分为同一功能(meeting_room)下的一组操作类型(edit_info)
+- 查看会议室可预约列表、预约会议室对应会议室的使用，其权限应当分为同一功能(meeting_room)下的另一组操作类型(appointment)
 
-## 7.4. `@AuthDataAuthEdit`
+需要特别注意的是，编辑会议室可以编辑会议室的预约权限，这是合理的。
 
-# 8. 配置指南
+## 7.1. 创建会议室
 
-**配置说明**：解释如何配置权限框架以适应不同的应用环境。
+创建会议室主要使用@AuthMenu注解校验是否拥有创建会议室的权限，由菜单API权限控制。
+创建会议室完成后需要添加会议室的管理权限。生活中一般有两种方式来控制，
+a. 一种方式是创建的人直接有权限处理，不需要每一个都分配管理人员，毕竟每条数据都分配一个权限会很麻烦，有的数据本身也不需要这么多维度的权限。
+b. 另一种方式是每个会议室都会分配管理的人，因为会议室这种属于不经常变动的资产，需要有人来管理它。
 
-**配置示例**：提供配置文件示例，帮助用户理解如何设置。
+我们这里使用第二种方案，即创建会议室时为会议室分配管理人员。
 
-# 9. 权限验证
+除此之外，也可以添加会议室预约的权限。这里就直接创建一个会议室，先不允许预约
 
-**验证流程**：阐述权限注解是如何被验证的，以及验证流程是怎样的。
+```java
+/**
+ * 创建会议室
+ * @param entity  需要实现接口 IdDataAuthEdit<ID> 
+ * @return
+ */
+@PostMapping("/add")
+@Transactional(rollbackFor = Exception.class)
+@AuthMenu(name = "创建会议室")
+@AuthDataAuthEdit(businessFunction = "meeting_room",operate = "edit_info",before = false)
+public Result add(@RequestBody MeetingRoomAddReq entity){
+   meetingRoomService.save(entity);
+   return Result.success();
+}
+/**
+ * 创建会议室,第二种写法，不依赖于注解
+ * @param entity  需要实现接口 IdDataAuthEdit<ID> 
+ * @return
+ */
+@PostMapping("/add2")
+@AuthMenu(name = "创建会议室")
+@Transactional(rollbackFor = Exception.class)
+public Result add2(@RequestBody MeetingRoomAddReq entity){
+   meetingRoomService.save(entity);
+   //引入 com.kewen.framework.auth.core.annotation.AuthDataService;
+   authDataService.editDataAuths("meeting_room",entity.getDataId(),"edit_info",entity.getAuthObject());
+   return Result.success();
+}
+```
 
-**错误处理**：说明当权限验证失败时框架的响应方式。
+**启动的时候会自动添加接口** `/meetingRoom;/meetingRoom/add;/meetingRoom/deleteById`
+数据库查看`sys_menu_api`可以看到以下新增的
+|id|path|name|parent_id|auth_type|
+|---|---|---|---|---|
+|1820708571775561728	|/meetingRoom	|MeetingRoomMpController|	0	|	1|
+|1820708571775561729	|/meetingRoom/add	|MeetingRoomMpController>创建会议室|	1820708571775561728	|	2|
+|1820708571775561730	|/meetingRoom/deleteById	|MeetingRoomMpController>删除会议室|	1820708571775561728	|	2|
 
-# 10. 兼容性和依赖
+然后需要我们在数据库找到对应接口权限的地方添加权限映射，由于有上下级关系，我们只需要在`/meetingRoom`对应的数据**id=1820708571775561728**配置权限即可，在此class下都有权限访问
 
-**兼容性说明**：介绍框架支持的操作系统、数据库、应用程序服务器等。
+```sql
+INSERT into sys_auth_menu(api_id,authority,description) VALUES (1820708571775561728,'ROLE_1','ROLE_超级管理员');
+```
 
-**依赖列表**：列出框架的依赖库和框架。
+上述SQL把超级管理员角色加了进去，超级管理员就有权限访问了，其他角色我们也可以按照此添加即可，也可以在页面上添加。
 
-# 11. 示例项目
+然后启动执行创建会议室，就可以把数据添加进去了。
 
-**示例应用**：提供一个或多个示例项目，让用户能够看到权限框架在实际项目中的运用。
+`/meetingRoom/add`或`/meetingRoom/add2`
 
-# 12. 获取帮助
+```json
+{
+  "name": "1103大会议室",
+  "userCount": 32,
+  "place": "大门入口右转1103号大会议室",
+  "remark": "全景落地窗，尊享位置",
+  "isVideo": 1,
+  "isProjector": 1,
+  "isPhone": 1,
+  "authObject": {
+    "roles": [
+      {
+        "id": 1,
+        "name": "超级管理员"
+      },
+      {
+        "id": 4,
+        "name": "会议室管理员"
+      }
+    ]
+  }
+}
+```
 
-**问题解答**：提供常见问题解答。
+## 7.2. 删除会议室
 
-**社区支持**：介绍社区论坛或支持渠道。
+删除会议室同创建一致，注意菜单权限保持相同即可，（与创建会议均用父级class的权限就可以解决）
+//todo 删除会议室需要删除相关权限，是不是考虑单独做一个删除注解比较好
 
-# 13. 许可证和版权
+`/meetingRoom/delete`
 
-**许可证**：明确项目使用的开源许可证。
+## 7.3. 编辑会议室
 
-**版权声明**：声明项目的版权信息。
+编辑会议室需要有会议室的管理权限，这里定义角色为 **会议室管理角色**
 
-# 14. 贡献指南
+编辑会议室首先要校验`@AuthDataOperation`，判定是否有权限，然后再编辑会议室相关的信息及预约权限
 
-**贡献说明**：鼓励用户贡献代码或提出建议。
+```java
+/**
+ * 编辑会议室
+ * @param entity
+ * @return
+ */
+@PostMapping("/updateById")
+@Transactional(rollbackFor = Exception.class)
+@AuthDataOperation(businessFunction = "meeting_room",operate = "edit_info")
+@AuthDataAuthEdit(businessFunction = "meeting_room",operate = "appointment")
+public Result updateById(@RequestBody MeetingRoomUpdateReq entity){
+   meetingRoomService.updateById(entity);
+   return Result.success();
+}
+/**
+ * 编辑会议室方式2，
+ * 不依赖@AuthDataAuthEdit
+ * @param entity
+ * @return
+ */
+@PostMapping("/updateById")
+@Transactional(rollbackFor = Exception.class)
+@AuthDataOperation(businessFunction = "meeting_room",operate = "edit_info")
+public Result updateById(@RequestBody MeetingRoomUpdateReq entity){
+   meetingRoomService.updateById(entity);
+   authDataService.editDataAuths("meeting_room",entity.getDataId(),"appointment",entity.getAuthObject());
+   return Result.success();
+}
+```
 
-**贡献流程**：说明如何提交问题、提出建议或贡献代码。
+编辑会议室除了编辑基本信息以外，还要编辑可预约权限，这里也可以使用两种方式进行
+需要注意的是校验是校验数据的`edit_info`操作，而插入的是预约权限`appointment`
+
+```json
+{
+  "id":1,
+  "name": "1103大会议室",
+  "userCount": 32,
+  "place": "大门入口右转1103号大会议室",
+  "remark": "全景落地窗，尊享位置 编辑之后",
+  "isVideo": 1,
+  "isProjector": 1,
+  "isPhone": 1,
+  "authObject": {
+    "roles": [
+      {
+        "id": 4,
+        "name": "会议室管理员"
+      }
+    ]
+  }
+}
+```
+
+预约权限改成了只有会议室管理员可以编辑，因此后续超级管理员调用预约的时候的时候就会报没有权限。
+至于会议室编辑的权限，应当单独拎出来一个接口用创建会议室的权限来执行，这样权限才能统一
+
+## 7.4. 会议室预约
+
+```java
+   /**
+    * 预约会议室
+    * @param req 会议室ID，其实还有其他的入参，比如时间段等，这里暂时不管
+    * @return
+    */
+   @PostMapping(value = "/appointmentMeetingRoom")
+   @AuthDataOperation(businessFunction = "meeting_room",operate = "appointment")
+   public Result appointmentMeetingRoom(@RequestBody @Validated MeetingRoomAppointmentReq req) {
+      String time = req.getTime();
+      //预约会议室的逻辑
+      log.info("预约成功{}", time);
+      return Result.success(time);
+   }
+```
+
+请求数据：
+
+```json
+{
+  "id":1,
+  "time":"2024-11-10"
+}
+```
+
+现在，超级管理员已经没有办法预约会议室了，因为没有权限、（至于超级管理员应当有最大权限这回事则应该在角色层级里面处理，有超管角色就应当有其余所有角色）
+
+我们在数据库的`sys_auth_data`中插入一条功能为会议室**meeting_room**ID为**1**的操作为**appointment**的数据，角色把超级管理员**ROLE_1**加进去
+
+```sql
+insert into sys_auth_data(business_function,data_id,operate,authority,description) 
+VALUES ('meeting_room',1,'appointment','ROLE_1','ROLE_超级管理员');
+```
+
+再次访问接口，成功的预约上了。
+
+以上就是一个完整的功能示例演示。主要需要注意的就是各接口需要的功能即操作类型不能搞混了。
+
+**菜单权限有最大权限，增减数据类的应当由菜单权限控制，对单条数据操作的应当菜单权限创建时指定数据对应的管理权限。**
+
+**对于只单一控制数据的比如日程列表，因为数据本身就之归属于某个人或一组人，因此菜单权限保证数据的增删改查，数据权限就仅剩下数据对应的范围。**
+
+# 8. 高级配置扩展
+
+框架实现了基于RABC的权限体系，同时也预留了很多扩展点，这其实也是一个框架应该具有的基本要求。
+这里将从基础到复杂进行配置说明
+
+## 8.1. 安全登录相关
+
+框架引入了SpringSecurity安全框架，大部分安全功能都是在SpringSecurity上进行扩展
+
+### 8.1.1. 登录相关的参数配置
+
+登录重写了SpringSecurity的表单登录逻辑，因为前后端分离项目本身就是使用json交互的，所以改成了json交互，
+可以自定义登录的API请求地址、username参数、password参数、token头参数、当前登录人接口、最大session数量、是否可以挤下线
+
+```yml
+kewen-framework:
+  security:
+    login:
+      login-url: /login                 #登录地址
+      current-user-url: /currentUser    #当前用户接口地址
+      maximum-sessions: 1               #最大session数量
+      max-sessions-prevents-login: true # 是否不允许挤下线
+      username-parameter: username      # username参数
+      password-parameter: password      # password参数
+      token-parameter: Authorization    # token请求头参数
+```
+
+以上是基于yml配置的默认的值，不修改默认为以上的地址。
+
+### 8.1.2. 认证成功处理器
+
+在认证成功后，默认会提供一个成功返回的处理器`DefaultSecurityAuthenticationSuccessHandler`，将成功认证的数据经过转换写入输出流中。
+我们这里可以自定义一个成功返回解析器，也可以自定义成功处理器。一般只需要定义解析器就可以了。
+
+1. 自定义成功返回解析器
+   需要实现`ResponseBodyResultResolver`，覆写`resolver`方法，要求返回最终写流的数据格式，一般这里用来匹配后端统一定义的返回格式，否则默认返回用户信息和默认退出信息不太符合统一返回格式的要求。
+   可以参照`SampleResponseBodyResultResolver`来进行配置
+
+   ```java
+   /**
+    * 认证成功用户转化类，处理用户的额外信息
+    * @author kewen
+    * @since 2024-07-04
+    */
+   public interface ResponseBodyResultResolver {
+      /**
+       * 处理返回格式
+       * @param request  请求
+       * @param response 响应，注意不要开关流
+       * @param data 准备返回的数据，可以为空
+       * @return 准备写流的数据
+       */
+      Object resolver(HttpServletRequest request, HttpServletResponse response, @Nullable Object data);
+   }
+   ```
+
+2. 自定义成功返回处理器
+   如果自定义返回处理器，则需要定义登录成功的返回和退出登录成功的返回
+
+   ```java
+   /**
+    * 认证成功处理器 
+    * @author kewen
+    * @since 2024-07-04
+    */
+   public interface SecurityAuthenticationSuccessHandler extends AuthenticationSuccessHandler , LogoutSuccessHandler {
+      /**
+       * 认证成功的数据处理，要求写流返回
+       */
+      @Override
+      void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException;
+      /**
+       * 退出登录成功的数据处理，要求写流返回
+       */
+      @Override
+      void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException;
+   }
+   ```
+
+### 8.1.3. 认证失败、授权失败处理器
+
+认证失败的处理相对而言就简单了，框架封装了SpringMVC的异常解析器，只需要按照SpringMVC的异常处理`@ControllerAdvice` + `@ExceptionHandler` 就可以
+比如配置一下异常增强，
+
+```java
+@RestControllerAdvice
+public class ExceptionAdviceHandler {
+   @ExceptionHandler(AccessDeniedException.class)
+   public Result accessDeniedException(AccessDeniedException t){
+      logger.error("访问异常：{}", t.getMessage(), t);
+      return Result.failed(401, t.getMessage());
+   }
+   @ResponseStatus(HttpStatus.FORBIDDEN)
+   @ExceptionHandler(AuthenticationException.class)
+   public Result authenticationException(AuthenticationException t){
+      logger.error("认证异常：{}", t.getMessage(), t);
+      return Result.failed(403, t.getMessage());
+   }
+   @ExceptionHandler(InsufficientAuthenticationException.class)
+   public Result insufficientAuthenticationException(InsufficientAuthenticationException t){
+      logger.error("授权异常：{}", t.getMessage(), t);
+      return Result.failed(401, t.getMessage());
+   }
+}
+```
+
+也可以参考 **auth-sample**下的`ExceptionAdviceHandler`
+
+## 8.2. 注解权限相关
+
+注解定义了主体的逻辑，除了既定的配置外，不支持扩展，能扩展的主要是在它的处理器中以及处理器的实现逻辑
+
+### 8.2.1. 权限处理器`AnnotationAuthHandler`
+
+`AnnotationAuthHandler`是权限校验和配置的实现类，它主要包含四个注解对应的校验方法。
+框架默认在auth-rabc中对其有一个RABC框架的实现，如果不需要的话也可以自己定义实现
+但是这里需要注意，如果自定义了`AnnotationAuthHandler`那么后续`auth-rabc`和`auth-starter-rabc`就不再应该引入了，因为`auth-rabc`的目的就是实现默认的`AnnotationAuthHandler`
+
+实现默认的需要实现4个方法，如下：
+
+```java
+/**
+ *  权限处理器，对于注解涉及到的权限需要的实现都从这里完成
+ * <E> 权限对象泛型
+ * @author kewen
+ * @since 2023-04-10
+ */
+public interface AnnotationAuthHandler<ID> {
+
+    /**
+     * 是否有菜单访问权限
+     *  对应菜单 范围权限 @AuthCheckMenuAccess
+     * @param auths
+     * @param path
+     * @return
+     */
+    boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String path) ;
+
+    /**
+     * 数据权限的数据库、表字段
+     *  对应范围查询 @AuthDataRange
+     * @return
+     */
+    AuthDataTable getAuthDataTable();
+
+    /**
+     * 是否有某条数据的操作权限
+     *  对应操作范围权限 @AuthCheckDataOperation
+     * @param auths 用户权限
+     * @param businessFunction 模块
+     * @param operate 操作
+     * @param dataId 业务id，如 1L 1011L等业务主键ID
+     * @return 是否有权限
+     */
+    boolean hasDataOperateAuths(Collection<BaseAuth> auths, String businessFunction, String operate, ID dataId);
+
+
+    /**
+     * 编辑某条 数据权限
+     * 但是这里要注意了，不应该编辑此接口本身的权限，否则就会出现自己把自己编辑没，或者把不应该有的人加入（其实就是属于越权了，本应该是上级做的事）
+     *  对应编辑数据权限 @AuthEditDataAuth
+     * @param dataId 数据ID
+     * @param businessFunction 模块
+     * @param operate 操作
+     * @param auths 权限结构
+     */
+    void editDataAuths(ID dataId, String businessFunction, String operate, Collection<BaseAuth> auths);
+
+    /**
+     * 获取数据
+     */
+    Collection<BaseAuth> getDataAuths(ID dataId, String businessFunction, String operate);
+}
+```
+
+因此，如果用RABC权限体系的话一般不建议实现此接口，如有自定义的可以修改`RabcAnnotationAuthHandler`内部的一些逻辑
+
+### 8.2.2. `RabcAnnotationAuthHandler`内部的扩展
+
+内部扩展主要是在`SysAuthMenuComposite`和`SysAuthDataComposite`两个。
+
+- `SysAuthMenuComposite`承载了菜单相关的逻辑，默认实现是基于内存的菜单管理关系，这里可以扩展将其修改为基于redis的等。后续看情况单独抽离一个存储容器让其可以自定义
+- `SysAuthDataComposite` 主要是数据权限验证相关的处理，默认是`SysAuthDataCompositeImpl`直接查库，有自定义需求的可以修改这里。
+
+## 8.3. RABC默认权限结构体的扩展
+
+RABC默认目前只实现了基于部门-用户-角色的三个维度的权限，且没有完成上下级的相关（后续拟加入上下级和复杂组合的权限实现）
+如果目前不满足也可以自行扩展基础类
+
+比如，我们新增加一个岗位维度的
+
+- 1. 新建一个岗位类`Position`继承`AbstractIdNameFlagAuthEntity`，实现基本的基于id、name的权限体
+
+ ```java
+ public class Position extends AbstractIdNameFlagAuthEntity{
+    public Position(Long id , String name) {
+       this.id=id;
+       this.name=name;
+    }
+ }
+ ```
+
+- 2. 新建一个权限集合体继承`SimpleAuthObject`，重写方法`addAnotherBashAuth`和`setAnotherBaseAuth`，使之可以添加相关的功能
+
+ ```java
+ public class PositionSimpleAuthObject extends SimpleAuthObject {
+    /**
+     * 添加其他权限对象，若子类继承可以扩展这里，也可以覆写listBaseAuth()
+     * @param baseAuths
+     */
+    public void addAnotherBashAuth(Collection<BaseAuth>  baseAuths){
+
+    }
+    /**
+     * 设置其他权限对象，若子类需要的话可以扩展这里，也可以覆写 setBaseAuth()
+     * @param abstractAuthEntity
+     */
+    public void setAnotherBaseAuth(IFlagAuthEntity abstractAuthEntity){
+
+    }
+ }
+ ```
+
+- 3. 实现`SysUserComposite`或继承`SysUserCompositeImpl`，重写通过用户加载权限的方法`loadByUsername()`，要替换`UserAuthObject`中的`authObject`字段
+     这部分可以参考`SysUserCompositeImpl`来实现
+
+```java
+    @Override
+    public UserAuthObject loadByUsername(String username) {
+
+        SysUser user = userMpService.getOne(
+                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
+                        .select()
+        );
+        if (user == null){
+            return null;
+        }
+
+        UserAuthObject userAuthObject = new UserAuthObject();
+        userAuthObject.setSysUser(user);
+        SysUserCredential credential = credentialMpService.getOne(
+                new LambdaQueryWrapper<SysUserCredential>().eq(SysUserCredential::getUserId, user.getId())
+                        .select()
+        );
+        if (credential == null){
+            return userAuthObject;
+        }
+        userAuthObject.setSysUserCredential(credential);
+        
+        //这里改成查询得到PositionSimpleAuthObject
+        SimpleAuthObject authObject = unionCompositeMapper.getUserAuthObject(user.getId());
+
+        userAuthObject.setAuthObject(authObject);
+
+        return userAuthObject;
+    }
+```
+
+- 4. 编辑权限入参的实体加入`PositionSimpleAuthObject`以配置权限体
+
+ ```java
+ @Data
+ public class EditIdDataAuthEdit implements IdDataAuthEdit<Long> {
+    PositionSimpleAuthObject authObject;
+    private Long id;
+    @Override
+    public Long getDataId() {
+       return id;
+    }
+    @Override
+    public IAuthObject getAuthObject() {
+       return authObject;
+    }
+ }
+ ```
+

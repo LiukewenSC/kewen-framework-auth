@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.core.annotation;
 
 import com.kewen.framework.auth.core.model.BaseAuth;
-import com.kewen.framework.auth.core.annotation.data.range.DataRangeDatabaseField;
+import com.kewen.framework.auth.core.annotation.data.range.AuthDataTable;
 
 import java.util.Collection;
 
@@ -33,7 +33,7 @@ public interface AnnotationAuthHandler<ID> {
      *  对应范围查询 @AuthDataRange
      * @return
      */
-    DataRangeDatabaseField getDataRangeDatabaseField();
+    AuthDataTable getAuthDataTable();
 
 
     /**
@@ -57,6 +57,11 @@ public interface AnnotationAuthHandler<ID> {
      * @param operate 操作
      * @param auths 权限结构
      */
-    void editDataAuths(ID dataId, String businessFunction, String operate, Collection<BaseAuth> auths);
+    void editDataAuths(String businessFunction,ID dataId,  String operate, Collection<BaseAuth> auths);
+
+    /**
+     * 获取数据
+     */
+    Collection<BaseAuth> getDataAuths(String businessFunction,ID dataId,  String operate);
 
 }

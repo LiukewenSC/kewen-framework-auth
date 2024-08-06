@@ -28,7 +28,15 @@ public interface SysAuthDataComposite {
      * @param operate 操作
      * @param auths 权限结构
      */
-    void editDataAuths(Long dataId, String businessFunction, String operate, Collection<BaseAuth> auths);
+    void editDataAuths(String businessFunction,Long dataId,  String operate, Collection<BaseAuth> auths);
 
 
+    /**
+     * 获取业务权限列表
+     * @param dataId
+     * @param businessFunction
+     * @param operate
+     * @return
+     */
+    Collection<BaseAuth> getDataAuths(String businessFunction, Long dataId, String operate);
 }

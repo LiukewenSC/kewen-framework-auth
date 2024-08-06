@@ -32,4 +32,9 @@ public @interface AuthDataAuthEdit {
      */
     String operate() default "unified";
 
+    /**
+     * 在主要方法之前执行，即先执行数据写入，再执行后续业务逻辑
+     * @return
+     */
+    boolean before() default true;
 }

@@ -24,9 +24,12 @@ public interface SysUserUnionCompositeMapper {
      * @param dataId
      * @return
      */
-    Integer hasAuth(@Param("auths") Collection<BaseAuth> auths, @Param("businessFunction") String businessFunction, @Param("operate") String operate, @Param("dataId") Long dataId);
-
-    void selectMenuAuths();
+    Integer hasAuth(
+            @Param("auths") Collection<BaseAuth> auths,
+            @Param("businessFunction") String businessFunction,
+            @Param("operate") String operate,
+            @Param("dataId") Long dataId
+    );
 
     /**
      * 查找用户的角色、机构等

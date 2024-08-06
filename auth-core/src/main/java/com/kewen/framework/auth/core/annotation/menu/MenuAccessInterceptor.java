@@ -28,6 +28,8 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)){
             return true;
         }
+
+        //获取菜单权限注解，如果没有的话说明不需要做校验的，那么就直接跳过拦截器，如果是则需要进一步进行权限校验
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         AuthMenu checkEndpoint = handlerMethod.getMethodAnnotation(AuthMenu.class);
         if (checkEndpoint == null){

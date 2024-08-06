@@ -48,20 +48,32 @@ public class AuthDataEditAspect {
         if (!first.isPresent()){
             throw new AuthorizationException("参数没有找到接口 AuthDataEditBusiness 实现类");
         }
-        IdDataAuthEdit IDataAuthEdit = first.get();
-
-        annotationAuthAdaptor.editDataAuths(
-                IDataAuthEdit.getDataId(),
-                checkDataAuthEdit.businessFunction(),
-                checkDataAuthEdit.operate(),
-                IDataAuthEdit.getAuthObject().listBaseAuth());
-
+        IdDataAuthEdit dataAuthEdit = first.get();
         try {
-            return joinPoint.proceed();
+            if (checkDataAuthEdit.before()){
+                editDataAuths(checkDataAuthEdit, dataAuthEdit);
+            }
+            Object proceed = joinPoint.proceed();
+            if (!checkDataAuthEdit.before()){
+                editDataAuths(checkDataAuthEdit, dataAuthEdit);
+            }
+            return proceed;
         } catch (Throwable throwable) {
             log.error("执行编辑失败"+throwable.getMessage(),throwable);
             throw new RuntimeException(throwable.getMessage(),throwable);
         }
+    }
+
+    private void editDataAuths(AuthDataAuthEdit checkDataAuthEdit, IdDataAuthEdit dataAuthEdit) {
+        Object dataId = dataAuthEdit.getDataId();
+        if (dataId==null){
+            throw new RuntimeException("没有数据ID，无法编辑");
+        }
+        annotationAuthAdaptor.editDataAuths(
+                checkDataAuthEdit.businessFunction(),
+                dataId,
+                checkDataAuthEdit.operate(),
+                dataAuthEdit.getAuthObject().listBaseAuth());
     }
 
 

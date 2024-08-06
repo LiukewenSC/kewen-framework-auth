@@ -68,8 +68,8 @@ public class MybatisDataRangeInterceptor implements Interceptor,ApplicationConte
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext=applicationContext;
     }
-    public DataRangeDatabaseField getDataRangeDatabaseField() {
-        return getAnnotationAuthHandler().getDataRangeDatabaseField();
+    public AuthDataTable getAuthDataTable() {
+        return getAnnotationAuthHandler().getAuthDataTable();
     }
     private synchronized AnnotationAuthHandler getAnnotationAuthHandler(){
         if(annotationAuthHandler==null){
@@ -161,11 +161,11 @@ public class MybatisDataRangeInterceptor implements Interceptor,ApplicationConte
         if (authRange.getMatchMethod()==MatchMethod.IN){
             return String.format(" %s in (select %s from %s where business_function='%s' and operate= '%s' and %s in ( %s ) )",
                     mainTableColumn,
-                    getDataRangeDatabaseField().getDataIdColumn(),
-                    getDataRangeDatabaseField().getTableName(),
+                    getAuthDataTable().getDataIdColumn(),
+                    getAuthDataTable().getTableName(),
                     authRange.getBusinessFunction(),
                     authRange.getOperate(),
-                    getDataRangeDatabaseField().getAuthorityColumn(),
+                    getAuthDataTable().getAuthorityColumn(),
                     authSept
             );
         } else {

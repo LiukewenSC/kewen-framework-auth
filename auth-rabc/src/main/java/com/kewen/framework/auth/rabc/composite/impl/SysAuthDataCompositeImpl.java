@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -35,10 +37,13 @@ public class SysAuthDataCompositeImpl implements SysAuthDataComposite {
     }
 
     @Override
-    public void editDataAuths(Long dataId, String businessFunction, String operate, Collection<BaseAuth> baseAuths) {
+    public void editDataAuths( String businessFunction,Long dataId, String operate, Collection<BaseAuth> baseAuths) {
         //移除原有的
         applicationAuthService.remove(
-                new LambdaQueryWrapper<SysAuthData>().eq(SysAuthData::getDataId,dataId)
+                new LambdaQueryWrapper<SysAuthData>()
+                        .eq(SysAuthData::getBusinessFunction,businessFunction)
+                        .eq(SysAuthData::getDataId,dataId)
+                        .eq(SysAuthData::getOperate,operate)
         );
         //批量插入新的
         if (!CollectionUtils.isEmpty(baseAuths)){
@@ -54,5 +59,16 @@ public class SysAuthDataCompositeImpl implements SysAuthDataComposite {
                             ).collect(Collectors.toList())
             );
         }
+    }
+
+    @Override
+    public Collection<BaseAuth> getDataAuths( String businessFunction,Long dataId, String operate) {
+        List<SysAuthData> datas = applicationAuthService.list(
+                new LambdaQueryWrapper<SysAuthData>()
+                        .eq(SysAuthData::getBusinessFunction, businessFunction)
+                        .eq(SysAuthData::getDataId, dataId)
+                        .eq(SysAuthData::getOperate, operate)
+        );
+        return datas.stream().map(d -> new BaseAuth(d.getAuthority(), d.getDescription())).collect(Collectors.toList());
     }
 }

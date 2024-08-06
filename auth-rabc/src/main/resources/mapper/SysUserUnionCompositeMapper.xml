@@ -14,10 +14,6 @@
         limit 1
     </select>
 
-    <select id="selectMenuAuths">
-        select * from sys_menu m left join sys_auth_menu a on m.id=a.menu_id
-    </select>
-
     <resultMap id="UserAuthObjectResult" type="com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject">
         <collection property="users" ofType="com.kewen.framework.auth.rabc.composite.model.User">
             <id property="id" column="user_id"/>

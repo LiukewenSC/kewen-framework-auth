@@ -8,7 +8,7 @@ import lombok.Data;
  * @since 2023-12-04 14:41
  */
 @Data
-public class DataRangeDatabaseField {
+public class AuthDataTable {
     /**
      * 业务关联表名
      */

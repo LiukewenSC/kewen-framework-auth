@@ -10,10 +10,10 @@ kewen-framework:
       authority-column: authority
   security:
     login:
-      login-url: /login
-      current-user-url: /currentUser
-      maximum-sessions: 1
-      max-sessions-prevents-login: true
-      username-parameter: username
-      password-parameter: password
-      token-parameter: Authorization
+      login-url: /login                 #登录地址
+      current-user-url: /currentUser    #当前用户接口地址
+      maximum-sessions: 1               #最大session数量
+      max-sessions-prevents-login: true # 是否不允许挤下线
+      username-parameter: username      # username参数
+      password-parameter: password      # password参数
+      token-parameter: Authorization    # token请求头参数

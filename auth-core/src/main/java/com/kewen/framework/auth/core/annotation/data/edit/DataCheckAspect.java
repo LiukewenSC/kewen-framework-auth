@@ -43,7 +43,7 @@ public class DataCheckAspect {
         }
         Optional<Object> first = Arrays.stream(args).filter(a -> a instanceof IdDataEdit).findFirst();
         if (!first.isPresent()){
-            throw new AuthorizationException("参数没有找到接口ApplicationBusiness实现类");
+            throw new AuthorizationException("参数没有找到接口IdDataEdit实现类");
         }
         IdDataEdit business = (IdDataEdit) first.get();
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
