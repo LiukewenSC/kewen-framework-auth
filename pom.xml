@@ -13,7 +13,6 @@
         <module>auth-rabc</module>
         <module>auth-starter-rabc</module>
         <module>auth-starter-security-web</module>
-        <module>auth-sample</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
     <properties>
