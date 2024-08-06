@@ -14,7 +14,9 @@
 ## 2.1. 权限说明
 
 **菜单权限**：访问某个菜单需要的权限。框架中涉及到有前端访问路由的菜单路由权限和请求后端接口的菜单API请求权限。通过对菜单的控制完成粗粒度的鉴权，达到可见/不可见的效果。
+
 **数据权限**：某条数据对应的权限。对于每一条数据，其都应该对应有一个数据权限来对其控制，有对应权限的就应该可以执行对应的操作，没有权限的就应该在查询列表中不可见，同时对应请求也应当不能执行。
+
 **数据权限-操作类型** 数据的权限应该还需要进一步的划分，一条数据对应不同的操作应该有不同的权限。如：会议室可以编辑，也可以预约，这两个操作的基础数据都是会议室，但是编辑应当由管理员来执行，而预约应当大部分人都可以执行的，它肯定不应该只能管理员可以预约。
 
 ## 2.2. 核心注解
@@ -28,7 +30,7 @@
 
 # 3. 快速开始
 
-框架通过maven引入，加载到自己的工程中即可。同时，框架也提供了一个示例工程`auth-sample`可以直接启动。启动完成后台工程就创建好了。
+框架通过maven引入，加载到自己的工程中即可。同时，框架也提供了一个示例工程`kewen-framework-auth-sample`可以直接启动。启动完成后台工程就创建好了。
 此外，框架还搭配了我的另外一个前端模板项目`kewen-vue-admin`，可以fork到自己工程中然后启动。
 启动后前后端均可以直接登录访问，默认账号密码**admin/123456**
 
@@ -72,20 +74,22 @@
 需要把`auth-starter-security-web`和`auth-starter-rabc`都引进，前者有安全和登录相关的，后台有基于RABC的权限实现
 
 ```xml
-<dependency>
-   <groupId>com.kewen.framework.auth</groupId>
-   <artifactId>auth-starter-security-web</artifactId>
-   <version>1.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-   <groupId>com.kewen.framework.auth</groupId>
-   <artifactId>auth-starter-rabc</artifactId>
-   <version>1.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-   <groupId>mysql</groupId>
-   <artifactId>mysql-connector-java</artifactId>
-</dependency>
+<dependencies>
+   <dependency>
+      <groupId>com.kewen.framework.auth</groupId>
+      <artifactId>auth-starter-security-web</artifactId>
+      <version>1.0-SNAPSHOT</version>
+   </dependency>
+   <dependency>
+      <groupId>com.kewen.framework.auth</groupId>
+      <artifactId>auth-starter-rabc</artifactId>
+      <version>1.0-SNAPSHOT</version>
+   </dependency>
+   <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+   </dependency>
+</dependencies>
 ```
 
 **初始化数据库**：和利用sample模块启动一致，找到工程目录`./script/sql/auth.sql`的脚本执行即可
@@ -102,11 +106,11 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 ## 3.3. 应用可选配置
 
-然后应用中有部分可选配置，可以参考`kewne-auth-sample`启动示例模块选择使用
+然后应用中有部分可选配置，可以参考`kewen-framework-auth-sample`启动示例工程选择使用
 `ExceptionAdviceHandler`主要用于返回异常，方便在报错时可以准确处理异常
 `SampleResponseBodyResultResolver`，认证成功返回的结构处理，可以匹配成和自己项目中一致的统一返回，不配置则使用默认的
 
-另外，示例项目还包含了代码生成相关的类，可以忽略不管，新的表需要一键生成MybatisPlus代码时也可以是使用，后续来完善这部分功能
+另外，示例工程还包含了代码生成相关的类，可以忽略不管，新的表需要一键生成MybatisPlus代码时也可以是使用，后续来完善这部分功能
 
 ## 3.4. 启动
 
@@ -172,12 +176,6 @@ kewen-framework-auth
 │         ├─SecurityUserDetailsService 用户登录相关需要实现的类
 │         └─RabcSecurityUserDetailsService RABC方式默认实现的类
 |
-├─auth-sample
-│    ├─config                       配置类
-│    ├─controller                   列表功能，对相关的注解有测试代码
-│    ├─mp                           测试表自动生成的测试代码
-│    ├─response                     统一异常处理、登录成功返回转化等
-│    └─AuthWebSample    启动类
 └─script(文件夹)
      └─sql                          RABC初始化数据库脚本文件
 ```
@@ -356,7 +354,7 @@ public class TestAuthAnnotationController {
 ```java
 /**
  * @descrpition 校验是否有编辑单条数据的权限
- * dataId需要关联获取 {@link IdDataEdit}
+ * dataId需要关联获取 {@link com.kewen.framework.auth.core.annotation.data.edit。IdDataEdit}
  * @author kewen
  * @since 2022-11-23
  */
@@ -453,217 +451,9 @@ public Result<EditIdDataAuthEdit> testDataAuthEdit(@RequestBody EditIdDataAuthEd
 }
 ```
 
-# 7. 示例功能
+# 7. 示例案例
 
-本文以会议室、会议室预约功能举例说明
-
-我们需要的功能有创建会议室、删除会议室、查看会议室可编辑列表、编辑会议室、查看会议室可预约列表、预约会议室
-我们将这些功能点进行分类，其中
-
-- 创建会议室、删除会议室因为是数据有无的概念，应当由菜单权限控制，这是比编辑数据更高的权限要求
-- 查看可编辑列表、编辑会议室是对会议室的基本信息的操作，其权限应当分为同一功能(meeting_room)下的一组操作类型(edit_info)
-- 查看会议室可预约列表、预约会议室对应会议室的使用，其权限应当分为同一功能(meeting_room)下的另一组操作类型(appointment)
-
-需要特别注意的是，编辑会议室可以编辑会议室的预约权限，这是合理的。
-
-## 7.1. 创建会议室
-
-创建会议室主要使用@AuthMenu注解校验是否拥有创建会议室的权限，由菜单API权限控制。
-创建会议室完成后需要添加会议室的管理权限。生活中一般有两种方式来控制，
-a. 一种方式是创建的人直接有权限处理，不需要每一个都分配管理人员，毕竟每条数据都分配一个权限会很麻烦，有的数据本身也不需要这么多维度的权限。
-b. 另一种方式是每个会议室都会分配管理的人，因为会议室这种属于不经常变动的资产，需要有人来管理它。
-
-我们这里使用第二种方案，即创建会议室时为会议室分配管理人员。
-
-除此之外，也可以添加会议室预约的权限。这里就直接创建一个会议室，先不允许预约
-
-```java
-/**
- * 创建会议室
- * @param entity  需要实现接口 IdDataAuthEdit<ID> 
- * @return
- */
-@PostMapping("/add")
-@Transactional(rollbackFor = Exception.class)
-@AuthMenu(name = "创建会议室")
-@AuthDataAuthEdit(businessFunction = "meeting_room",operate = "edit_info",before = false)
-public Result add(@RequestBody MeetingRoomAddReq entity){
-   meetingRoomService.save(entity);
-   return Result.success();
-}
-/**
- * 创建会议室,第二种写法，不依赖于注解
- * @param entity  需要实现接口 IdDataAuthEdit<ID> 
- * @return
- */
-@PostMapping("/add2")
-@AuthMenu(name = "创建会议室")
-@Transactional(rollbackFor = Exception.class)
-public Result add2(@RequestBody MeetingRoomAddReq entity){
-   meetingRoomService.save(entity);
-   //引入 com.kewen.framework.auth.core.annotation.AuthDataService;
-   authDataService.editDataAuths("meeting_room",entity.getDataId(),"edit_info",entity.getAuthObject());
-   return Result.success();
-}
-```
-
-**启动的时候会自动添加接口** `/meetingRoom;/meetingRoom/add;/meetingRoom/deleteById`
-数据库查看`sys_menu_api`可以看到以下新增的
-|id|path|name|parent_id|auth_type|
-|---|---|---|---|---|
-|1820708571775561728	|/meetingRoom	|MeetingRoomMpController|	0	|	1|
-|1820708571775561729	|/meetingRoom/add	|MeetingRoomMpController>创建会议室|	1820708571775561728	|	2|
-|1820708571775561730	|/meetingRoom/deleteById	|MeetingRoomMpController>删除会议室|	1820708571775561728	|	2|
-
-然后需要我们在数据库找到对应接口权限的地方添加权限映射，由于有上下级关系，我们只需要在`/meetingRoom`对应的数据**id=1820708571775561728**配置权限即可，在此class下都有权限访问
-
-```sql
-INSERT into sys_auth_menu(api_id,authority,description) VALUES (1820708571775561728,'ROLE_1','ROLE_超级管理员');
-```
-
-上述SQL把超级管理员角色加了进去，超级管理员就有权限访问了，其他角色我们也可以按照此添加即可，也可以在页面上添加。
-
-然后启动执行创建会议室，就可以把数据添加进去了。
-
-`/meetingRoom/add`或`/meetingRoom/add2`
-
-```json
-{
-  "name": "1103大会议室",
-  "userCount": 32,
-  "place": "大门入口右转1103号大会议室",
-  "remark": "全景落地窗，尊享位置",
-  "isVideo": 1,
-  "isProjector": 1,
-  "isPhone": 1,
-  "authObject": {
-    "roles": [
-      {
-        "id": 1,
-        "name": "超级管理员"
-      },
-      {
-        "id": 4,
-        "name": "会议室管理员"
-      }
-    ]
-  }
-}
-```
-
-## 7.2. 删除会议室
-
-删除会议室同创建一致，注意菜单权限保持相同即可，（与创建会议均用父级class的权限就可以解决）
-//todo 删除会议室需要删除相关权限，是不是考虑单独做一个删除注解比较好
-
-`/meetingRoom/delete`
-
-## 7.3. 编辑会议室
-
-编辑会议室需要有会议室的管理权限，这里定义角色为 **会议室管理角色**
-
-编辑会议室首先要校验`@AuthDataOperation`，判定是否有权限，然后再编辑会议室相关的信息及预约权限
-
-```java
-/**
- * 编辑会议室
- * @param entity
- * @return
- */
-@PostMapping("/updateById")
-@Transactional(rollbackFor = Exception.class)
-@AuthDataOperation(businessFunction = "meeting_room",operate = "edit_info")
-@AuthDataAuthEdit(businessFunction = "meeting_room",operate = "appointment")
-public Result updateById(@RequestBody MeetingRoomUpdateReq entity){
-   meetingRoomService.updateById(entity);
-   return Result.success();
-}
-/**
- * 编辑会议室方式2，
- * 不依赖@AuthDataAuthEdit
- * @param entity
- * @return
- */
-@PostMapping("/updateById")
-@Transactional(rollbackFor = Exception.class)
-@AuthDataOperation(businessFunction = "meeting_room",operate = "edit_info")
-public Result updateById(@RequestBody MeetingRoomUpdateReq entity){
-   meetingRoomService.updateById(entity);
-   authDataService.editDataAuths("meeting_room",entity.getDataId(),"appointment",entity.getAuthObject());
-   return Result.success();
-}
-```
-
-编辑会议室除了编辑基本信息以外，还要编辑可预约权限，这里也可以使用两种方式进行
-需要注意的是校验是校验数据的`edit_info`操作，而插入的是预约权限`appointment`
-
-```json
-{
-  "id":1,
-  "name": "1103大会议室",
-  "userCount": 32,
-  "place": "大门入口右转1103号大会议室",
-  "remark": "全景落地窗，尊享位置 编辑之后",
-  "isVideo": 1,
-  "isProjector": 1,
-  "isPhone": 1,
-  "authObject": {
-    "roles": [
-      {
-        "id": 4,
-        "name": "会议室管理员"
-      }
-    ]
-  }
-}
-```
-
-预约权限改成了只有会议室管理员可以编辑，因此后续超级管理员调用预约的时候的时候就会报没有权限。
-至于会议室编辑的权限，应当单独拎出来一个接口用创建会议室的权限来执行，这样权限才能统一
-
-## 7.4. 会议室预约
-
-```java
-   /**
-    * 预约会议室
-    * @param req 会议室ID，其实还有其他的入参，比如时间段等，这里暂时不管
-    * @return
-    */
-   @PostMapping(value = "/appointmentMeetingRoom")
-   @AuthDataOperation(businessFunction = "meeting_room",operate = "appointment")
-   public Result appointmentMeetingRoom(@RequestBody @Validated MeetingRoomAppointmentReq req) {
-      String time = req.getTime();
-      //预约会议室的逻辑
-      log.info("预约成功{}", time);
-      return Result.success(time);
-   }
-```
-
-请求数据：
-
-```json
-{
-  "id":1,
-  "time":"2024-11-10"
-}
-```
-
-现在，超级管理员已经没有办法预约会议室了，因为没有权限、（至于超级管理员应当有最大权限这回事则应该在角色层级里面处理，有超管角色就应当有其余所有角色）
-
-我们在数据库的`sys_auth_data`中插入一条功能为会议室**meeting_room**ID为**1**的操作为**appointment**的数据，角色把超级管理员**ROLE_1**加进去
-
-```sql
-insert into sys_auth_data(business_function,data_id,operate,authority,description) 
-VALUES ('meeting_room',1,'appointment','ROLE_1','ROLE_超级管理员');
-```
-
-再次访问接口，成功的预约上了。
-
-以上就是一个完整的功能示例演示。主要需要注意的就是各接口需要的功能即操作类型不能搞混了。
-
-**菜单权限有最大权限，增减数据类的应当由菜单权限控制，对单条数据操作的应当菜单权限创建时指定数据对应的管理权限。**
-
-**对于只单一控制数据的比如日程列表，因为数据本身就之归属于某个人或一组人，因此菜单权限保证数据的增删改查，数据权限就仅剩下数据对应的范围。**
+示例案例新建工程`kewen-framework-auth-sample`中，可以参考此工程来引入及配置
 
 # 8. 高级配置扩展
 
@@ -771,7 +561,7 @@ public class ExceptionAdviceHandler {
 }
 ```
 
-也可以参考 **auth-sample**下的`ExceptionAdviceHandler`
+也可以参考 **kewen-framework-auth-sample**下的`ExceptionAdviceHandler`
 
 ## 8.2. 注解权限相关
 
