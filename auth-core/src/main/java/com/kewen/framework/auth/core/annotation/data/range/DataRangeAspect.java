@@ -14,7 +14,7 @@ import java.util.Collection;
 /**
  * @descrpition 切面拦截注解 {@link AuthDataRange} 将注解对应的信息写入权限范围上下文中，供mapper拦截器中使用
  * @author kewen
- * @since 2022-11-24 17:26
+ * @since 2022-11-24
  */
 @Aspect
 public class DataRangeAspect {
@@ -28,10 +28,10 @@ public class DataRangeAspect {
     public Object around(ProceedingJoinPoint proceedingJoinPoint, AuthDataRange checkAuthDataRange) throws Throwable {
 
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
-        DataRangeContext.AuthRange authRange = new DataRangeContext.AuthRange()
+        AuthRange authRange = new AuthRange()
                 .setBusinessFunction(checkAuthDataRange.businessFunction())
                 .setOperate(checkAuthDataRange.operate())
-                .setTableAlias(checkAuthDataRange.tableAlias())
+                .setTable(checkAuthDataRange.table())
                 .setDataColumn(checkAuthDataRange.dataIdColumn())
                 .setAuthorities(auths)
                 .setMatchMethod(checkAuthDataRange.matchMethod())

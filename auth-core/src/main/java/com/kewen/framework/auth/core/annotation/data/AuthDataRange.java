@@ -37,13 +37,13 @@ public @interface AuthDataRange {
 
 
     /**
-     * 表别名，多表联查时用于拼接权限 如： t.id
+     * 表名多表联查时用于指定是和哪一张表关联
      * @return
      */
-    String tableAlias() default "";
+    String table() default "";
 
     /**
-     * 业务主键column名 用于拼接 t.id
+     * 业务主键column名 用于拼接 table.id
      * @return
      */
     String dataIdColumn() default "id";

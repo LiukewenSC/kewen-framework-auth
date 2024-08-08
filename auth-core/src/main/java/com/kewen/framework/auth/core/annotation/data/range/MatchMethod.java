@@ -1,12 +1,11 @@
 package com.kewen.framework.auth.core.annotation.data.range;
 
 /**
- * todo
  * 权限匹配方式
  * 匹配应当遵循小表驱动大表的原则
  * @author kewen
  * @descrpition
- * @since 2022-11-24 21:16
+ * @since 2022-11-24
  */
 public enum MatchMethod {
     /**
