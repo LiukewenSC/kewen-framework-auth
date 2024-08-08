@@ -4,6 +4,7 @@ package com.kewen.framework.auth.core.annotation.data.range;
 import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
 import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.core.model.BaseAuth;
+import net.sf.jsqlparser.schema.Table;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

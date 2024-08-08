@@ -3,6 +3,7 @@ package com.kewen.framework.auth.core.annotation.data.range;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.sf.jsqlparser.schema.Table;
 
 import java.util.Collection;
 
@@ -13,7 +14,7 @@ import java.util.Collection;
  */
 @Data
 @Accessors(chain = true)
-public class AuthRange {
+class AuthRange {
     /**
      * 应用/模块标识
      */
