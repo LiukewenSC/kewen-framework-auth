@@ -1,15 +1,12 @@
 package com.kewen.framework.auth.core.annotation.data.range;
 
 import com.kewen.framework.auth.core.model.BaseAuth;
+import javafx.scene.control.Tab;
 import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.expression.Alias;
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
-import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
-import net.sf.jsqlparser.expression.operators.relational.ExistsExpression;
-import net.sf.jsqlparser.expression.operators.relational.InExpression;
-import net.sf.jsqlparser.expression.operators.relational.ParenthesedExpressionList;
+import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
+import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -53,8 +50,12 @@ public class MybatisAuthSqlInject {
     public static String convert2NewSql(String sql, AuthRange authRange) throws JSQLParserException {
         Select parse = (Select) CCJSqlParserUtil.parse(sql);
         PlainSelect plainSelect = parse.getPlainSelect();
-        Table mainTable = parseMainTable(plainSelect,authRange.getTable());
-
+        //要做子查询，这里需要分析二叉树的各种逻辑，因为子查询可以在嵌套的各个地方，而Jsql所有的条件都是二叉构造
+        String tableName = authRange.getTable();
+        Table table = new Table(tableName);
+        PlainSelect authPlainSelect = findAuthPlainSelect(plainSelect,table);
+        //Table mainTable = parseMainTable(plainSelect,authRange.getTable());
+        Table mainTable=new Table(authRange.getTable());
         Expression condition;
         if (authRange.getMatchMethod()==MatchMethod.IN){
             //获取到 `id in (a,b,c)` 表达式
@@ -64,18 +65,70 @@ public class MybatisAuthSqlInject {
         } else {
             throw new RuntimeException("仅支持 in 和 exists");
         }
-
-        Expression where = plainSelect.getWhere();
+        Expression where = authPlainSelect.getWhere();
         if (where == null) {
-            plainSelect.setWhere(condition);
+            authPlainSelect.setWhere(condition);
         } else {
             //组合现在的和原来的
-            plainSelect.setWhere(new AndExpression(where, condition));
+            authPlainSelect.setWhere(new AndExpression(where, condition));
         }
 
         return plainSelect.toString();
     }
-    private static Table parseMainTable(PlainSelect plainSelect,@Nullable String tableName) throws JSQLParserException {
+
+    /**
+     * 查找到最终匹配条件的 PlainSelect
+     * @param plainSelect
+     * @return
+     */
+    private static PlainSelect findAuthPlainSelect(PlainSelect plainSelect, Table paramTable) throws JSQLParserException {
+        Table mainTable = parseMainTable(plainSelect, paramTable);
+        if (mainTable != null){
+            return plainSelect;
+        }
+        return parseExpression(plainSelect.getWhere(),paramTable);
+    }
+    private static PlainSelect parseExpression(Expression expression,Table paramTable) throws JSQLParserException {
+        PlainSelect plainSelect = null;
+        if (expression instanceof AndExpression){
+            AndExpression andExpression = (AndExpression) expression;
+            plainSelect = parseExpression(andExpression.getLeftExpression(),paramTable);
+            if (plainSelect != null){
+                return plainSelect;
+            }
+            plainSelect = parseExpression(andExpression.getRightExpression(),paramTable);
+            return plainSelect;
+        } else if (expression instanceof OrExpression){
+            OrExpression orExpression = (OrExpression) expression;
+            plainSelect = parseExpression(orExpression.getLeftExpression(),paramTable);
+            if (plainSelect != null){
+                return plainSelect;
+            }
+            plainSelect = parseExpression(orExpression.getRightExpression(),paramTable);
+            return plainSelect;
+        }else if (expression instanceof InExpression){
+            InExpression inExpression = (InExpression) expression;
+            plainSelect = parseExpression(inExpression.getRightExpression(),paramTable);
+            return plainSelect;
+        }else if (expression instanceof Select){
+            Select select = (Select) expression;
+            plainSelect = select.getPlainSelect();
+            Table table = parseMainTable(plainSelect, paramTable);
+            if (table != null){
+                return plainSelect;
+            }
+        } else {
+            System.out.println("不该走这里");
+        }
+        return null;
+    }
+
+    /**
+     * 从 PlainSelect 中找到匹配的表名，主要是 从 From Join中找 where中需要再进行处理
+     */
+    private static Table parseMainTable(PlainSelect plainSelect,Table paramTable) throws JSQLParserException {
+        String tableName = paramTable.getName();
+        //String alias = paramTable.getAlias().getName();
         //没有设置则以from后面的为主
         FromItem fromItem = plainSelect.getFromItem();
         if (StringUtils.isBlank(tableName)){
@@ -90,17 +143,21 @@ public class MybatisAuthSqlInject {
             }
         }
 
-        for (Join join : plainSelect.getJoins()) {
-            FromItem joinFromItem = join.getFromItem();
-            if (joinFromItem instanceof Table) {
-                Table joinTable = ((Table) joinFromItem);
-                if (tableName.equals(joinTable.getName())){
-                    return joinTable;
+        if (plainSelect.getJoins() != null){
+            for (Join join : plainSelect.getJoins()) {
+                FromItem joinFromItem = join.getFromItem();
+                if (joinFromItem instanceof Table) {
+                    Table joinTable = ((Table) joinFromItem);
+                    if (tableName.equals(joinTable.getName())){
+                        return joinTable;
+                    }
                 }
             }
         }
-        log.warn("SQL中没有找到表名对应的表");
-        throw new JSQLParserException("sql 解析异常，SQL("+plainSelect+")中没有找到表名"+tableName+"对应的表");
+        String noTableStr = "SQL中没有找到表名对应的表";
+        log.warn(noTableStr);
+        System.out.println(noTableStr);
+        return null;
     }
 
     /**

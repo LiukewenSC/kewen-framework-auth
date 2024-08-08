@@ -81,8 +81,8 @@ public class MybatisAuthSqlInjectTest {
     @Test
     public void matchNested() throws JSQLParserException {
         AuthRange authRange = getAuthRange();
-        authRange.setTable("meeting_room");
-        String sql="select * from meeting_room where id in (select * from meet2 t_2 where 1=1)";
+        authRange.setTable("meet2");
+        String sql="select * from meeting_room where 1=1 and id in (select * from meet2 t_2 where 1=1) and 2=2";
         String newSql = MybatisAuthSqlInject.convert2NewSql(sql, authRange);
 
         System.out.println(newSql);
