@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(MenuApiGeneratorProcessor.class);
-    private MenuApiStore menuApiStore = new NoneMenuApiStore();
+    private MenuApiStore menuApiStore;
     private Map<RequestMappingInfo, HandlerMethod> handlerMethods;
 
     private final Map<String, MenuApiEntity> menuApiMap = new ConcurrentHashMap<>();
@@ -48,6 +48,10 @@ public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnab
     @Override
     public void run() {
         //处理对应关系，找到路径信息，在此处处理不会引发系统启动的问题
+        if (menuApiStore==null){
+            log.warn("menuApiStore is null");
+            return;
+        }
         process();
 
         //获取数据库中的API
@@ -62,7 +66,7 @@ public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnab
                 .map(entry -> {
                     //排序之后用雪花算法生成ID
                     MenuApiEntity apiEntity = entry.getValue();
-                    apiEntity.setId(IdUtil.getSnowflakeNextId());
+                    apiEntity.setId(menuApiStore.generateId());
                     return apiEntity;
                 }).collect(Collectors.toList());
 
@@ -167,24 +171,6 @@ public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnab
         Set<String> patterns = patternsCondition.getPatterns();
         for (String pattern : patterns) {
             menuApiMap.putIfAbsent(pattern.trim(), MenuApiEntity.of(pattern, methodName, controllerPath));
-        }
-    }
-
-    static class NoneMenuApiStore implements MenuApiStore {
-
-        @Override
-        public List<MenuApiEntity> list() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public Object getRootParentId() {
-            return null;
-        }
-
-        @Override
-        public void saveBatch(List list) {
-            log.info("没有存储");
         }
     }
 }

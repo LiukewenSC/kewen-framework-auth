@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.rabc.extension;
 
+import cn.hutool.core.util.IdUtil;
 import com.kewen.framework.auth.core.annotation.menu.MenuApiEntity;
 import com.kewen.framework.auth.core.annotation.menu.MenuApiStore;
 import com.kewen.framework.auth.rabc.mp.entity.SysMenuApi;
@@ -49,5 +50,14 @@ public class RabcMenuApiStore implements MenuApiStore<Long> {
     @Override
     public Long getRootParentId() {
         return 0L;
+    }
+
+    /**
+     * 雪花算法生成id
+     * @return
+     */
+    @Override
+    public Long generateId() {
+        return IdUtil.getSnowflakeNextId();
     }
 }

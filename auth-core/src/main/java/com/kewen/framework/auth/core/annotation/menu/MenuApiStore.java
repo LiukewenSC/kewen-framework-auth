@@ -29,5 +29,10 @@ public interface MenuApiStore<T> {
      */
     T getRootParentId();
 
+    /**
+     * 生成菜单id，
+     * @return
+     */
+    T generateId();
 
 }
