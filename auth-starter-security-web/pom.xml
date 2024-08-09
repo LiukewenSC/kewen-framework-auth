@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.kewen.framework.auth</groupId>
-            <artifactId>auth-core</artifactId>
+            <artifactId>auth-starter-core</artifactId>
         </dependency>
 
         <dependency>

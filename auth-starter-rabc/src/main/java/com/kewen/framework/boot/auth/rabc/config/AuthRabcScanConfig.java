@@ -1,10 +1,7 @@
-package com.kewen.framework.boot.auth.config;
+package com.kewen.framework.boot.auth.rabc.config;
 
-import com.kewen.framework.auth.rabc.RabcAnnotationAuthHandler;
-import com.kewen.framework.boot.auth.properties.DataRangeDatabaseFieldProperties;
+import com.kewen.framework.boot.auth.core.properties.AuthDataTableDefinition;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
         "com.kewen.framework.auth.rabc.composite",
         "com.kewen.framework.auth.rabc.controller"
 })
-@EnableConfigurationProperties(DataRangeDatabaseFieldProperties.class)
+@EnableConfigurationProperties(AuthDataTableDefinition.class)
 public class AuthRabcScanConfig {
 
 }

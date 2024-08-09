@@ -24,18 +24,6 @@ public interface AnnotationAuthHandler<ID> {
      */
     boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String path) ;
 
-
-
-
-
-    /**
-     * 数据权限的数据库、表字段
-     *  对应范围查询 @AuthDataRange
-     * @return
-     */
-    AuthDataTable getAuthDataTable();
-
-
     /**
      * 是否有某条数据的操作权限
      *  对应操作范围权限 @AuthCheckDataOperation

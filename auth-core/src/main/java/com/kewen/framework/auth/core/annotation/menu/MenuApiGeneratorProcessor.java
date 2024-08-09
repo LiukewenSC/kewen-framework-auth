@@ -1,17 +1,11 @@
-package com.kewen.framework.boot.auth.init;
+package com.kewen.framework.auth.core.annotation.menu;
 
 import cn.hutool.core.util.IdUtil;
-import com.kewen.framework.auth.core.annotation.menu.AuthMenu;
-import com.kewen.framework.auth.rabc.model.MenuTypeConstant;
-import com.kewen.framework.auth.rabc.mp.entity.SysMenuApi;
-import com.kewen.framework.auth.rabc.mp.service.SysMenuApiMpService;
-import lombok.Data;
-import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
@@ -21,79 +15,79 @@ import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class InitMenuAuthCommandLineRunner implements CommandLineRunner, ApplicationContextAware {
+/**
+ * API菜单生成处理器
+ *  有MenuApiStore才执行
+ * @author kewen
+ * @since 2024-08-09
+ */
+public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger(InitMenuAuthCommandLineRunner.class);
-    private SysMenuApiMpService sysMenuPathMpService;
+    private static final Logger log = LoggerFactory.getLogger(MenuApiGeneratorProcessor.class);
+    private MenuApiStore menuApiStore = new NoneMenuApiStore();
     private Map<RequestMappingInfo, HandlerMethod> handlerMethods;
 
-    private final Map<String, ApiEntity> menuApiMap = new ConcurrentHashMap<>();
+    private final Map<String, MenuApiEntity> menuApiMap = new ConcurrentHashMap<>();
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.sysMenuPathMpService = applicationContext.getBean(SysMenuApiMpService.class);
         RequestMappingHandlerMapping handlerMapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
         this.handlerMethods = handlerMapping.getHandlerMethods();
+        MenuApiStore menuApiStore = applicationContext.getBeanProvider(MenuApiStore.class).getIfAvailable();
+        if (menuApiStore != null){
+            this.menuApiStore = menuApiStore;
+        }
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        Thread thread = new Thread(() -> {
+    public void run() {
+        //处理对应关系，找到路径信息，在此处处理不会引发系统启动的问题
+        process();
 
-            //处理对应关系，找到路径信息，在此处处理不会引发系统启动的问题
-            process();
+        //获取数据库中的API
+        List<MenuApiEntity> dbs = menuApiStore.list();
+        Set<String> dbPaths = dbs.stream().map(MenuApiEntity::getPath).collect(Collectors.toSet());
 
-            List<SysMenuApi> dbs = sysMenuPathMpService.list();
-            Set<String> dbPaths = dbs.stream().map(SysMenuApi::getPath).collect(Collectors.toSet());
+        //过滤掉数据库中已经包含的API，只创建不包含的
+        List<MenuApiEntity> readySaveApis = menuApiMap.entrySet().stream()
+                .filter(entry -> !dbPaths.contains(entry.getKey()))  //在数据库中有的则不计入本次列表
+                //根据path排序
+                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .map(entry -> {
+                    //排序之后用雪花算法生成ID
+                    MenuApiEntity apiEntity = entry.getValue();
+                    apiEntity.setId(IdUtil.getSnowflakeNextId());
+                    return apiEntity;
+                }).collect(Collectors.toList());
 
-            List<ApiEntity> apiEntities = menuApiMap.entrySet().stream()
-                    .filter(entry -> !dbPaths.contains(entry.getKey()))  //在数据库中有的则不计入本次列表
-                    .sorted(Comparator.comparing(Map.Entry::getKey))
-                    .map(entry -> {
-                        ApiEntity apiEntity = entry.getValue();
-                        apiEntity.setId(IdUtil.getSnowflakeNextId());
-                        return apiEntity;
-                    }).collect(Collectors.toList());
+        //把数据库的还要加到map中去，后续要使用父path找parentId，而且这里应该允许父级覆盖当前
+        for (MenuApiEntity db : dbs) {
+            menuApiMap.put(db.getPath(), db);
+        }
 
-            //把数据库的还要加到map中去，后续要使用父path找parentId，而且这里应该允许父级覆盖当前
-            for (SysMenuApi db : dbs) {
-                menuApiMap.put(
-                        db.getPath(),
-                        new ApiEntity().setId(db.getId()).setName(db.getName()).setPath(db.getPath()).setParentId(db.getParentId())
-                );
-            }
-
-            //组装上级ID并转换
-            List<SysMenuApi> requestList = apiEntities.stream()
-                    .peek(apiEntity -> {
-                        //如果父path和自己是相同的，则把自己设置为根
-                        if (apiEntity.getPath().equals(apiEntity.getParentPath()) || apiEntity.getParentPath() == null) {
-                            apiEntity.setParentId(0L);
-                        } else {
-                            //根据parentPath设置parentId
-                            apiEntity.setParentId(menuApiMap.get(apiEntity.getParentPath()).getId());
-                        }
-                    }).map(apiEntity -> new SysMenuApi()
-                            .setId(apiEntity.getId())
-                            .setName(apiEntity.getName())
-                            .setPath(apiEntity.getPath())
-                            .setParentId(apiEntity.getParentId())
-                            .setAuthType(apiEntity.getParentId() == 0L ? MenuTypeConstant.AUTH_TYPE.OWNER : MenuTypeConstant.AUTH_TYPE.PARENT)
-                    ).collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(requestList)) {
-                sysMenuPathMpService.saveBatch(requestList);
-                log.info("添加的接口有: {}",requestList.stream().map(SysMenuApi::getPath).collect(Collectors.joining(";")));
-            } else {
-                log.info("没有生成新的API接口");
-            }
-        });
-        thread.setName("init menu auth");
-        thread.setUncaughtExceptionHandler((t, e) -> log.error("初始化菜单权限脚本异常： {}", e.getMessage(), e));
-        thread.start();
+        //组装上级ID
+        List<MenuApiEntity> apiSaves = readySaveApis.stream()
+                .peek(apiEntity -> {
+                    //如果父path和自己是相同的，则把自己设置为根
+                    if (apiEntity.getPath().equals(apiEntity.getParentPath()) || apiEntity.getParentPath() == null) {
+                        apiEntity.setParentId(menuApiStore.getRootParentId());
+                    } else {
+                        //根据parentPath设置parentId
+                        apiEntity.setParentId(menuApiMap.get(apiEntity.getParentPath()).getId());
+                    }
+                }).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(apiSaves)) {
+            menuApiStore.saveBatch(apiSaves);
+            log.info("添加的接口有: {}",apiSaves.stream().map(MenuApiEntity::getPath).collect(Collectors.joining(";")));
+        } else {
+            log.info("没有生成新的API接口");
+        }
     }
 
     /**
@@ -156,7 +150,7 @@ public class InitMenuAuthCommandLineRunner implements CommandLineRunner, Applica
             if (hasAuthMenu) {
                 //有权限注解，而且需要添加controller虚拟路径才添加
                 if (hasAddClassVirtualPath){
-                    menuApiMap.putIfAbsent(controllerPath, ApiEntity.of(controllerPath, controllerName));
+                    menuApiMap.putIfAbsent(controllerPath, MenuApiEntity.of(controllerPath, controllerName));
                 }
                 putMenuAuth(mappingInfo, methodName, controllerPath);
             }
@@ -172,42 +166,25 @@ public class InitMenuAuthCommandLineRunner implements CommandLineRunner, Applica
         PatternsRequestCondition patternsCondition = mappingInfo.getPatternsCondition();
         Set<String> patterns = patternsCondition.getPatterns();
         for (String pattern : patterns) {
-            menuApiMap.putIfAbsent(pattern.trim(), ApiEntity.of(pattern, methodName, controllerPath));
+            menuApiMap.putIfAbsent(pattern.trim(), MenuApiEntity.of(pattern, methodName, controllerPath));
         }
     }
 
-    @Data
-    @Accessors(chain = true)
-    public static class ApiEntity {
-        Long id;
-        String path;
-        String name;
-        Long parentId;
-        String parentPath;
+    static class NoneMenuApiStore implements MenuApiStore {
 
-        public static ApiEntity of(String path, String name) {
-            return of(path, name, null);
-        }
-
-        public static ApiEntity of(String path, String name, String parentPath) {
-            ApiEntity apiEntity = new ApiEntity();
-            apiEntity.setPath(path);
-            apiEntity.setName(name);
-            apiEntity.setParentPath(parentPath);
-            return apiEntity;
+        @Override
+        public List<MenuApiEntity> list() {
+            return Collections.emptyList();
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ApiEntity apiEntity = (ApiEntity) o;
-            return Objects.equals(path, apiEntity.path);
+        public Object getRootParentId() {
+            return null;
         }
 
         @Override
-        public int hashCode() {
-            return Objects.hashCode(path);
+        public void saveBatch(List list) {
+            log.info("没有存储");
         }
     }
 }

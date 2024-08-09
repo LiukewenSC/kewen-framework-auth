@@ -11,6 +11,7 @@
     <modules>
         <module>auth-core</module>
         <module>auth-rabc</module>
+        <module>auth-starter-core</module>
         <module>auth-starter-rabc</module>
         <module>auth-starter-security-web</module>
     </modules>
@@ -21,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <framework-version>1.0-SNAPSHOT</framework-version>
-        <mybaits-plus-version>3.5.2</mybaits-plus-version>
+        <mybaits-plus-version>3.5.7</mybaits-plus-version>
     </properties>
 
 
@@ -31,6 +32,11 @@
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
                 <artifactId>auth-core</artifactId>
+                <version>${framework-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kewen.framework.auth</groupId>
+                <artifactId>auth-starter-core</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
@@ -46,11 +52,6 @@
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
                 <artifactId>auth-starter-security-web</artifactId>
-                <version>${framework-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>auth-starter-web</artifactId>
                 <version>${framework-version}</version>
             </dependency>
 
@@ -111,11 +112,6 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus</artifactId>
-                <version>${mybaits-plus-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-generator</artifactId>
                 <version>${mybaits-plus-version}</version>
             </dependency>
         </dependencies>

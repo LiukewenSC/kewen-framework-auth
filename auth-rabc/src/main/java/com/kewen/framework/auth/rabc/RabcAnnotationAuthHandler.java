@@ -21,21 +21,11 @@ public class RabcAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
 
     SysAuthDataComposite sysAuthDataComposite;
 
-    AuthDataTable authDataTable;
-
 
 
     @Override
     public boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String path) {
         return sysAuthMenuComposite.hasMenuAuth(auths, path);
-    }
-
-
-
-
-    @Override
-    public AuthDataTable getAuthDataTable() {
-        return authDataTable;
     }
 
     @Override
@@ -59,9 +49,5 @@ public class RabcAnnotationAuthHandler implements AnnotationAuthHandler<Long> {
 
     public void setSysAuthDataComposite(SysAuthDataComposite sysAuthDataComposite) {
         this.sysAuthDataComposite = sysAuthDataComposite;
-    }
-
-    public void setAuthDataTable(AuthDataTable authDataTable) {
-        this.authDataTable = authDataTable;
     }
 }

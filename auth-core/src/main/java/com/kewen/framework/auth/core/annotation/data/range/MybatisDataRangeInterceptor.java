@@ -3,20 +3,7 @@ package com.kewen.framework.auth.core.annotation.data.range;
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
-import com.kewen.framework.auth.core.model.BaseAuth;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.StringValue;
-import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
-import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
-import net.sf.jsqlparser.expression.operators.relational.InExpression;
-import net.sf.jsqlparser.expression.operators.relational.ParenthesedExpressionList;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.plugin.Interceptor;
@@ -33,7 +20,6 @@ import org.springframework.context.annotation.Lazy;
 
 import java.sql.Connection;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * MyBatis 允许你在映射语句执行过程中的某一点进行拦截调用。默认情况下，MyBatis 允许使用插件来拦截的方法调用包括：
@@ -54,6 +40,7 @@ public class MybatisDataRangeInterceptor implements Interceptor,ApplicationConte
     public MybatisDataRangeInterceptor() {
     }
 
+    SqlAuthInject sqlAuthInject;
     /**
      * Mybatis的插件先于spring容器的完全初始化 ,因此不能直接通过注入等方式获取到容器中的Bean，需要在第一次使用的时候才进行初始化
      * 可以先加载ApplicationContext，再使用时加载AnnotationAuthHandler，
@@ -63,19 +50,26 @@ public class MybatisDataRangeInterceptor implements Interceptor,ApplicationConte
      * private AnnotationAuthHandler annotationAuthHandler
      */
     private ApplicationContext applicationContext;
-    private AnnotationAuthHandler annotationAuthHandler;
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext=applicationContext;
     }
-    public AuthDataTable getAuthDataTable() {
-        return getAnnotationAuthHandler().getAuthDataTable();
-    }
-    private synchronized AnnotationAuthHandler getAnnotationAuthHandler(){
-        if(annotationAuthHandler==null){
-            this.annotationAuthHandler = applicationContext.getBean(AnnotationAuthHandler.class);
+
+    /**
+     * 获取SQL权限注入器
+     * 双重检测锁方式的懒加载
+     * @return
+     */
+    private SqlAuthInject getSqlAuthInject() {
+        if (sqlAuthInject ==null){
+            synchronized (this){
+                if (sqlAuthInject == null) {
+                    sqlAuthInject = applicationContext.getBean(SqlAuthInject.class);
+                }
+            }
         }
-        return annotationAuthHandler;
+
+        return sqlAuthInject;
     }
 
 
@@ -103,7 +97,7 @@ public class MybatisDataRangeInterceptor implements Interceptor,ApplicationConte
             log.debug("原始SQL为:{}", sql);
         }
         //获取新的SQL
-        String newSql = MybatisAuthSqlInject.convert2NewSql(sql, authRange);
+        String newSql = getSqlAuthInject().convert2NewSql(sql, authRange);
 
         //通过反射设置值
         MetaObject metaObject = SystemMetaObject.forObject(boundSql);
@@ -123,11 +117,6 @@ public class MybatisDataRangeInterceptor implements Interceptor,ApplicationConte
 
     @Override
     public void setProperties(Properties properties) {
-    }
-
-    @Lazy
-    public void setAnnotationAuthHandler(AnnotationAuthHandler annotationAuthHandler) {
-        this.annotationAuthHandler = annotationAuthHandler;
     }
 
 }

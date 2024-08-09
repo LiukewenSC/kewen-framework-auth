@@ -28,6 +28,10 @@ class AuthRange {
      */
     private String table;
     /**
+     * 表别名
+     */
+    private String tableAlias;
+    /**
      * 业务主键名 一般为 id
      */
     private String dataColumn;

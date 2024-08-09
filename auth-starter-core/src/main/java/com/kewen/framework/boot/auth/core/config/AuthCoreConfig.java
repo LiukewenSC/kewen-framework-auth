@@ -1,12 +1,16 @@
-package com.kewen.framework.auth.security.config;
+package com.kewen.framework.boot.auth.core.config;
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.data.authedit.AuthDataEditAspect;
 import com.kewen.framework.auth.core.annotation.data.edit.DataCheckAspect;
+import com.kewen.framework.auth.core.annotation.data.range.AuthDataTable;
 import com.kewen.framework.auth.core.annotation.data.range.DataRangeAspect;
 import com.kewen.framework.auth.core.annotation.data.range.MybatisDataRangeInterceptor;
+import com.kewen.framework.auth.core.annotation.data.range.SqlAuthInject;
 import com.kewen.framework.auth.core.annotation.menu.MenuAccessInterceptor;
-import com.kewen.framework.auth.core.context.AuthUserContext;
+import com.kewen.framework.auth.core.annotation.menu.MenuApiGeneratorProcessor;
+import com.kewen.framework.boot.auth.core.init.InitMenuApiCommandLineRunner;
+import com.kewen.framework.boot.auth.core.properties.AuthDataTableDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +27,6 @@ public class AuthCoreConfig {
      */
     @Autowired
     private AnnotationAuthHandler annotationAuthHandler;
-
 
 
     /*--------------------------------------core.annotation.下配置--------------------------------------*/
@@ -59,6 +62,33 @@ public class AuthCoreConfig {
         return new DataRangeAspect();
     }
 
+    @Autowired
+    AuthDataTableDefinition authDataTableDefinition;
+    /**
+     * 数据权限数据库字段
+     * @return
+     */
+    @Bean
+    AuthDataTable authDataTable(){
+        AuthDataTable authDataTable = new AuthDataTable();
+        authDataTable.setTableName(authDataTableDefinition.getTableName());
+        authDataTable.setBusinessFunctionColumn(authDataTableDefinition.getBusinessFunctionColumn());
+        authDataTable.setDataIdColumn(authDataTableDefinition.getDataIdColumn());
+        authDataTable.setOperateColumn(authDataTableDefinition.getOperateColumn());
+        authDataTable.setAuthorityColumn(authDataTableDefinition.getAuthorityColumn());
+        authDataTable.setDescriptionColumn(authDataTableDefinition.getDescriptionColumn());
+        return authDataTable;
+    }
+
+    /**
+     * SQL处理
+     * @param authDataTable
+     * @return
+     */
+    @Bean
+    SqlAuthInject sqlAuthInject(AuthDataTable authDataTable){
+        return new SqlAuthInject(authDataTable);
+    }
     /**
      * mybatis拦截器实现
      * @return
@@ -83,6 +113,22 @@ public class AuthCoreConfig {
         return interceptor;
     }
 
-
-
+    /**
+     * 菜单API生成器
+     * @return
+     */
+    @Bean
+    MenuApiGeneratorProcessor menuApiGeneratorProcessor(){
+        return new MenuApiGeneratorProcessor();
+    }
+    /**
+     * 菜单API生成调用
+     * @return
+     */
+    @Bean
+    InitMenuApiCommandLineRunner initMenuApiCommandLineRunner(MenuApiGeneratorProcessor menuApiGeneratorProcessor){
+        InitMenuApiCommandLineRunner runner = new InitMenuApiCommandLineRunner();
+        runner.setMenuApiGeneratorProcessor(menuApiGeneratorProcessor);
+        return runner;
+    }
 }
