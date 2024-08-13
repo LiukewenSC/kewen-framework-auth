@@ -9,7 +9,7 @@ import java.util.Collection;
  * @author kewen
  * @since 2024-08-06
  */
-public class AuthDataManager<ID> {
+public class AuthDataAdaptor<ID> {
 
     private AnnotationAuthHandler<ID> annotationAuthHandler;
 

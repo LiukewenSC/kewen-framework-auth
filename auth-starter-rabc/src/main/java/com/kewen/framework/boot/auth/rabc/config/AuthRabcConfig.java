@@ -1,7 +1,7 @@
 package com.kewen.framework.boot.auth.rabc.config;
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.AuthDataManager;
+import com.kewen.framework.auth.core.annotation.AuthDataAdaptor;
 import com.kewen.framework.auth.rabc.RabcAnnotationAuthHandler;
 import com.kewen.framework.auth.rabc.composite.SysAuthDataComposite;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
@@ -48,8 +48,8 @@ public class AuthRabcConfig {
      * @return
      */
     @Bean
-    public AuthDataManager authDataManager(AnnotationAuthHandler annotationAuthHandler){
-        AuthDataManager authDataService = new AuthDataManager();
+    public AuthDataAdaptor authDateAdaptor(AnnotationAuthHandler annotationAuthHandler){
+        AuthDataAdaptor authDataService = new AuthDataAdaptor();
         authDataService.setAnnotationAuthHandler(annotationAuthHandler);
         return authDataService;
     }
