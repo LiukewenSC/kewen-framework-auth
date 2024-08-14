@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.core.annotation.data.range;
 
+import com.kewen.framework.auth.core.annotation.data.AuthDataTable;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import net.sf.jsqlparser.JSQLParserException;
 import org.junit.Assert;
@@ -18,13 +19,15 @@ public class MybatisAuthSqlInjectTest {
 
     @Before
     public void before() {
-        AuthDataTable table = new AuthDataTable();
-        table.setTableName("sys_auth_data");
-        table.setBusinessFunctionColumn("business_function");
-        table.setDataIdColumn("data_id");
-        table.setOperateColumn("operate");
-        table.setAuthorityColumn("authority");
-        table.setDescriptionColumn("description");
+        AuthDataTable table = new AuthDataTable(
+                "sys_auth_data",
+                "id",
+                "business_function",
+                "data_id",
+                "operate",
+                "authority",
+                "description"
+        );
         sqlAuthInject = new SqlAuthInject(table);
     }
 

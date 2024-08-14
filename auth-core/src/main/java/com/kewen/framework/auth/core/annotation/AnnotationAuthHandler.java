@@ -1,7 +1,6 @@
 package com.kewen.framework.auth.core.annotation;
 
 import com.kewen.framework.auth.core.model.BaseAuth;
-import com.kewen.framework.auth.core.annotation.data.range.AuthDataTable;
 
 import java.util.Collection;
 
@@ -33,7 +32,7 @@ public interface AnnotationAuthHandler<ID> {
      * @param dataId 业务id，如 1L 1011L等业务主键ID
      * @return 是否有权限
      */
-    boolean hasDataOperateAuths(Collection<BaseAuth> auths, String businessFunction, String operate, ID dataId);
+    boolean hasDataOperateAuths(Collection<BaseAuth> auths, String businessFunction, ID dataId,String operate);
 
 
     /**

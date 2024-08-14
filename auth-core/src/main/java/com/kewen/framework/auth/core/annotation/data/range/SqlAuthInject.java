@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.core.annotation.data.range;
 
+import com.kewen.framework.auth.core.annotation.data.AuthDataTable;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.*;
@@ -273,8 +274,8 @@ public class SqlAuthInject {
         //构建 select data_id from sys_auth_data
         //Select authSqlSelect = ((Select) CCJSqlParserUtil.parse("select data_id from sys_auth_data"));
         Select authSqlSelect = SelectUtils.buildSelectFromTableAndSelectItems(
-                new Table(authDataTable.getTableName()),
-                new SelectItem<>(new Column(authDataTable.getDataIdColumn()))
+                authDataTable.getTable(),
+                new SelectItem<>(authDataTable.getDataIdColumn())
         );
         PlainSelect authSqlPlainSelect = authSqlSelect.getPlainSelect();
         // 得到权限表的条件
@@ -303,13 +304,13 @@ public class SqlAuthInject {
         // 构造 select 1 from sys_auth_data
         // PlainSelect plainSelect = ((Select) CCJSqlParserUtil.parse("select 1 from sys_auth_data")).getPlainSelect();
         PlainSelect plainSelect = SelectUtils.buildSelectFromTableAndSelectItems(
-                new Table(authDataTable.getTableName()),
+                authDataTable.getTable(),
                 new SelectItem<>(new Column("1"))
         ).getPlainSelect();
         AndExpression authedWhereExpression = authTableWhereExpression(authRange);
         //Expression equalsTo = CCJSqlParserUtil.parseCondExpression("id=data_id");
         String tableName = parseAliseOrTableName(mainTable);
-        Expression equalsTo = new EqualsTo(getMainTableColumn(tableName, authRange.getDataColumn()), new Column(authDataTable.getDataIdColumn()));
+        Expression equalsTo = new EqualsTo(getMainTableColumn(tableName, authRange.getDataColumn()),authDataTable.getDataIdColumn());
         AndExpression where = new AndExpression(equalsTo, authedWhereExpression);
         plainSelect.setWhere(where);
         //需要将plainSelect包裹在括号中
@@ -342,17 +343,17 @@ public class SqlAuthInject {
                 authRange.getAuthorities().stream().map(BaseAuth::getAuth).map(StringValue::new).collect(Collectors.toList())
         );
         //2.2 构造表达式
-        InExpression authInExpression = new InExpression(new Column(authDataTable.getAuthorityColumn()), authValues);
+        InExpression authInExpression = new InExpression(authDataTable.getAuthorityColumn(), authValues);
 
         //3 构造 business_function 条件
         AndExpression inAndBusinessFunctionExpression = new AndExpression(
                 authInExpression,
-                new EqualsTo(new Column(authDataTable.getBusinessFunctionColumn()), new StringValue(authRange.getBusinessFunction()))
+                new EqualsTo(authDataTable.getBusinessFunctionColumn(), new StringValue(authRange.getBusinessFunction()))
         );
         //4 构造 operate 条件
         AndExpression inAndBusinessFunctionAndOperateExpression = new AndExpression(
                 inAndBusinessFunctionExpression,
-                new EqualsTo(new Column(authDataTable.getOperateColumn()), new StringValue(authRange.getOperate()))
+                new EqualsTo(authDataTable.getOperateColumn(), new StringValue(authRange.getOperate()))
         );
         return inAndBusinessFunctionAndOperateExpression;
     }

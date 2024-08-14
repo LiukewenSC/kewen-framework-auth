@@ -2,6 +2,7 @@ package com.kewen.framework.boot.auth.rabc.config;
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.AuthDataAdaptor;
+import com.kewen.framework.auth.core.annotation.data.JdbcAuthDataPersistent;
 import com.kewen.framework.auth.rabc.RabcAnnotationAuthHandler;
 import com.kewen.framework.auth.rabc.composite.SysAuthDataComposite;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
@@ -27,6 +28,8 @@ public class AuthRabcConfig {
     SysAuthDataComposite sysAuthDataComposite;
     @Autowired
     SysMenuApiMpService sysMenuApiMpService;
+    @Autowired
+    JdbcAuthDataPersistent jdbcAuthDataPersistent;
     /**
      * 注解权限处理器
      * 在引入了<kewen-auth-impl> 依赖的情况下配置
@@ -37,8 +40,8 @@ public class AuthRabcConfig {
     @ConditionalOnMissingBean(AnnotationAuthHandler.class)
     public AnnotationAuthHandler annotationAuthHandler(){
         RabcAnnotationAuthHandler handler = new RabcAnnotationAuthHandler();
-        handler.setSysAuthDataComposite(sysAuthDataComposite);
         handler.setSysAuthMenuComposite(sysAuthMenuComposite);
+        handler.setJdbcAuthDataPersistent(jdbcAuthDataPersistent);
         return handler;
     }
 

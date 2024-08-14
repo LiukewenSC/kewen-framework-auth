@@ -47,7 +47,7 @@ public class DataCheckAspect {
         }
         IdDataEdit business = (IdDataEdit) first.get();
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
-        boolean hasAuth = annotationAuthHandler.hasDataOperateAuths(auths, authAnn.businessFunction(), authAnn.operate(), business.getDataId());
+        boolean hasAuth = annotationAuthHandler.hasDataOperateAuths(auths, authAnn.businessFunction(), business.getDataId(),authAnn.operate());
         if (!hasAuth){
             throw new AuthorizationException("权限校验不通过");
         }
