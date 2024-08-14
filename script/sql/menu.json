@@ -1,354 +1,407 @@
 {
-  "path": "/",
-  "redirect": "/home",
-  "component": "layout/index",
-  "children": [
+  "code": 200,
+  "success": true,
+  "message": "成功",
+  "data": [
     {
+      "id": 2,
+      "name": "首页",
+      "parentId": 0,
       "path": "/home",
       "component": "home",
       "icon": "el-icon-s-home",
-      "name": "首页",
-      "meta": {
-        "parent": "/home",
-        "affix": true,
-        "hidden": false,
-        "isExternalLinks": false,
-        "externalLinkUrl": null
-      }
+      "hidden": false,
+      "type": 1,
+      "createTime": "2024-08-01 00:00:00",
+      "deleted": 0
     },
     {
+      "id": 3,
+      "name": "文档",
+      "parentId": 0,
       "path": "/docs",
       "component": "docs",
       "icon": "el-icon-s-order",
-      "name": "文档",
-      "meta": {
-        "parent": "/docs",
-        "affix": true
-      }
+      "hidden": false,
+      "type": 1,
+      "createTime": "2024-08-01 00:00:00",
+      "deleted": 0
     },
     {
-      "path": "/user",
-      "redirect": "/user/user-list",
+      "id": 4,
+      "name": "组织机构管理",
+      "parentId": 0,
+      "path": "/organization",
+      "redirect": "/organization/user",
       "component": "layout/publics",
       "icon": "el-icon-s-help",
-      "name": "用户",
-      "meta": {
-        "parent": "/user"
-      },
+      "hidden": false,
+      "type": 1,
+      "createTime": "2024-08-01 00:00:00",
+      "deleted": 0,
       "children": [
         {
-          "path": "/user/user-list",
-          "component": "user/list",
-          "parentPath": "/user",
+          "id": 5,
+          "name": "部门管理",
+          "parentId": 4,
+          "path": "/organization/dept",
+          "component": "organization/Dept",
           "icon": "el-icon-s-platform",
-          "name": "网站用户",
-          "meta": {
-            "parent": "/user"
-          }
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0
         },
         {
-          "path": "/user/user-admin",
-          "component": "user/admin",
-          "parentPath": "/user",
-          "icon": "el-icon-s-promotion",
-          "name": "后台管理员",
-          "meta": {
-            "parent": "/user"
-          }
+          "id": 6,
+          "name": "用户管理",
+          "parentId": 4,
+          "path": "/organization/user",
+          "component": "organization/User",
+          "icon": "el-icon-s-platform",
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0
         },
         {
-          "path": "/user/user-role",
-          "component": "user/role",
-          "parentPath": "/user",
+          "id": 7,
+          "name": "角色管理",
+          "parentId": 4,
+          "path": "/organization/role",
+          "component": "organization/Role",
           "icon": "el-icon-s-custom",
-          "name": "菜单管理",
-          "meta": {
-            "parent": "/user"
-          }
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0
         }
       ]
     },
     {
+      "id": 8,
+      "name": "个人中心",
+      "parentId": 0,
       "path": "/profile",
       "component": "profile",
       "icon": "el-icon-star-on",
-      "name": "个人中心",
-      "meta": {
-        "parent": "/profile",
-        "hidden": true
-      }
+      "hidden": true,
+      "type": 1,
+      "createTime": "2024-08-01 00:00:00",
+      "deleted": 0
     },
     {
-      "path": "/menu",
-      "redirect": "/menu/menu1",
+      "id": 9,
+      "name": "菜单路由",
+      "parentId": 0,
+      "path": "/route",
+      "redirect": "/menu",
       "component": "layout/publics",
       "icon": "el-icon-s-data",
-      "name": "路由嵌套",
-      "meta": {
-        "parent": "/menu"
-      },
+      "hidden": false,
+      "type": 1,
+      "createTime": "2024-08-01 00:00:00",
+      "deleted": 0,
       "children": [
         {
-          "path": "/menu/menu1",
-          "component": "layout/publics",
-          "parentPath": "/menu",
+          "id": 10,
+          "name": "菜单管理",
+          "parentId": 9,
+          "path": "/menu",
+          "component": "menu",
           "icon": "el-icon-s-operation",
-          "name": "菜单1",
-          "meta": {
-            "parent": "/menu"
-          },
-          "redirect": "/menu/menu1/menu1-1",
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "权限框架测试",
+      "parentId": 0,
+      "path": "/test",
+      "redirect": "/test/datarange",
+      "component": "layout/publics",
+      "icon": "el-icon-tickets",
+      "hidden": false,
+      "type": 1,
+      "createTime": "2024-08-01 00:00:00",
+      "deleted": 0,
+      "children": [
+        {
+          "id": 12,
+          "name": "@DataRange权限范围",
+          "parentId": 11,
+          "path": "/test/datarange",
+          "component": "test/DataRange",
+          "icon": "el-icon-tickets",
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0
+        },
+        {
+          "id": 13,
+          "name": "@AuthMenu权限列表",
+          "parentId": 11,
+          "path": "/test/authmenu",
+          "component": "test/AuthMenu",
+          "icon": "el-icon-tickets",
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0
+        },
+        {
+          "id": 14,
+          "name": "@AuthCheckDataOperation数据编辑",
+          "parentId": 11,
+          "path": "/test/authdataoperation",
+          "component": "test/AuthCheckDataOperation",
+          "icon": "el-icon-tickets",
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "name": "组件模板",
+      "parentId": 0,
+      "path": "/example",
+      "component": "example",
+      "icon": "el-icon-s-platform",
+      "hidden": false,
+      "type": 1,
+      "createTime": "2024-08-01 00:00:00",
+      "deleted": 0,
+      "children": [
+        {
+          "id": 117,
+          "name": "组件例子",
+          "parentId": 101,
+          "path": "/demo",
+          "redirect": "/demo/filtering",
+          "component": "layout/publics",
+          "icon": "el-icon-star-on",
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0,
           "children": [
             {
-              "path": "/menu/menu1/menu1-1",
-              "component": "menu/menu1/menu1-1",
-              "parentPath": "/menu/menu1",
-              "icon": "el-icon-s-operation",
-              "name": "菜单1-1",
-              "meta": {
-                "parent": "/menu"
-              }
+              "id": 118,
+              "name": "筛选组件",
+              "parentId": 117,
+              "path": "/demo/filtering",
+              "component": "demo/filtering/index",
+              "icon": "el-icon-s-marketing",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
             },
             {
-              "path": "/menu/menu1/menu1-2",
-              "component": "layout/publics",
-              "parentPath": "/menu/menu1",
-              "icon": "el-icon-s-operation",
-              "name": "菜单1-2",
-              "meta": {
-                "parent": "/menu"
-              },
-              "redirect": "/menu/menu1/menu1-2/menu1-2-1",
-              "children": [
-                {
-                  "path": "/menu/menu1/menu1-2/menu1-2-1",
-                  "component": "menu/menu1/menu1-2/menu1-2-1",
-                  "parentPath": "/menu/menu1/menu1-2",
-                  "icon": "el-icon-s-operation",
-                  "name": "菜单1-2-1",
-                  "meta": {
-                    "parent": "/menu"
-                  }
-                },
-                {
-                  "path": "/menu/menu1/menu1-2/menu1-2-2",
-                  "component": "menu/menu1/menu1-2/menu1-2-2",
-                  "parentPath": "/menu/menu1/menu1-2",
-                  "icon": "el-icon-s-operation",
-                  "name": "菜单1-2-2",
-                  "meta": {
-                    "parent": "/menu"
-                  }
-                }
-              ]
+              "id": 119,
+              "name": "筛选组件详情",
+              "parentId": 117,
+              "path": "/demo/filtering-details",
+              "component": "demo/filtering/component/details",
+              "icon": "el-icon-s-marketing",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
             },
             {
-              "path": "/menu/menu1/menu1-3",
-              "component": "menu/menu1/menu1-3",
-              "parentPath": "/menu/menu1",
-              "icon": "el-icon-s-operation",
-              "name": "菜单1-3",
-              "meta": {
-                "parent": "/menu"
-              }
+              "id": 120,
+              "name": "v-charts 图表",
+              "parentId": 117,
+              "path": "/demo/v-charts",
+              "component": "demo/vCharts/index",
+              "icon": "el-icon-data-analysis",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 121,
+              "name": "大数据可视化",
+              "parentId": 117,
+              "path": "externalLinkUrl",
+              "component": "demo/bigData",
+              "icon": "el-icon-s-data",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 122,
+              "name": "仿电视开关机",
+              "parentId": 117,
+              "path": "/demo/tVSwitch",
+              "component": "demo/tVSwitch/index",
+              "icon": "el-icon-s-platform",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 123,
+              "name": "富文本编辑器",
+              "parentId": 117,
+              "path": "/demo/mavonEditor",
+              "component": "demo/mavonEditor/index",
+              "icon": "el-icon-edit-outline",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 124,
+              "name": "瀑布屏",
+              "parentId": 117,
+              "path": "/demo/waterfall",
+              "component": "demo/waterfall/index",
+              "icon": "el-icon-reading",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 125,
+              "name": "论坛评价",
+              "parentId": 117,
+              "path": "/demo/comment",
+              "component": "demo/comment/index",
+              "icon": "el-icon-chat-line-square",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 126,
+              "name": "Tree 树形控件",
+              "parentId": 117,
+              "path": "/demo/treeControl",
+              "component": "demo/treeControl/index",
+              "icon": "el-icon-finished",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 127,
+              "name": "天地图",
+              "parentId": 117,
+              "path": "/demo/tianditu",
+              "component": "demo/tianditu/index",
+              "icon": "el-icon-location-information",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 128,
+              "name": "表格",
+              "parentId": 117,
+              "path": "/demo/table",
+              "component": "demo/table/index",
+              "icon": "el-icon-tickets",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
             }
           ]
         },
         {
-          "path": "/menu/menu2",
-          "component": "menu/menu2",
-          "parentPath": "/menu",
-          "icon": "el-icon-s-operation",
-          "name": "菜单2",
-          "meta": {
-            "parent": "/menu"
-          }
-        }
-      ]
-    },
-    {
-      "path": "/demo",
-      "redirect": "/demo/filtering",
-      "component": "layout/publics",
-      "icon": "el-icon-star-on",
-      "name": "组件例子",
-      "meta": {
-        "parent": "/demo"
-      },
-      "children": [
-        {
-          "path": "/demo/filtering",
-          "component": "demo/filtering/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-s-marketing",
-          "name": "筛选组件",
-          "meta": {
-            "parent": "/demo"
-          }
+          "id": 129,
+          "name": "表单页",
+          "parentId": 101,
+          "path": "/forms",
+          "redirect": "/forms/basic-form",
+          "component": "layout/publics",
+          "icon": "el-icon-notebook-2",
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0,
+          "children": [
+            {
+              "id": 130,
+              "name": "基础表单",
+              "parentId": 129,
+              "path": "/forms/basic-form",
+              "component": "forms/basicForm/index",
+              "icon": "el-icon-cloudy",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 131,
+              "name": "分步表单",
+              "parentId": 129,
+              "path": "/forms/step-form",
+              "component": "forms/stepForm/index",
+              "icon": "el-icon-partly-cloudy",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            },
+            {
+              "id": 132,
+              "name": "高级表单",
+              "parentId": 129,
+              "path": "/forms/advanced-form",
+              "component": "forms/advancedForm/index",
+              "icon": "el-icon-cloudy-and-sunny",
+              "hidden": false,
+              "type": 1,
+              "createTime": "2024-08-01 00:00:00",
+              "deleted": 0
+            }
+          ]
         },
         {
-          "path": "/demo/filtering-details",
-          "component": "demo/filtering/component/details",
-          "parentPath": "/demo",
-          "icon": "el-icon-s-marketing",
-          "name": "筛选组件详情",
-          "meta": {
-            "parent": "/demo",
-            "hidden": true
-          }
-        },
-        {
-          "path": "/demo/v-charts",
-          "component": "demo/vCharts/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-data-analysis",
-          "name": "v-charts 图表",
-          "meta": {
-            "parent": "/demo"
-          }
-        },
-        {
+          "id": 134,
+          "name": "外链",
+          "parentId": 101,
           "path": "externalLinkUrl",
-          "parentPath": "/demo",
-          "icon": "el-icon-s-data",
-          "name": "大数据可视化",
-          "meta": {
-            "isExternalLinks": true,
-            "externalLinkUrl": "/big-data"
-          }
-        },
-        {
-          "path": "/demo/tVSwitch",
-          "component": "demo/tVSwitch/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-s-platform",
-          "name": "仿电视开关机",
-          "meta": {
-            "parent": "/demo"
-          }
-        },
-        {
-          "path": "/demo/mavonEditor",
-          "component": "demo/mavonEditor/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-edit-outline",
-          "name": "富文本编辑器",
-          "meta": {
-            "parent": "/demo"
-          }
-        },
-        {
-          "path": "/demo/waterfall",
-          "component": "demo/waterfall/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-reading",
-          "name": "瀑布屏",
-          "meta": {
-            "parent": "/demo"
-          }
-        },
-        {
-          "path": "/demo/comment",
-          "component": "demo/comment/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-chat-line-square",
-          "name": "论坛评价",
-          "meta": {
-            "parent": "/demo"
-          }
-        },
-        {
-          "path": "/demo/treeControl",
-          "component": "demo/treeControl/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-finished",
-          "name": "Tree 树形控件",
-          "meta": {
-            "parent": "/demo"
-          }
-        },
-        {
-          "path": "/demo/tianditu",
-          "component": "demo/tianditu/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-location-information",
-          "name": "天地图",
-          "meta": {
-            "parent": "/demo"
-          }
-        },
-        {
-          "path": "/demo/table",
-          "component": "demo/table/index",
-          "parentPath": "/demo",
-          "icon": "el-icon-tickets",
-          "name": "表格",
-          "meta": {
-            "parent": "/demo"
-          }
+          "icon": "el-icon-link",
+          "hidden": false,
+          "type": 1,
+          "createTime": "2024-08-01 00:00:00",
+          "deleted": 0
         }
       ]
     },
     {
-      "path": "/forms",
-      "redirect": "/forms/basic-form",
-      "component": "layout/publics",
-      "icon": "el-icon-notebook-2",
-      "name": "表单页",
-      "meta": {
-        "parent": "/forms"
-      },
-      "children": [
-        {
-          "path": "/forms/basic-form",
-          "component": "forms/basicForm/index",
-          "parentPath": "/forms",
-          "icon": "el-icon-cloudy",
-          "name": "基础表单",
-          "meta": {
-            "parent": "/forms"
-          }
-        },
-        {
-          "path": "/forms/step-form",
-          "component": "forms/stepForm/index",
-          "parentPath": "/forms",
-          "icon": "el-icon-partly-cloudy",
-          "name": "分步表单",
-          "meta": {
-            "parent": "/forms"
-          }
-        },
-        {
-          "path": "/forms/advanced-form",
-          "component": "forms/advancedForm/index",
-          "parentPath": "/forms",
-          "icon": "el-icon-cloudy-and-sunny",
-          "name": "高级表单",
-          "meta": {
-            "parent": "/forms"
-          }
-        }
-      ]
-    },
-    {
+      "id": 133,
+      "name": "工具类集合",
+      "parentId": 0,
       "path": "/tools",
       "component": "tools",
       "icon": "el-icon-setting",
-      "name": "工具类集合",
-      "meta": {
-        "parent": "/tools"
-      }
-    },
-    {
-      "path": "externalLinkUrl",
-      "icon": "el-icon-link",
-      "name": "外链",
-      "meta": {
-        "isExternalLinks": true,
-        "externalLinkUrl": "https://www.baidu.com",
-        "externalLinkType": "open"
-      }
+      "hidden": false,
+      "type": 1,
+      "createTime": "2024-08-01 00:00:00",
+      "deleted": 0
     }
   ]
 }

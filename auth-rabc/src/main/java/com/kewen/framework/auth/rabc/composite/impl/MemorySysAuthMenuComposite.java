@@ -20,9 +20,11 @@ import com.kewen.framework.auth.rabc.mp.service.SysMenuApiMpService;
 import com.kewen.framework.auth.rabc.mp.service.SysMenuRouteMpService;
 import com.kewen.framework.auth.rabc.utils.TreeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -30,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -106,6 +109,14 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
         return trees;
     }
 
+    @Override
+    public List<MenuRouteResp> getAuthsMenuRouteTree() {
+
+        List<SysMenuRoute> menuRoutes = getMenuRoutes();
+        List<MenuRouteResp> routeResps = menuRoutes.stream().map(MenuRouteResp::from).collect(Collectors.toList());
+        return TreeUtil.transfer(routeResps, 0L);
+    }
+
     /**
      * 获取权限集对应的有权限的路由
      * @return
@@ -117,10 +128,7 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
         List<MenuApiResp> requestRespTrees = TreeUtil.convertList(trees, MenuApiResp.class);
 
         //获取路由树
-        List<SysMenuRoute> menuRoutes = getMenuRoutes();
-        List<MenuRouteResp> routeResps = menuRoutes.stream().map(MenuRouteResp::from).collect(Collectors.toList());
-        List<MenuRouteResp> routeRespTree = TreeUtil.transfer(routeResps, 0L);
-
+        List<MenuRouteResp> routeRespTree = getAuthsMenuRouteTree();
         //移除无用的节点
         //1. 判断MenuRoute对应的请求id是否在拥有的请求树中
         Set<Long> requestIds = requestRespTrees.stream()
@@ -133,29 +141,31 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     }
 
 
-
     @Override
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public void editMenuAuthorities(Long apiId, Collection<BaseAuth> baseAuths) {
+
+        List<SysAuthMenu> authMenus = menuAuthService.list(new LambdaQueryWrapper<SysAuthMenu>().eq(SysAuthMenu::getApiId, apiId));
+
+        //需要移除的
+        List<SysAuthMenu> removes = authMenus.stream().filter(
+                db -> baseAuths.stream().noneMatch(b -> b.getAuth().equals(db.getAuthority()))
+        ).collect(Collectors.toList());
+        //需要添加的
+        List<SysAuthMenu> adds = baseAuths.stream().filter(
+                b -> authMenus.stream().noneMatch(db -> db.getAuthority().equals(b.getAuth()))
+        ).map(
+                b -> new SysAuthMenu().setApiId(apiId).setAuthority(b.getAuth()).setDescription(b.getDescription())
+        ).collect(Collectors.toList());
+
         //移除原有的
-        menuAuthService.remove(
-                new LambdaQueryWrapper<SysAuthMenu>().eq(SysAuthMenu::getApiId, apiId)
-        );
+        menuAuthService.removeBatchByIds(removes);
         //批量插入新的
-        if (!CollectionUtils.isEmpty(baseAuths)){
-            menuAuthService.saveBatch(
-                    baseAuths.stream()
-                            .map(a->
-                                    new SysAuthMenu()
-                                            .setApiId(apiId)
-                                            .setAuthority(a.getAuth())
-                                            .setDescription(a.getDescription())
-                            ).collect(Collectors.toList())
-            );
-        }
+        menuAuthService.saveBatch(adds);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateMenu(MenuApiSaveReq req) {
         sysMenuPathMpService.updateById(req);
         Long apiId = req.getId();

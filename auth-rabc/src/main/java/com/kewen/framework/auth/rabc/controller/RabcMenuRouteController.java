@@ -8,6 +8,8 @@ import com.kewen.framework.auth.rabc.model.Result;
 import com.kewen.framework.auth.rabc.model.req.MenuApiSaveReq;
 import com.kewen.framework.auth.rabc.model.resp.MenuApiAndAuthResp;
 import com.kewen.framework.auth.rabc.model.resp.MenuApiResp;
+import com.kewen.framework.auth.rabc.model.resp.MenuRouteResp;
+import com.kewen.framework.auth.rabc.mp.service.SysMenuRouteMpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,26 +17,21 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
-@RequestMapping("/menu/api")
-@AuthMenu(name = "菜单路径相关接口")
-public class RabcMenuController {
+@RequestMapping("/menu/route")
+@AuthMenu(name = "菜单路由相关接口")
+public class RabcMenuRouteController {
 
     @Autowired
     SysAuthMenuComposite sysAuthMenuComposite;
 
-
+    /**
+     * 获取所有菜单路由
+     * @return
+     */
     @GetMapping("/tree")
-    public Result<List<MenuApiAndAuthResp>> menuTree(){
-        List<MenuApiAndAuthResp> menuTree = sysAuthMenuComposite.getMenuRequestAuthTree();
+    public Result<List<MenuRouteResp>> routeTrees(){
+        List<MenuRouteResp> menuTree = sysAuthMenuComposite.getAuthsMenuRouteTree();
         return Result.success(menuTree);
     }
-    @PostMapping("/update")
-    public Result<List<MenuApiResp>> updateMenu(@RequestBody MenuApiSaveReq req){
-        if (req.getAuthType()==2  && (req.getAuthObject()==null || req.getAuthObject().isEmpty())){
-            throw new RuntimeException("这样谁都没有权限查看了");
-        }
-        Collection<BaseAuth> auths = AuthUserContext.getAuths();
-        sysAuthMenuComposite.updateMenu(req);
-        return Result.success(null);
-    }
+
 }

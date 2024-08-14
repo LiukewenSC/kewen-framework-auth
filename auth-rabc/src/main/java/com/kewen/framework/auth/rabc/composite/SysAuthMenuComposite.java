@@ -38,6 +38,11 @@ public interface SysAuthMenuComposite {
     List<MenuApiAndAuthResp> getAuthsMenuRequestAuthTree(Collection<BaseAuth> authorities);
 
     /**
+     * 获取所有菜单路由树（管理使用）
+     * @return
+     */
+    List<MenuRouteResp> getAuthsMenuRouteTree();
+    /**
      * 获取权限集对应的有权限的路由
      * @param authorities
      * @return
