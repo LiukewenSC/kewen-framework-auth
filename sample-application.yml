@@ -2,6 +2,7 @@ kewen-framework:
   auth:
     auth-data-table:
       table-name: sys_auth_data
+      id-column: id
       data-id-column: data_id
       authority-column: authority
       description-column: description

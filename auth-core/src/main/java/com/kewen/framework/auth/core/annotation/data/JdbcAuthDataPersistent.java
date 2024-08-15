@@ -88,14 +88,14 @@ public class JdbcAuthDataPersistent implements InitializingBean {
                 .withWhere(new InExpression()
                         .withLeftExpression(authDataTable.getIdColumn())
                         .withRightExpression(new ParenthesedExpressionList<>(
-                                ids.stream().map(id->{
-                                    if (id instanceof Long){
+                                ids.stream().map(id -> {
+                                    if (id instanceof Long) {
                                         Long id1 = (Long) id;
                                         return new LongValue(id1);
-                                    } else if (id instanceof Integer){
+                                    } else if (id instanceof Integer) {
                                         Integer id1 = (Integer) id;
                                         return new LongValue(id1);
-                                    }else if (id instanceof StringValue){
+                                    } else if (id instanceof StringValue) {
                                         return new StringValue((String) id);
                                     } else {
                                         throw new RuntimeException("ID类型异常");
@@ -115,6 +115,7 @@ public class JdbcAuthDataPersistent implements InitializingBean {
 
     /**
      * 根据业务方法，数据ID，操作类型查询权限
+     *
      * @param businessFunction
      * @param dataId
      * @param operate
@@ -127,20 +128,20 @@ public class JdbcAuthDataPersistent implements InitializingBean {
         List<AuthDataDO<ID>> list = jdbcTemplate.query(sql, (rs, rowNum) -> {
             ID id;
             if (dataId instanceof Long) {
-                id = ((ID) Long.valueOf(rs.getLong(0)));
+                id = ((ID) Long.valueOf(rs.getLong(1)));
             } else if (dataId instanceof Integer) {
-                id = (ID) Integer.valueOf(rs.getInt(0));
+                id = (ID) Integer.valueOf(rs.getInt(1));
             } else if (dataId instanceof String) {
-                id = (ID) rs.getString(0);
+                id = (ID) rs.getString(1);
             } else {
                 log.error("ID类型不正确 {}", rs);
                 id = null;
             }
-            String authority = rs.getString(1);
-            String description = rs.getString(2);
+            String authority = rs.getString(2);
+            String description = rs.getString(3);
             return new AuthDataDO<>(id, businessFunction, dataId, operate, authority, description);
         });
-        if (list==null){
+        if (list == null) {
             return Collections.emptyList();
         }
         return list;
@@ -155,7 +156,7 @@ public class JdbcAuthDataPersistent implements InitializingBean {
                                 new EqualsTo(authDataTable.getBusinessFunctionColumn(), new StringValue(businessFunction)),
                                 new EqualsTo(authDataTable.getDataIdColumn(), new StringValue(dataId.toString()))
                         ),
-                        new EqualsTo(authDataTable.getIdColumn(), new StringValue(operate))
+                        new EqualsTo(authDataTable.getOperateColumn(), new StringValue(operate))
                 )
         ).withSelectItems(Arrays.asList(
                 new SelectItem<>(authDataTable.getIdColumn()),
