@@ -1,11 +1,9 @@
 package com.kewen.framework.auth.core.annotation.menu;
 
-import cn.hutool.core.util.IdUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
@@ -15,7 +13,6 @@ import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +27,7 @@ import java.util.stream.Collectors;
 public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(MenuApiGeneratorProcessor.class);
-    private MenuApiStore menuApiStore;
+    private MenuApiServcie menuApiServcie;
     private Map<RequestMappingInfo, HandlerMethod> handlerMethods;
 
     private final Map<String, MenuApiEntity> menuApiMap = new ConcurrentHashMap<>();
@@ -39,23 +36,23 @@ public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnab
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         RequestMappingHandlerMapping handlerMapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
         this.handlerMethods = handlerMapping.getHandlerMethods();
-        MenuApiStore menuApiStore = applicationContext.getBeanProvider(MenuApiStore.class).getIfAvailable();
-        if (menuApiStore != null){
-            this.menuApiStore = menuApiStore;
+        MenuApiServcie menuApiServcie = applicationContext.getBeanProvider(MenuApiServcie.class).getIfAvailable();
+        if (menuApiServcie != null){
+            this.menuApiServcie = menuApiServcie;
         }
     }
 
     @Override
     public void run() {
         //处理对应关系，找到路径信息，在此处处理不会引发系统启动的问题
-        if (menuApiStore==null){
+        if (menuApiServcie ==null){
             log.warn("menuApiStore is null");
             return;
         }
         process();
 
         //获取数据库中的API
-        List<MenuApiEntity> dbs = menuApiStore.list();
+        List<MenuApiEntity> dbs = menuApiServcie.list();
         Set<String> dbPaths = dbs.stream().map(MenuApiEntity::getPath).collect(Collectors.toSet());
 
         //过滤掉数据库中已经包含的API，只创建不包含的
@@ -66,7 +63,7 @@ public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnab
                 .map(entry -> {
                     //排序之后用雪花算法生成ID
                     MenuApiEntity apiEntity = entry.getValue();
-                    apiEntity.setId(menuApiStore.generateId());
+                    apiEntity.setId(menuApiServcie.generateId());
                     return apiEntity;
                 }).collect(Collectors.toList());
 
@@ -80,14 +77,14 @@ public class MenuApiGeneratorProcessor implements ApplicationContextAware,Runnab
                 .peek(apiEntity -> {
                     //如果父path和自己是相同的，则把自己设置为根
                     if (apiEntity.getPath().equals(apiEntity.getParentPath()) || apiEntity.getParentPath() == null) {
-                        apiEntity.setParentId(menuApiStore.getRootParentId());
+                        apiEntity.setParentId(menuApiServcie.getRootParentId());
                     } else {
                         //根据parentPath设置parentId
                         apiEntity.setParentId(menuApiMap.get(apiEntity.getParentPath()).getId());
                     }
                 }).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(apiSaves)) {
-            menuApiStore.saveBatch(apiSaves);
+            menuApiServcie.saveBatch(apiSaves);
             log.info("添加的接口有: {}",apiSaves.stream().map(MenuApiEntity::getPath).collect(Collectors.joining(";")));
         } else {
             log.info("没有生成新的API接口");

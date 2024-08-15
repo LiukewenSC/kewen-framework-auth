@@ -1,4 +1,6 @@
 kewen-framework:
+  environment:
+    prod: false
   auth:
     auth-data-table:
       table-name: sys_auth_data

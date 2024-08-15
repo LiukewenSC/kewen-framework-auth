@@ -8,7 +8,7 @@ import java.util.List;
  * @author kewen
  * @since 2024-08-09
  */
-public interface MenuApiStore<T> {
+public interface MenuApiServcie<T> {
 
     /**
      * 获取所有的API菜单列表

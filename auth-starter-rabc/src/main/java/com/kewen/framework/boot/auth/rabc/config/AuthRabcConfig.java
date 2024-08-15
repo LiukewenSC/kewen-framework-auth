@@ -4,10 +4,11 @@ import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.AuthDataAdaptor;
 import com.kewen.framework.auth.core.annotation.data.JdbcAuthDataPersistent;
 import com.kewen.framework.auth.rabc.RabcAnnotationAuthHandler;
-import com.kewen.framework.auth.rabc.composite.SysAuthDataComposite;
+import com.kewen.framework.auth.rabc.composite.AuthMenuStore;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
+import com.kewen.framework.auth.rabc.composite.impl.MemoryExpiredAuthMenuStore;
+import com.kewen.framework.auth.rabc.extension.RabcMenuApiServcie;
 import com.kewen.framework.auth.rabc.mp.service.SysMenuApiMpService;
-import com.kewen.framework.auth.rabc.extension.RabcMenuApiStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -24,8 +25,6 @@ public class AuthRabcConfig {
 
     @Autowired
     SysAuthMenuComposite sysAuthMenuComposite;
-    @Autowired
-    SysAuthDataComposite sysAuthDataComposite;
     @Autowired
     SysMenuApiMpService sysMenuApiMpService;
     @Autowired
@@ -57,11 +56,25 @@ public class AuthRabcConfig {
         return authDataService;
     }
 
+    /**
+     * 菜单API服务
+     * @return
+     */
     @Bean
-    RabcMenuApiStore rabcMenuApiStore(){
-        RabcMenuApiStore store = new RabcMenuApiStore();
+    RabcMenuApiServcie rabcMenuApiStore(){
+        RabcMenuApiServcie store = new RabcMenuApiServcie();
         store.setSysMenuApiMpService(sysMenuApiMpService);
         return store;
+    }
+
+    /**
+     * 菜单存储，可以基于内存或redis实现
+     * @return
+     */
+    @Bean
+    @ConditionalOnMissingBean(AuthMenuStore.class)
+    AuthMenuStore authMenuStore(){
+        return new MemoryExpiredAuthMenuStore();
     }
 
 }

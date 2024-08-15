@@ -2,11 +2,10 @@ package com.kewen.framework.auth.rabc.composite.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.kewen.framework.auth.core.model.BaseAuth;
-import com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject;
+import com.kewen.framework.auth.rabc.composite.AuthMenuStore;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
+import com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject;
 import com.kewen.framework.auth.rabc.model.MenuTypeConstant;
 import com.kewen.framework.auth.rabc.model.req.MenuApiSaveReq;
 import com.kewen.framework.auth.rabc.model.resp.MenuApiAndAuthResp;
@@ -20,29 +19,23 @@ import com.kewen.framework.auth.rabc.mp.service.SysMenuApiMpService;
 import com.kewen.framework.auth.rabc.mp.service.SysMenuRouteMpService;
 import com.kewen.framework.auth.rabc.utils.TreeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * @descrpition 基于菜单存于内存的实现
+ * @descrpition 菜单实现
  * @author kewen
  * @since 2022-12-01 10:21
  */
 @Service
 @Slf4j
-public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
+public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
     @Autowired
     private SysMenuApiMpService sysMenuPathMpService;
     @Autowired
@@ -53,17 +46,11 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
     @Value("${kewen-framework.environment.prod:false}")
     private boolean isCache = false;
 
-    /**
-     * 菜单、权限的缓存
-     */
-    Cache<Object, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
-
-
-
+    @Autowired
+    private AuthMenuStore authMenuStore;
 
     @Override
     public boolean hasMenuAuth(Collection<BaseAuth> authorities, String requestPath) {
-        //SysMenuRequest SysMenuRequest = menuService.getMenuByUrl(url);
         Optional<SysMenuApi> sysMenuOptional = getMenuRequests().stream().filter(m -> Objects.equals(m.getPath(), requestPath)).findFirst();
         if (!sysMenuOptional.isPresent()){
             return false;
@@ -209,16 +196,7 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
         if (!isCache){
             return sysMenuRouteMpService.list();
         }
-        try {
-            return (List<SysMenuRoute>)cache.get("menuRoutes", new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    return sysMenuRouteMpService.list();
-                }
-            });
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return authMenuStore.getMenuRoutes(() -> sysMenuRouteMpService.list());
     }
     /**
      * 获取菜单列表
@@ -228,16 +206,7 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
         if (!isCache){
             return sysMenuPathMpService.list();
         }
-        try {
-            return (List<SysMenuApi>)cache.get("menuRequests", new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    return sysMenuPathMpService.list();
-                }
-            });
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return authMenuStore.getMenuRequests(() -> sysMenuPathMpService.list());
     }
     /**
      * 获取菜单权限
@@ -247,15 +216,6 @@ public class MemorySysAuthMenuComposite implements SysAuthMenuComposite {
         if (!isCache){
             return menuAuthService.list();
         }
-        try {
-            return (List<SysAuthMenu>)cache.get("menuAuths", new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    return menuAuthService.list();
-                }
-            });
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return authMenuStore.getAuthMenus(() -> menuAuthService.list());
     }
 }
