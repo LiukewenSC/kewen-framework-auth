@@ -2,7 +2,7 @@ package com.kewen.framework.auth.core.annotation.data.edit;
 
 
 import com.kewen.framework.auth.core.model.BaseAuth;
-import com.kewen.framework.auth.core.annotation.data.AuthDataOperation;
+import com.kewen.framework.auth.core.annotation.AuthDataOperation;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.core.exception.AuthorizationException;
@@ -31,7 +31,7 @@ public class DataCheckAspect {
 
 
 
-    @Pointcut("@annotation(com.kewen.framework.auth.core.annotation.data.AuthDataOperation)")
+    @Pointcut("@annotation(com.kewen.framework.auth.core.annotation.AuthDataOperation)")
     public void pointcut(){}
 
     @Before(value = "pointcut() && @annotation(authAnn)", argNames = "joinPoint,authAnn")

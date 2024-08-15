@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.core.annotation.data;
+package com.kewen.framework.auth.core.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

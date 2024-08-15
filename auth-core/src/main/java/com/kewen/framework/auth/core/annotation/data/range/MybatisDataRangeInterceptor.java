@@ -1,8 +1,7 @@
 package com.kewen.framework.auth.core.annotation.data.range;
 
 
-import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
+import com.kewen.framework.auth.core.annotation.AuthDataRange;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -16,7 +15,6 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Lazy;
 
 import java.sql.Connection;
 import java.util.Properties;

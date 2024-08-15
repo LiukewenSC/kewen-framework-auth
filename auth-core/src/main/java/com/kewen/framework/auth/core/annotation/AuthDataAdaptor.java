@@ -5,7 +5,7 @@ import com.kewen.framework.auth.core.model.IAuthObject;
 
 import java.util.Collection;
 /**
- *  权限服务层服务，使用此服务也可以不依赖 @AuthDataAuthEdit，可以直接在Service层调用
+ *  数据权限控制器，使用此服务也可以不依赖 @AuthDataAuthEdit，可以直接在Service层调用
  * @author kewen
  * @since 2024-08-06
  */

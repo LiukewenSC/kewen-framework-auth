@@ -1,8 +1,7 @@
 package com.kewen.framework.auth.rabc.controller;
 
-import com.kewen.framework.auth.core.annotation.menu.AuthMenu;
+import com.kewen.framework.auth.core.annotation.AuthMenu;
 import com.kewen.framework.auth.core.context.AuthUserContext;
-import com.kewen.framework.auth.core.model.AuthConstant;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.rabc.model.MenuTypeConstant;

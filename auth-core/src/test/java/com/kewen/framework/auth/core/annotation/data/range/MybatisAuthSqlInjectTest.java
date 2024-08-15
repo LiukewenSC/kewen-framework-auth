@@ -54,7 +54,7 @@ public class MybatisAuthSqlInjectTest {
         AuthRange authRange = new AuthRange()
                 .setBusinessFunction("meeting_room")
                 .setOperate("edit")
-                .setDataColumn("id")
+                .setDataIdColumn("id")
                 .setMatchMethod(MatchMethod.IN)
                 .setAuthorities(Arrays.asList(
                         new BaseAuth("ROLE_1", "ROLE_admin"),

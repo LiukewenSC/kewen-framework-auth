@@ -28,6 +28,11 @@
 `@AuthDataOperation`：数据操作注解，加上此注解会在请求时校验是否对单条数据有操作权限，避免通过接口进行越权攻击，一般业务配合`@AuthDataRange`使用。
 `@AuthDataAuthEdit`： 数据编辑注解，加上此注解会直接把请求中的权限编辑到权限表中，此注解依赖菜单的权限校验。
 
+## 2.3. 核心调用类
+
+`AnnotationAuthHandler<ID>` 注解核心控制器，注解对应的所有实现由此Handler完成。其中，泛型ID是指业务权限中的data_id类型`String Integer Long`中的一种
+`AuthDataAdaptor<ID>` 业务调用适配器，可以不使用注解`@AuthDataAuthEdit`来编辑权限了，更灵活。其中，泛型ID是指业务权限中的data_id类型`String Integer Long`中的一种
+
 # 3. 快速开始
 
 框架通过maven引入，加载到自己的工程中即可。同时，框架也提供了一个示例工程`kewen-framework-auth-sample`可以直接启动。启动完成后台工程就创建好了。
@@ -43,16 +48,17 @@
 - 启动
 
 **1.初始化数据库**：框架默认给了MySQL的初始化脚本，并且添加了默认的一些数据供使用，方便一键启动项目并查看。
-脚本的路径在框架目录下的`./script/sql/auth.sql`下
+全量脚本的路径在框架目录下的`./script/sql/auth_full.sql`下，
+增量脚本在同级目录，带日期后缀，如 `auth_20240801.sql`
 
 **2.配置**：配置需要自行配置基本的数据库配置
 
    ```properties
    server.port=8081
-   spring.datasource.url=jdbc:mysql://liukewensc.mysql.rds.aliyuncs.com:3306/kewen_framework_auth_template
-   spring.datasource.username=open_framework
-   spring.datasource.password=framework123456_
-   spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://liukewensc.mysql.rds.aliyuncs.com:3306/kewen_framework_auth_template
+spring.datasource.username=open_framework
+spring.datasource.password=framework123456_
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
    ```
 
 配置完成直接启动`AuthWebSample`类即可。
@@ -131,7 +137,7 @@ kewen-framework-auth
 │    │    ├─menu                    菜单相关包
 │    │    │    └─@AuthMenu          菜单校验注解
 │    │    ├─AnnotationAuthHandler   权限相关主要抽象接口，需要子类实现
-│    │    └─AuthDataService         权限服务层服务，可以直接在Service层调用处理权限
+│    │    └─AuthDataAdapter         数据权限适配器，可以直接在Service层调用处理权限，相较于注解使用起来更灵活
 │    ├─model                        权限模型包
 │    │    ├─BaseAuth                基础权限，数据库对应的模型结构
 │    │    ├─IAuthEntity             权限实体接口，与应用层面相关的抽象
@@ -149,12 +155,15 @@ kewen-framework-auth
 │    ├─composite                    拆分服务，根据数据、菜单、登录人维度各自完成对应的服务
 │    └─controller                   RABC用户、部门、角色相关的业务逻辑，方便维护
 |
+├─auth-starter-core   
+│    ├─config                       核心注解相关的启动类，主要是注解及其依赖相关的配置
+│    ├─init                         初始化菜单API并入库
+│    └─properties                   表结构相关的参数定义
+|
 ├─auth-starter-rabc                 RABC快速配置模块，以SpringBoot方式配置
-│    ├─config                       配置
-│    │    ├─AuthRabcConfig          默认的对象配置，配置auth-rabc模块的相关的Bean
-│    │    └─AuthRabcScanConfig      RABC配置扫描，配置相关Bean
-│    └─init
-│         └─InitMenuAuthCommandLineRunner 菜单初始化配置，启动时默认将@AuthMenu对应的api接口保存至数据库，后续可以直接配置权限
+│    └─config                       配置
+│         ├─AuthRabcConfig          默认的对象配置，配置auth-rabc模块的相关的Bean
+│         └─AuthRabcScanConfig      RABC配置扫描，配置相关Bean
 |
 ├─auth-starter-security-web         框架安全相关的配置，同时包括登录
 │    ├─annotation
@@ -271,31 +280,47 @@ public @interface AuthMenu {
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface AuthDataRange {
+
     /**
      * 业务功能
      * @return
      */
     String businessFunction() ;
+
     /**
-     * 表别名，多表联查时用于拼接权限 如： t.id
+     * 表名多表联查时用于指定是和哪一张表关联
+     * 当为空时默认指定以主表（from后的表）为准
+     * @return
+     */
+    String table() default "";
+
+    /**
+     * 表别名
+     * 当在多表联查，又有相同的表时指定表别名，在匹配了表之后匹配表别名，
+     * 只有在有表的情况下才使用表别名
      */
     String tableAlias() default "";
+
     /**
-     * 业务主键column名 用于拼接 t.id
+     * 业务主键column名 用于拼接 table.id
+     * @return
      */
     String dataIdColumn() default "id";
+
     /**
      * 默认统一的
      * @return 返回操作类型
      */
     String operate() default "unified";
+
     /**
      * 条件匹配方式 in/exists
      * 关联原则 小表驱动大表
      * 默认通过in的方式，当权限表中数据大时应该采用exists方式
-     * //todo 暂未实现
+     * @return
      */
     MatchMethod matchMethod() default MatchMethod.IN;
+
 }
 ```
 
@@ -305,7 +330,7 @@ public @interface AuthDataRange {
 - tableAlias()： 可选，表别名，用于多表联查时的别名，
 - dataIdColumn()： 主表的ID字段名，默认id
 - operate()：操作，对同一业务功能的细化操作，如 会议室编辑、预约
-- matchMethod()： 暂未实现
+- matchMethod()： 用In或exists匹配
 
 基于当前权限范围查询注解，在查询数据的时候关联数据的权限表以及用户权限体系，检查用户是否拥有数据配置的权限
 在mapper拦截 ，用于数据权限列表查询
@@ -319,9 +344,8 @@ where ${business_table}.{business_id} in
     )
 ```
 
-拼接 where后面部分，where前半部分为业务定义的sql，本增强只是在后加上 and 的权限查询语句，避免业务中都需要主动关联权限表匹配，
-实现逻辑解耦
-where后有条件也不用担心，会自动加上and
+已经实现了在where、in子查询、join子查询、withas子查询的匹配。
+基本包含了常见的语句的权限匹配
 
 **使用方法**：
 
@@ -345,6 +369,59 @@ public class TestAuthAnnotationController {
         return list;
     }
 }
+```
+
+**支持类型示例**：
+
+**in** 子查询in
+
+```sql
+SELECT * FROM meeting_room t1
+LEFT JOIN sys_dept t2 ON t1.id = t2.id 
+RIGHT JOIN sys_role t3 ON t2.id = t3.id AND t1.id = t3.id 
+WHERE t3.id IN (SELECT data_id FROM sys_auth_data 
+      WHERE authority IN ('ROLE_1', 'USER_kewen') 
+      AND business_function = 'meeting_room' AND operate = 'edit'
+)
+```
+
+**exists** exists
+
+```sql
+SELECT * FROM meeting_room t1 
+LEFT JOIN sys_dept t2 ON t1.id = t2.id 
+RIGHT JOIN sys_role t3 ON t2.id = t3.id AND t1.id = t3.id 
+WHERE EXISTS (
+         SELECT 1 FROM sys_auth_data WHERE t3.id = data_id 
+         AND authority IN ('ROLE_1', 'USER_kewen')
+         AND business_function = 'meeting_room' AND operate = 'edit'
+```
+
+**in和exists都实现了**，后面只提in相关的
+
+**with as** with as
+
+```sql
+WITH t_a AS (
+SELECT * FROM sys_user WHERE EXISTS 
+   SELECT 1 FROM sys_auth_data 
+      WHERE sys_user.id = data_id 
+      AND authority IN ('ROLE_1', 'USER_kewen')
+      AND business_function = 'meeting_room' 
+      AND operate = 'edit'
+)
+) SELECT * FROM t_a WHERE 1 = 1
+```
+
+**join** join查询
+
+```sql
+SELECT * FROM meeting_room t1 
+LEFT JOIN (select * from dept d  where 
+            authority IN ('ROLE_1', 'USER_kewen')
+            AND business_function = 'meeting_room' 
+            AND operate = 'edit'
+)  t2 ON t1.id = t2.id 
 ```
 
 ## 6.3. `@AuthDataOperation`
@@ -412,17 +489,22 @@ public Result testDataEdit(@RequestBody EditIdDataEdit editBusinessData) {
 ```java
 public @interface AuthDataAuthEdit {
 
-    /**
-     * 模块ID
-     * @return 模块ID
-     */
-    String businessFunction() ;
+   /**
+    * 模块ID
+    * @return 模块ID
+    */
+   String businessFunction() ;
 
-    /**
-     * 操作
-     * @return 返回操作类型
-     */
-    String operate() default "unified";
+   /**
+    * 操作
+    * @return 返回操作类型
+    */
+   String operate() default "unified";
+   /**
+    * 在主要方法之前执行，即先执行数据写入，再执行后续业务逻辑
+    * @return
+    */
+   boolean before() default true;
 }
 ```
 
@@ -430,6 +512,7 @@ public @interface AuthDataAuthEdit {
 
 - businessFunction()：必填，业务功能，用于区分权限的所属，唯一标识一套数据属于哪一个功能
 - operate()：操作，对同一业务功能的细化操作，如 会议室编辑、预约
+- before()：在具体业务前执行还是之后执行
 
 执行修改业务权限逻辑，记得在这之前要先执行url权限验证,自行控制权限，这里只是封装编辑逻辑
 加上注解直接就开始修改业务的权限了，用了这个注解就不用再写权限逻辑，只需要完成写权限的后续逻辑即可
@@ -448,6 +531,36 @@ public Result<EditIdDataAuthEdit> testDataAuthEdit(@RequestBody EditIdDataAuthEd
    System.out.println("successdataAuthEdit");
 
    return Result.success(applicationBusiness);
+}
+```
+
+也可以用`AuthDataAdaptor#editDataAuths()`来代替
+
+## 6.5. `AuthDataAdaptor` 数据权限适配器
+
+使用此可以不使用注解`@AuthDataAuthEdit`
+
+```java
+public class AuthDataAdaptor<ID> {
+   private AnnotationAuthHandler<ID> annotationAuthHandler;
+   /**
+    * 编辑某条 数据权限
+    */
+   public void editDataAuths(String businessFunction, ID dataId, String operate, IAuthObject authObject){
+      annotationAuthHandler.editDataAuths(businessFunction, dataId, operate, authObject.listBaseAuth());
+   }
+
+   /**
+    * 填充数据，用于查询某条数据对应的权限集合
+    */
+   public IAuthObject fillDataAuths(String businessFunction,ID dataId,  String operate, IAuthObject authObject){
+      Collection<BaseAuth> dataAuths = annotationAuthHandler.getDataAuths(businessFunction, dataId, operate);
+      authObject.setProperties(dataAuths);
+      return authObject;
+   }
+   public void setAnnotationAuthHandler(AnnotationAuthHandler<ID> annotationAuthHandler) {
+      this.annotationAuthHandler = annotationAuthHandler;
+   }
 }
 ```
 
@@ -471,15 +584,15 @@ public Result<EditIdDataAuthEdit> testDataAuthEdit(@RequestBody EditIdDataAuthEd
 
 ```yml
 kewen-framework:
-  security:
-    login:
-      login-url: /login                 #登录地址
-      current-user-url: /currentUser    #当前用户接口地址
-      maximum-sessions: 1               #最大session数量
-      max-sessions-prevents-login: true # 是否不允许挤下线
-      username-parameter: username      # username参数
-      password-parameter: password      # password参数
-      token-parameter: Authorization    # token请求头参数
+   security:
+      login:
+         login-url: /login                 #登录地址
+         current-user-url: /currentUser    #当前用户接口地址
+         maximum-sessions: 1               #最大session数量
+         max-sessions-prevents-login: true # 是否不允许挤下线
+         username-parameter: username      # username参数
+         password-parameter: password      # password参数
+         token-parameter: Authorization    # token请求头参数
 ```
 
 以上是基于yml配置的默认的值，不修改默认为以上的地址。
@@ -584,60 +697,64 @@ public class ExceptionAdviceHandler {
  */
 public interface AnnotationAuthHandler<ID> {
 
-    /**
-     * 是否有菜单访问权限
-     *  对应菜单 范围权限 @AuthCheckMenuAccess
-     * @param auths
-     * @param path
-     * @return
-     */
-    boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String path) ;
+   /**
+    * 是否有菜单访问权限
+    *  对应菜单 范围权限 @AuthCheckMenuAccess
+    * @param auths
+    * @param path
+    * @return
+    */
+   boolean hasMenuAccessAuth(Collection<BaseAuth> auths, String path) ;
 
-    /**
-     * 数据权限的数据库、表字段
-     *  对应范围查询 @AuthDataRange
-     * @return
-     */
-    AuthDataTable getAuthDataTable();
+   /**
+    * 数据权限的数据库、表字段
+    *  对应范围查询 @AuthDataRange
+    * @return
+    */
+   AuthDataTable getAuthDataTable();
 
-    /**
-     * 是否有某条数据的操作权限
-     *  对应操作范围权限 @AuthCheckDataOperation
-     * @param auths 用户权限
-     * @param businessFunction 模块
-     * @param operate 操作
-     * @param dataId 业务id，如 1L 1011L等业务主键ID
-     * @return 是否有权限
-     */
-    boolean hasDataOperateAuths(Collection<BaseAuth> auths, String businessFunction, String operate, ID dataId);
+   /**
+    * 是否有某条数据的操作权限
+    *  对应操作范围权限 @AuthCheckDataOperation
+    * @param auths 用户权限
+    * @param businessFunction 模块
+    * @param operate 操作
+    * @param dataId 业务id，如 1L 1011L等业务主键ID
+    * @return 是否有权限
+    */
+   boolean hasDataOperateAuths(Collection<BaseAuth> auths, String businessFunction, String operate, ID dataId);
 
 
-    /**
-     * 编辑某条 数据权限
-     * 但是这里要注意了，不应该编辑此接口本身的权限，否则就会出现自己把自己编辑没，或者把不应该有的人加入（其实就是属于越权了，本应该是上级做的事）
-     *  对应编辑数据权限 @AuthEditDataAuth
-     * @param dataId 数据ID
-     * @param businessFunction 模块
-     * @param operate 操作
-     * @param auths 权限结构
-     */
-    void editDataAuths(ID dataId, String businessFunction, String operate, Collection<BaseAuth> auths);
+   /**
+    * 编辑某条 数据权限
+    * 但是这里要注意了，不应该编辑此接口本身的权限，否则就会出现自己把自己编辑没，或者把不应该有的人加入（其实就是属于越权了，本应该是上级做的事）
+    *  对应编辑数据权限 @AuthEditDataAuth
+    * @param dataId 数据ID
+    * @param businessFunction 模块
+    * @param operate 操作
+    * @param auths 权限结构
+    */
+   void editDataAuths(ID dataId, String businessFunction, String operate, Collection<BaseAuth> auths);
 
-    /**
-     * 获取数据
-     */
-    Collection<BaseAuth> getDataAuths(ID dataId, String businessFunction, String operate);
+   /**
+    * 获取数据
+    */
+   Collection<BaseAuth> getDataAuths(ID dataId, String businessFunction, String operate);
 }
 ```
 
 因此，如果用RABC权限体系的话一般不建议实现此接口，如有自定义的可以修改`RabcAnnotationAuthHandler`内部的一些逻辑
 
-### 8.2.2. `RabcAnnotationAuthHandler`内部的扩展
+### 8.2.2. `AbstractAuthDatraAnnotationAuthHandler`扩展
+
+AbstractAuthDatraAnnotationAuthHandler 本身实现了数据权限的相关操作功能，使用的是jdbcTemplate操作数据库。
+此类的配置主要是权限数据表的定义可以自己指定，并且全局统一
+
+### 8.2.3. `RabcAnnotationAuthHandler`内部的扩展
 
 内部扩展主要是在`SysAuthMenuComposite`和`SysAuthDataComposite`两个。
 
 - `SysAuthMenuComposite`承载了菜单相关的逻辑，默认实现是基于内存的菜单管理关系，这里可以扩展将其修改为基于redis的等。后续看情况单独抽离一个存储容器让其可以自定义
-- `SysAuthDataComposite` 主要是数据权限验证相关的处理，默认是`SysAuthDataCompositeImpl`直接查库，有自定义需求的可以修改这里。
 
 ## 8.3. RABC默认权限结构体的扩展
 
@@ -650,32 +767,32 @@ RABC默认目前只实现了基于部门-用户-角色的三个维度的权限�
 
  ```java
  public class Position extends AbstractIdNameFlagAuthEntity{
-    public Position(Long id , String name) {
-       this.id=id;
-       this.name=name;
-    }
- }
+   public Position(Long id , String name) {
+      this.id=id;
+      this.name=name;
+   }
+}
  ```
 
 - 2. 新建一个权限集合体继承`SimpleAuthObject`，重写方法`addAnotherBashAuth`和`setAnotherBaseAuth`，使之可以添加相关的功能
 
  ```java
  public class PositionSimpleAuthObject extends SimpleAuthObject {
-    /**
-     * 添加其他权限对象，若子类继承可以扩展这里，也可以覆写listBaseAuth()
-     * @param baseAuths
-     */
-    public void addAnotherBashAuth(Collection<BaseAuth>  baseAuths){
+   /**
+    * 添加其他权限对象，若子类继承可以扩展这里，也可以覆写listBaseAuth()
+    * @param baseAuths
+    */
+   public void addAnotherBashAuth(Collection<BaseAuth>  baseAuths){
 
-    }
-    /**
-     * 设置其他权限对象，若子类需要的话可以扩展这里，也可以覆写 setBaseAuth()
-     * @param abstractAuthEntity
-     */
-    public void setAnotherBaseAuth(IFlagAuthEntity abstractAuthEntity){
+   }
+   /**
+    * 设置其他权限对象，若子类需要的话可以扩展这里，也可以覆写 setBaseAuth()
+    * @param abstractAuthEntity
+    */
+   public void setAnotherBaseAuth(IFlagAuthEntity abstractAuthEntity){
 
-    }
- }
+   }
+}
  ```
 
 - 3. 实现`SysUserComposite`或继承`SysUserCompositeImpl`，重写通过用户加载权限的方法`loadByUsername()`，要替换`UserAuthObject`中的`authObject`字段
@@ -683,51 +800,57 @@ RABC默认目前只实现了基于部门-用户-角色的三个维度的权限�
 
 ```java
     @Override
-    public UserAuthObject loadByUsername(String username) {
+public UserAuthObject loadByUsername(String username) {
 
-        SysUser user = userMpService.getOne(
-                new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
-                        .select()
-        );
-        if (user == null){
-            return null;
-        }
+   SysUser user = userMpService.getOne(
+           new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username)
+                   .select()
+   );
+   if (user == null){
+      return null;
+   }
 
-        UserAuthObject userAuthObject = new UserAuthObject();
-        userAuthObject.setSysUser(user);
-        SysUserCredential credential = credentialMpService.getOne(
-                new LambdaQueryWrapper<SysUserCredential>().eq(SysUserCredential::getUserId, user.getId())
-                        .select()
-        );
-        if (credential == null){
-            return userAuthObject;
-        }
-        userAuthObject.setSysUserCredential(credential);
-        
-        //这里改成查询得到PositionSimpleAuthObject
-        SimpleAuthObject authObject = unionCompositeMapper.getUserAuthObject(user.getId());
+   UserAuthObject userAuthObject = new UserAuthObject();
+   userAuthObject.setSysUser(user);
+   SysUserCredential credential = credentialMpService.getOne(
+           new LambdaQueryWrapper<SysUserCredential>().eq(SysUserCredential::getUserId, user.getId())
+                   .select()
+   );
+   if (credential == null){
+      return userAuthObject;
+   }
+   userAuthObject.setSysUserCredential(credential);
 
-        userAuthObject.setAuthObject(authObject);
+   //这里改成查询得到PositionSimpleAuthObject
+   SimpleAuthObject authObject = unionCompositeMapper.getUserAuthObject(user.getId());
 
-        return userAuthObject;
-    }
+   userAuthObject.setAuthObject(authObject);
+
+   return userAuthObject;
+}
 ```
 
 - 4. 编辑权限入参的实体加入`PositionSimpleAuthObject`以配置权限体
 
  ```java
  @Data
- public class EditIdDataAuthEdit implements IdDataAuthEdit<Long> {
-    PositionSimpleAuthObject authObject;
-    private Long id;
-    @Override
-    public Long getDataId() {
-       return id;
-    }
-    @Override
-    public IAuthObject getAuthObject() {
-       return authObject;
-    }
- }
+public class EditIdDataAuthEdit implements IdDataAuthEdit<Long> {
+   PositionSimpleAuthObject authObject;
+   private Long id;
+   @Override
+   public Long getDataId() {
+      return id;
+   }
+   @Override
+   public IAuthObject getAuthObject() {
+      return authObject;
+   }
+}
  ```
 
+# 9. 权限粒度说明
+
+- 数据创建、删除的权限应当由菜单权限控制，同时，需要有一个编辑接口专门编辑主权限（即创建之后交于其他人管理的最大权限，其他人应当可以管理除了主权限之外的信息），这样实现了管理分离
+- 菜单权限拥有对接口的最大控制，没有接口权限不能访问任何数据。建议在高级接口才使用菜单权限控制，其余的数据的操作接口，可以设置为所有人均拥有权限（避免两种权限搞混）
+- 对于只有单一控制的数据如日程（创建之后数据基本就形成了，没有再复杂的逻辑），因为数据本身就之归属于某个人或一组人，因此菜单权限保证数据的增删改查，数据权限就仅剩下数据对应的范围。
+- 对于有多重复杂控制的数据如会议室（创建了之后还需要以此为中心执行其他的业务逻辑），因为数据本身固定，但会提供给其他，因此菜单建议控制添加、删除、修改主权限，其余的交予数据权限来控制。

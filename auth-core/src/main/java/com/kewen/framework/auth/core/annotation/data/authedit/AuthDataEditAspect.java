@@ -2,7 +2,7 @@ package com.kewen.framework.auth.core.annotation.data.authedit;
 
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.data.AuthDataAuthEdit;
+import com.kewen.framework.auth.core.annotation.AuthDataAuthEdit;
 import com.kewen.framework.auth.core.exception.AuthorizationException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -29,7 +29,7 @@ public class AuthDataEditAspect {
 
 
 
-    @Pointcut("@annotation(com.kewen.framework.auth.core.annotation.data.AuthDataAuthEdit)")
+    @Pointcut("@annotation(com.kewen.framework.auth.core.annotation.AuthDataAuthEdit)")
     public void pointcut(){
 
     }

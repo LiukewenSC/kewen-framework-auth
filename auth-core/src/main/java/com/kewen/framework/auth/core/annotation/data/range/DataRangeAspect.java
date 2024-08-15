@@ -1,10 +1,9 @@
 package com.kewen.framework.auth.core.annotation.data.range;
 
 
-import com.kewen.framework.auth.core.annotation.data.AuthDataRange;
+import com.kewen.framework.auth.core.annotation.AuthDataRange;
 import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.core.model.BaseAuth;
-import net.sf.jsqlparser.schema.Table;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,7 +19,7 @@ import java.util.Collection;
 @Aspect
 public class DataRangeAspect {
 
-    @Pointcut("@annotation(com.kewen.framework.auth.core.annotation.data.AuthDataRange)")
+    @Pointcut("@annotation(com.kewen.framework.auth.core.annotation.AuthDataRange)")
     public void jointPoint() {
 
     }
@@ -33,7 +32,8 @@ public class DataRangeAspect {
                 .setBusinessFunction(checkAuthDataRange.businessFunction())
                 .setOperate(checkAuthDataRange.operate())
                 .setTable(checkAuthDataRange.table())
-                .setDataColumn(checkAuthDataRange.dataIdColumn())
+                .setTableAlias(checkAuthDataRange.tableAlias())
+                .setDataIdColumn(checkAuthDataRange.dataIdColumn())
                 .setAuthorities(auths)
                 .setMatchMethod(checkAuthDataRange.matchMethod())
                 ;

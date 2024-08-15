@@ -289,7 +289,7 @@ public class SqlAuthInject {
         ParenthesedSelect parenthesedSelect = new ParenthesedSelect();
         parenthesedSelect.setSelect(authSqlSelect);
 
-        InExpression inExpression = new InExpression(new Column(tableName + "." + authRange.getDataColumn()), parenthesedSelect);
+        InExpression inExpression = new InExpression(new Column(tableName + "." + authRange.getDataIdColumn()), parenthesedSelect);
 
         //返回最后结果
         return inExpression;
@@ -310,7 +310,7 @@ public class SqlAuthInject {
         AndExpression authedWhereExpression = authTableWhereExpression(authRange);
         //Expression equalsTo = CCJSqlParserUtil.parseCondExpression("id=data_id");
         String tableName = parseAliseOrTableName(mainTable);
-        Expression equalsTo = new EqualsTo(getMainTableColumn(tableName, authRange.getDataColumn()),authDataTable.getDataIdColumn());
+        Expression equalsTo = new EqualsTo(getMainTableColumn(tableName, authRange.getDataIdColumn()),authDataTable.getDataIdColumn());
         AndExpression where = new AndExpression(equalsTo, authedWhereExpression);
         plainSelect.setWhere(where);
         //需要将plainSelect包裹在括号中

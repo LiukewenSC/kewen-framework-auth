@@ -1,6 +1,4 @@
-package com.kewen.framework.auth.core.annotation.menu;
-
-import org.springframework.core.annotation.AliasFor;
+package com.kewen.framework.auth.core.annotation;
 
 import java.lang.annotation.*;
 

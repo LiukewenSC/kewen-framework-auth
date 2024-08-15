@@ -3,7 +3,6 @@ package com.kewen.framework.auth.core.annotation.data.range;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import net.sf.jsqlparser.schema.Table;
 
 import java.util.Collection;
 
@@ -34,7 +33,7 @@ class AuthRange {
     /**
      * 业务主键名 一般为 id
      */
-    private String dataColumn;
+    private String dataIdColumn;
 
     /**
      * 用户权限字符串

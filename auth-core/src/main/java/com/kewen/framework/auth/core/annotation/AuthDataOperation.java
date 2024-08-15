@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.core.annotation.data;
+package com.kewen.framework.auth.core.annotation;
 
 
 import com.kewen.framework.auth.core.annotation.data.edit.IdDataEdit;

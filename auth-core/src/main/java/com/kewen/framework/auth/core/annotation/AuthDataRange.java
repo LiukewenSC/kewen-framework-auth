@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.core.annotation.data;
+package com.kewen.framework.auth.core.annotation;
 
 import com.kewen.framework.auth.core.annotation.data.range.MatchMethod;
 
@@ -35,12 +35,19 @@ public @interface AuthDataRange {
      */
     String businessFunction() ;
 
-
     /**
      * 表名多表联查时用于指定是和哪一张表关联
+     * 当为空时默认指定以主表（from后的表）为准
      * @return
      */
     String table() default "";
+
+    /**
+     * 表别名
+     * 当在多表联查，又有相同的表时指定表别名，在匹配了表之后匹配表别名，
+     * 只有在有表的情况下才使用表别名
+     */
+    String tableAlias() default "";
 
     /**
      * 业务主键column名 用于拼接 table.id
@@ -58,7 +65,6 @@ public @interface AuthDataRange {
      * 条件匹配方式 in/exists
      * 关联原则 小表驱动大表
      * 默认通过in的方式，当权限表中数据大时应该采用exists方式
-     * //todo 暂未实现
      * @return
      */
     MatchMethod matchMethod() default MatchMethod.IN;

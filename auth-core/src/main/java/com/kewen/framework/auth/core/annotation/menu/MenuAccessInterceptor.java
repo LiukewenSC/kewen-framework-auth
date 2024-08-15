@@ -1,10 +1,10 @@
 package com.kewen.framework.auth.core.annotation.menu;
 
+import com.kewen.framework.auth.core.annotation.AuthMenu;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.core.exception.AuthorizationException;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
