@@ -5,7 +5,7 @@ import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.annotation.AuthDataOperation;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.AuthUserContext;
-import com.kewen.framework.auth.core.exception.AuthorizationException;
+import com.kewen.framework.auth.core.exception.AuthException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -39,17 +39,17 @@ public class DataCheckAspect {
         log.info("校验用户权限，拦截方法:{}",joinPoint.toString());
         Object[] args = joinPoint.getArgs();
         if (args==null){
-            throw new AuthorizationException("参数不能为空");
+            throw new AuthException("参数不能为空");
         }
         Optional<Object> first = Arrays.stream(args).filter(a -> a instanceof IdDataEdit).findFirst();
         if (!first.isPresent()){
-            throw new AuthorizationException("参数没有找到接口IdDataEdit实现类");
+            throw new AuthException("参数没有找到接口 IdDataEdit 实现类");
         }
         IdDataEdit business = (IdDataEdit) first.get();
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
         boolean hasAuth = annotationAuthHandler.hasDataOperateAuths(auths, authAnn.businessFunction(), business.getDataId(),authAnn.operate());
         if (!hasAuth){
-            throw new AuthorizationException("权限校验不通过");
+            throw new AuthException("权限校验不通过");
         }
     }
 

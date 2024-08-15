@@ -4,7 +4,7 @@ import com.kewen.framework.auth.core.annotation.AuthMenu;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.AuthUserContext;
-import com.kewen.framework.auth.core.exception.AuthorizationException;
+import com.kewen.framework.auth.core.exception.AuthException;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -51,7 +51,7 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
                 url
         );
         if (!hasMenuAuth){
-            throw new AuthorizationException("没有API访问权限");
+            throw new AuthException("没有API菜单访问权限");
         }
         return true;
     }

@@ -3,7 +3,7 @@ package com.kewen.framework.auth.core.annotation.data.authedit;
 
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.annotation.AuthDataAuthEdit;
-import com.kewen.framework.auth.core.exception.AuthorizationException;
+import com.kewen.framework.auth.core.exception.AuthException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -39,14 +39,14 @@ public class AuthDataEditAspect {
         log.info("编辑业务权限，拦截方法:{}",joinPoint.toString());
         Object[] args = joinPoint.getArgs();
         if (args==null){
-            throw new AuthorizationException("参数不能为空");
+            throw new AuthException("参数不能为空");
         }
         Optional<IdDataAuthEdit> first = Arrays.stream(args)
                 .filter(a -> a instanceof IdDataAuthEdit)
                 .map(a ->(IdDataAuthEdit)a)
                 .findFirst();
         if (!first.isPresent()){
-            throw new AuthorizationException("参数没有找到接口 AuthDataEditBusiness 实现类");
+            throw new AuthException("参数没有找到接口 IdDataAuthEdit 实现类");
         }
         IdDataAuthEdit dataAuthEdit = first.get();
         try {
