@@ -1,6 +1,7 @@
 package com.kewen.framework.auth.rabc.composite.impl;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.rabc.composite.AuthMenuStore;
@@ -146,9 +147,13 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
         ).collect(Collectors.toList());
 
         //移除原有的
-        menuAuthService.removeBatchByIds(removes);
+        if (CollectionUtil.isNotEmpty(removes)){
+            menuAuthService.removeBatchByIds(removes);
+        }
         //批量插入新的
-        menuAuthService.saveBatch(adds);
+        if (CollectionUtil.isNotEmpty(adds)){
+            menuAuthService.saveBatch(adds);
+        }
     }
 
     @Override

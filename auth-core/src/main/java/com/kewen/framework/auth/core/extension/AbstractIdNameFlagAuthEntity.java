@@ -2,7 +2,7 @@ package com.kewen.framework.auth.core.extension;
 
 import com.alibaba.fastjson.JSONObject;
 import com.kewen.framework.auth.core.model.BaseAuth;
-import com.kewen.framework.auth.core.exception.BackendException;
+import com.kewen.framework.auth.core.exception.AuthServiceException;
 import com.kewen.framework.auth.core.util.ClassUtil;
 import lombok.Data;
 
@@ -50,7 +50,7 @@ public abstract class AbstractIdNameFlagAuthEntity<ID> implements IFlagAuthEntit
         String[] authStrs = baseAuth.getAuth().split(split);
         String[] descStrs = baseAuth.getDescription().split(split);
         if (!authStrs[0].equals(flag())){
-            throw new BackendException("权限字符串格式错误"+ JSONObject.toJSONString(baseAuth));
+            throw new AuthServiceException("权限字符串格式错误"+ JSONObject.toJSONString(baseAuth));
         }
         String idStr = authStrs[1];
         Class actualT = ClassUtil.parseSuperActualT(this.getClass(), Object.class);
@@ -62,7 +62,7 @@ public abstract class AbstractIdNameFlagAuthEntity<ID> implements IFlagAuthEntit
         } else if (actualT == String.class){
             setId((ID) idStr);
         } else {
-            throw new BackendException("ID的 格式 仅支持基本数据类型 int long String");
+            throw new AuthServiceException("ID的 格式 仅支持基本数据类型 int long String");
         }
         setName(descStrs[1]);
     }

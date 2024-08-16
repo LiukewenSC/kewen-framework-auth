@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.rabc.model;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -23,14 +24,24 @@ public class PageConverter {
         return  result;
     }
     public static <T> PageResult<T> pageAndConvert(PageReq req, IService<T> service){
-        return pageAndConvert(req, service, null);
+        return pageAndConvert(req, service, null,null);
+    }
+    public static <T> PageResult<T> pageAndConvert(PageReq req, IService<T> service,Wrapper<T> wrapper){
+        return pageAndConvert(req, service, null,wrapper);
     }
     public static <T> PageResult<T> pageAndConvert(PageReq req, IService<T> service, Consumer<Page<T>> consumer){
+        return pageAndConvert(req, service, consumer,null);
+    }
+    public static <T> PageResult<T> pageAndConvert(PageReq req, IService<T> service, Consumer<Page<T>> consumer,Wrapper<T> wrapper){
         Page<T> baomidoPage = new Page<>(req.getPage() ,req.getSize());
         if (consumer != null){
             consumer.accept(baomidoPage);
         }
-        baomidoPage = service.page(baomidoPage);
+        if (wrapper==null){
+            baomidoPage = service.page(baomidoPage);
+        } else {
+            baomidoPage = service.page(baomidoPage, wrapper);
+        }
         return baomidouPage2PageResult(baomidoPage);
     }
 }

@@ -27,7 +27,7 @@ CREATE TABLE `sys_auth_menu`  (
     `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` datetime NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_auth_menu
@@ -54,7 +54,7 @@ CREATE TABLE `sys_dept`  (
     `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` datetime NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '部门表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB  CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '部门表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_dept
@@ -76,8 +76,9 @@ CREATE TABLE `sys_menu_api`  (
      `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
      `update_time` datetime NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
      `deleted` tinyint NULL DEFAULT 0 COMMENT '是否删除，默认0-未删除',
-     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1823284778685722629 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '菜单表' ROW_FORMAT = DYNAMIC;
+     PRIMARY KEY (`id`) USING BTREE,
+     unique (path)
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '菜单表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_menu_api
@@ -120,8 +121,6 @@ INSERT INTO `sys_menu_api` VALUES (1823284778685722625, '/meetingRoomPrimary/add
 INSERT INTO `sys_menu_api` VALUES (1823284778685722626, '/meetingRoomPrimary/add2', 'MeetingRoomPrimaryController>创建会议室', 1823284778685722624, NULL, 2, '2024-08-01 00:00:00', NULL, 0);
 INSERT INTO `sys_menu_api` VALUES (1823284778685722627, '/meetingRoomPrimary/deleteById', 'MeetingRoomPrimaryController>删除会议室', 1823284778685722624, NULL, 2, '2024-08-01 00:00:00', NULL, 0);
 INSERT INTO `sys_menu_api` VALUES (1823284778685722628, '/meetingRoomPrimary/updatePrimaryAuth', 'MeetingRoomPrimaryController>编辑会议室主权限', 1823284778685722624, NULL, 2, '2024-08-01 00:00:00', NULL, 0);
-INSERT INTO `sys_menu_api` VALUES (1823557356394409984, '/menu/route', '菜单路由相关接口', 0, NULL, 1, '2024-08-14 11:08:48', '2024-08-14 11:08:48', 0);
-INSERT INTO `sys_menu_api` VALUES (1823557356394409985, '/menu/route/tree', '菜单路由相关接口>routeTrees', 1823557356394409984, NULL, 2, '2024-08-14 11:08:48', '2024-08-14 11:08:48', 0);
 
 -- ----------------------------
 -- Table structure for sys_menu_route
@@ -144,7 +143,7 @@ CREATE TABLE `sys_menu_route`  (
     `update_time` datetime NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     `deleted` tinyint NULL DEFAULT 0 COMMENT '是否删除，默认0-未删除',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 136 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '菜单表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '菜单表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_menu_route
@@ -192,7 +191,7 @@ CREATE TABLE `sys_role`  (
     `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` datetime NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '角色表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role
@@ -220,7 +219,7 @@ CREATE TABLE `sys_user`  (
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `username`(`username` ASC) USING BTREE,
     UNIQUE INDEX `phone`(`phone` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user
@@ -245,7 +244,7 @@ CREATE TABLE `sys_user_credential`  (
     `update_time` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `user_id`(`user_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户凭证表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户凭证表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_credential
@@ -265,7 +264,7 @@ CREATE TABLE `sys_user_dept`  (
     `update_time` datetime NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `user_id`(`user_id` ASC, `dept_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户部门关联表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户部门关联表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_dept
@@ -284,7 +283,7 @@ CREATE TABLE `sys_user_role`  (
     `update_time` datetime NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `user_id`(`user_id` ASC, `role_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_role

@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,9 @@ public abstract class AbstractAuthDatraAnnotationAuthHandler<ID> implements Anno
 
     @Override
     public void editDataAuths(String businessFunction, ID dataId, String operate, Collection<BaseAuth> baseAuths) {
+        //这里为了保证baseAuths不为空，需要为空的时候设置为emptyList，但是直接赋值 lambda中会报错
+        Collection<BaseAuth> baseAuthsTemplate = baseAuths==null?Collections.emptyList():baseAuths;
+
         List<AuthDataDO<ID>> dbList=jdbcAuthDataPersistent.listAuthData(businessFunction,dataId,operate);
         //需要添加的
         List<AuthDataDO<ID>> adds = baseAuths.stream()
@@ -37,7 +41,7 @@ public abstract class AbstractAuthDatraAnnotationAuthHandler<ID> implements Anno
                 ).collect(Collectors.toList());
         //需要移除的
         List<ID> removes = dbList.stream()
-                .filter(db -> !baseAuths.contains(new BaseAuth(db.getAuthority(), db.getDescription())))
+                .filter(db -> !baseAuthsTemplate.contains(new BaseAuth(db.getAuthority(), db.getDescription())))
                 .map(AuthDataDO::getId)
                 .collect(Collectors.toList());
 
@@ -64,5 +68,10 @@ public abstract class AbstractAuthDatraAnnotationAuthHandler<ID> implements Anno
         return authDataDOS.stream().map(
                 a -> new BaseAuth(a.getDescription(), a.getDescription())
         ).collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteBusinessFunctionAuthByDataId(String businessFunction, ID dataId) {
+        int i = jdbcAuthDataPersistent.deleteBusinessFunctionDataIdAuth(businessFunction, dataId);
     }
 }

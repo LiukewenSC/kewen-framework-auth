@@ -1,6 +1,8 @@
 package com.kewen.framework.auth.core.annotation.data;
 
+import com.kewen.framework.auth.core.exception.AuthServiceException;
 import lombok.Setter;
+import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -105,6 +107,42 @@ public class JdbcAuthDataPersistent implements InitializingBean {
                 );
         return delete.toString();
     }
+
+    /**
+     * 根据业务功能和dataID删除数据权限，即清空功能下特定ID的所有权限
+     * @param businessFunction
+     * @param dataId
+     * @param <ID>
+     * @return
+     */
+    public <ID> int deleteBusinessFunctionDataIdAuth(String businessFunction, ID dataId) {
+        String sql = removeBusinessFunctionDataIdSql(businessFunction,dataId);
+        return jdbcTemplate.update(sql);
+    }
+    private <ID> String removeBusinessFunctionDataIdSql(String businessFunction, ID dataId) {
+        Delete delete = new Delete();
+
+        Expression dataIdExpression;
+        if (dataId instanceof String){
+            dataIdExpression = new StringValue(dataId.toString());
+        } else if (dataId instanceof Long){
+            dataIdExpression = new LongValue(dataId.toString());
+        } else if (dataId instanceof Integer){
+            dataIdExpression = new LongValue(dataId.toString());
+        } else {
+            throw new AuthServiceException("ID类型不正确");
+        }
+
+        delete.withTable(authDataTable.getTable())
+                .withWhere(
+                        new AndExpression(
+                                new EqualsTo(authDataTable.getBusinessFunctionColumn(),new StringValue(businessFunction)),
+                                new EqualsTo(authDataTable.getDataIdColumn(), dataIdExpression)
+                        )
+                );
+        return delete.toString();
+    }
+
 
     @Override
     public void afterPropertiesSet() throws Exception {

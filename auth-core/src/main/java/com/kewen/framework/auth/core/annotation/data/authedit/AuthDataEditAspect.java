@@ -67,13 +67,13 @@ public class AuthDataEditAspect {
     private void editDataAuths(AuthDataAuthEdit checkDataAuthEdit, IdDataAuthEdit dataAuthEdit) {
         Object dataId = dataAuthEdit.getDataId();
         if (dataId==null){
-            throw new RuntimeException("没有数据ID，无法编辑");
+            throw new RuntimeException("没有数据ID，无法编辑数据权限");
         }
         annotationAuthAdaptor.editDataAuths(
                 checkDataAuthEdit.businessFunction(),
                 dataId,
                 checkDataAuthEdit.operate(),
-                dataAuthEdit.getAuthObject().listBaseAuth());
+                dataAuthEdit.getAuthObject());
     }
 
 
