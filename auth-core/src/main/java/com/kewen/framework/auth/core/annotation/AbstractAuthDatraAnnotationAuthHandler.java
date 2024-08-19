@@ -66,7 +66,7 @@ public abstract class AbstractAuthDatraAnnotationAuthHandler<ID> implements Anno
     public Collection<BaseAuth> getDataAuths(String businessFunction, ID dataId, String operate) {
         List<AuthDataDO<ID>> authDataDOS = jdbcAuthDataPersistent.listAuthData(businessFunction, dataId, operate);
         return authDataDOS.stream().map(
-                a -> new BaseAuth(a.getDescription(), a.getDescription())
+                a -> new BaseAuth(a.getAuthority(), a.getDescription())
         ).collect(Collectors.toList());
     }
 
