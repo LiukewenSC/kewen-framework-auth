@@ -51,7 +51,7 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
                 url
         );
         if (!hasMenuAuth){
-            throw new AuthException("没有API菜单访问权限");
+            throw new AuthException("没有API菜单"+url+"访问权限");
         }
         return true;
     }
