@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -69,7 +69,7 @@ public class SysMenuRoute extends Model<SysMenuRoute> {
     /**
      * 元信息
      */
-    @TableField(value = "meta",typeHandler = JacksonTypeHandler.class)
+    @TableField(value = "meta",typeHandler = FastjsonTypeHandler.class)
     protected Map<String, Object> meta;
 
     /**

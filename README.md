@@ -7,7 +7,7 @@
 
 目前大部分的权限体系其实都是基于RABC思想（用户-部门-角色-岗位）来设计，通过对业务与用户组织信息建立对应的映射关系来实现权限控制，其实有非常大的共有特点，而且由于权限本身对于一个项目来说的话就是公共的部分，因此本项目从常用的RABC权限体系入手，通过设计来实现统一的权限管理。
 
-本框架主要是用`Java+Maven+Spring+SpringMVC+SpringBoot+SpringSecurity+MybatisPlus+Mysql`来搭建的，主要基于Spring5和Springboot2搭建。
+本框架主要是用`Java+Maven+Spring+SpringMVC+SpringBoot+SpringSecurity+MybatisPlus+Mysql`来搭建的，主要基于Spring5和SpringBoot2搭建。
 
 # 2. 核心概念
 
@@ -35,36 +35,13 @@
 
 # 3. 快速开始
 
-框架通过maven引入，加载到自己的工程中即可。同时，框架也提供了一个示例工程`kewen-framework-auth-sample`可以直接启动。启动完成后台工程就创建好了。
-此外，框架还搭配了我的另外一个前端模板项目`kewen-vue-admin`，可以fork到自己工程中然后启动。
-启动后前后端均可以直接登录访问，默认账号密码**admin/123456**
+框架通过maven引入，下载本框架工程然后`npm install`到本地maven仓库。这样，一个框架的依赖包就安装好了。
 
 ## 3.1. 启动示例工程
 
-框架自带了一个启动示例工程，已经做好了模块引入和基本配置，我们只需要做少量的配置即可启动
+框架配置了一个示例工程，受mysql开源协议影响，示例工程已经移动至[kewen-framework-auth-sample](https://gitee.com/LiuKewenSc/kewen-framework-auth-sample)下，可以查看其**README.md**文档
 
-- 初始化数据库
-- 添加配置
-- 启动
-
-**1.初始化数据库**：框架默认给了MySQL的初始化脚本，并且添加了默认的一些数据供使用，方便一键启动项目并查看。
-全量脚本的路径在框架目录下的`./script/sql/auth_full.sql`下，
-增量脚本在同级目录，带日期后缀，如 `auth_20240801.sql`
-
-**2.配置**：配置需要自行配置基本的数据库配置
-
-   ```properties
-   server.port=8081
-spring.datasource.url=jdbc:mysql://liukewensc.mysql.rds.aliyuncs.com:3306/kewen_framework_auth_template
-spring.datasource.username=open_framework
-spring.datasource.password=framework123456_
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-   ```
-
-配置完成直接启动`AuthWebSample`类即可。
-
-示例项目中包含了基本的注解使用，可以登录后调用相关接口验证。也可以配合`kewen-vue-admin`工程启动登录之后在页面上验证查看。
-这里建议把前端工程启动起来验证，可以查看一个完整的流程，只不过前端的启动需要nodejs相关的前端知识。
+此外，框架还搭配了我的另外一个前端模板项目[kewen-web-admin](https://gitee.com/LiuKewenSc/kewen-web-admin)，可以fork到自己工程中也可以复制下来，然后启动。
 
 ## 3.2. 引入到自己的工程
 
