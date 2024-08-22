@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.security.model;
 
+import com.kewen.framework.auth.core.context.CurrentUser;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.model.IAuthObject;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Data
 @Accessors(chain = true)
-public class SecurityUser<T extends IAuthObject> implements UserDetails {
+public class SecurityUser<T extends IAuthObject> implements UserDetails, CurrentUser {
 
 
     private String token;

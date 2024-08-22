@@ -3,7 +3,6 @@ package com.kewen.framework.auth.security.before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,18 +27,16 @@ public class WebGlobalExceptionHandlerFilter  implements BeforeSecurityFilter {
     }
 
     @Override
-    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String requestURI = request.getRequestURI();
         if (requestURI.startsWith("/error")) {
             resolver(request,response,new RuntimeException("没有此页面 /error"));
         }
         try {
             filterChain.doFilter(request, response);
-        } catch (ServletException e) {
-            throw new RuntimeException(e);
         } catch (Exception ex){
-            log.warn("security前处理异常，一般说明SpringSecurity过滤器出异常了");
-            resolver(request,response,ex);
+            log.warn("security前处理返回异常，一般说明SpringSecurity过滤器出异常了");
+            throw ex;
         }
     }
     private void resolver(HttpServletRequest request, HttpServletResponse response, Exception ex){

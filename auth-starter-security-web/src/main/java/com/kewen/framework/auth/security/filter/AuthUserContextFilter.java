@@ -58,7 +58,7 @@ public class AuthUserContextFilter extends OncePerRequestFilter {
         principalOptional.ifPresent(principal -> {
             if (principal instanceof SecurityUser) {
                 SecurityUser securityUser = (SecurityUser) principal;
-                AuthUserContext.setAuthObject(securityUser.getAuthObject());
+                AuthUserContext.setCurrentUser(securityUser);
             }
         });
 

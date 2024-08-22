@@ -2,17 +2,20 @@ package com.kewen.framework.auth.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.rabc.composite.SysUserComposite;
+import com.kewen.framework.auth.rabc.extension.RabcCurrentUserService;
 import com.kewen.framework.auth.security.before.BeforeSecurityFilter;
+import com.kewen.framework.auth.security.before.BeforeSecurityFilterProxy;
 import com.kewen.framework.auth.security.before.WebGlobalExceptionHandlerFilter;
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
-import com.kewen.framework.auth.security.before.BeforeSecurityFilterProxy;
 import com.kewen.framework.auth.security.response.DefaultSecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.service.RabcSecurityUserDetailsService;
+import com.kewen.framework.auth.security.service.SecurityRabcCurrentUserService;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +50,11 @@ public class SecurityBeanConfig {
         service.setSysUserComposite(sysUserComposite);
         return service;
     };
+    @Bean(autowire = Autowire.BY_TYPE)
+    @ConditionalOnMissingBean(RabcCurrentUserService.class)
+    RabcCurrentUserService rabcCurrentUserService(){
+        return new SecurityRabcCurrentUserService();
+    }
 
     @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
