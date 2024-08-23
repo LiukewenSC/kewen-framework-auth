@@ -74,11 +74,6 @@ public class TokenSessionHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public HttpSession getSession(boolean create) {
-        HttpSession innerSession = getInnerSession(create);
-        return new TokenSession(innerSession);
-    }
-
-    public HttpSession getInnerSession(boolean create) {
         String token = getToken();
         //没有token则生成一个
         if (token == null) {

@@ -3,14 +3,13 @@ package com.kewen.framework.auth.security.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.configurer.JsonLoginAuthenticationFilterConfigurer;
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
-import com.kewen.framework.auth.security.filter.TokenSessionRequestFilter;
-import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
-import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
+import com.kewen.framework.auth.security.filter.AuthUserContextFilter;
 import com.kewen.framework.auth.security.filter.JsonLoginFilter;
 import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
+import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
+import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
-import com.kewen.framework.auth.security.filter.AuthUserContextFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,7 +19,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -109,11 +107,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //.cors().configurationSource(corsConfigurationSource()).and()
                 //这里添加一个处于最顶端的异常处理过滤器，用来处理默认拦截器未到时发生的异常，
                 // 默认的过滤器一般在倒数第二个处理，前面十多个过滤器中的异常都不会捕获
-                // 如果不添加此过滤器，则会出现在默认过滤器之前的异常(如用户更新密码等未包含账号密码错误的异常)都不会被捕获，导致重定向到/error（而前后端异常是没有这个页面的），出现循环异常
-                // todo但是这里为啥加了ExceptionTranslationFilter就出现了两个了,会把原来的提前至WebAsyncManagerIntegrationFilter之前，又新建一个。最后还是不在这里添加了，放在SpringSecurity过滤器链之前去统一处理
-                //.addFilterBefore(new ExceptionTranslationFilter(exceptionResolverHandler), WebAsyncManagerIntegrationFilter.class)
-                // 这里就是封装一层request以便获取session
-                .addFilterBefore(new TokenSessionRequestFilter(loginProperties.getTokenParameter()), WebAsyncManagerIntegrationFilter.class)
+                // WebGlobalExceptionHandlerFilter 已经移动至BeforeSecurityFilter中实现全局控制
+                // todo 这里就是封装一层request以便获取session ，session失效的问题存在
+                //.addFilterBefore(new TokenSessionRequestFilter(loginProperties.getTokenParameter()), WebAsyncManagerIntegrationFilter.class)
                 //这里添加权限用户上下文过滤器
                 .addFilterAfter(new AuthUserContextFilter(loginProperties.getCurrentUserUrl(),resultResolverProvider,objectMapper), JsonLoginFilter.class)
         ;
