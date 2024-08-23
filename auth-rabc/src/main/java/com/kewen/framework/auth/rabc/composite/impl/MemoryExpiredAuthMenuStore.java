@@ -26,18 +26,18 @@ public class MemoryExpiredAuthMenuStore implements AuthMenuStore {
 
 
     @Override
-    public List<SysMenuApi> getMenuRequests(Callable<List<SysMenuApi>> callable) {
+    public List<SysMenuApi> getApiMenus(Callable<List<SysMenuApi>> callable) {
         try {
-            return  (List<SysMenuApi>) cache.get("getMenuRequests", callable);
+            return  (List<SysMenuApi>) cache.get("getApiMenus", callable);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<SysMenuRoute> getMenuRoutes(Callable<List<SysMenuRoute>> callable) {
+    public List<SysMenuRoute> getRouteMenus(Callable<List<SysMenuRoute>> callable) {
         try {
-            return  (List<SysMenuRoute>) cache.get("getMenuRoutes", callable);
+            return  (List<SysMenuRoute>) cache.get("getRouteMenus", callable);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }

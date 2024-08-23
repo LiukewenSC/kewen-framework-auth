@@ -1,6 +1,5 @@
 package com.kewen.framework.auth.security.service;
 
-import com.kewen.framework.auth.security.model.SecurityUser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;

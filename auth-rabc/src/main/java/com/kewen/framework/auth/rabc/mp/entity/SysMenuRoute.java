@@ -118,7 +118,7 @@ public class SysMenuRoute extends Model<SysMenuRoute> {
      * 是否删除，默认0-未删除
      */
     @TableField("deleted")
-    protected Integer deleted;
+    protected Boolean deleted;
 
 
     @Override

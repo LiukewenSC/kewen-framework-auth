@@ -52,7 +52,7 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
 
     @Override
     public boolean hasMenuAuth(Collection<BaseAuth> authorities, String requestPath) {
-        Optional<SysMenuApi> sysMenuOptional = getMenuRequests().stream().filter(m -> Objects.equals(m.getPath(), requestPath)).findFirst();
+        Optional<SysMenuApi> sysMenuOptional = getApiMenus().stream().filter(m -> Objects.equals(m.getPath(), requestPath)).findFirst();
         if (!sysMenuOptional.isPresent()){
             return false;
         }
@@ -61,12 +61,15 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
     }
 
     @Override
-    public List<MenuApiAndAuthResp> getMenuRequestAuthTree() {
-        List<SysMenuApi> sysMenus = getMenuRequests();
+    public List<MenuApiAndAuthResp> getApiAuthMenuTree(boolean showDeleted) {
+        List<SysMenuApi> sysMenus = getApiMenus();
+
         Map<Long, List<SysAuthMenu>> authByMenuMap = getSysMenuAuths().stream()
                 .collect(Collectors.groupingBy(SysAuthMenu::getApiId));
         List<MenuApiAndAuthResp> collect = sysMenus.stream()
                 .map(MenuApiAndAuthResp::of)
+                //是否过滤已删除的API菜单
+                .filter(m-> showDeleted || !m.getDeleted())
                 .peek(m-> {
                     List<SysAuthMenu> SysAuthMenus = authByMenuMap.get(m.getId());
                     if (SysAuthMenus != null){
@@ -84,11 +87,12 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
 
     /**
      * 获取权限集的请求菜单树
+     * 已删除的API菜单不包含
      */
     @Override
-    public List<MenuApiAndAuthResp> getAuthsMenuRequestAuthTree(Collection<BaseAuth> authorities) {
+    public List<MenuApiAndAuthResp> getApiAuthMenuTree(Collection<BaseAuth> authorities) {
         //得到全部树
-        List<MenuApiAndAuthResp> trees = getMenuRequestAuthTree();
+        List<MenuApiAndAuthResp> trees = getApiAuthMenuTree(false);
         //移除掉不是自己的
         TreeUtil.removeIfUnmatch(trees,t ->{
             boolean hasMenuAuth = hasMenuAuth(authorities, t);
@@ -98,10 +102,13 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
     }
 
     @Override
-    public List<MenuRouteResp> getAuthsMenuRouteTree() {
+    public List<MenuRouteResp> getRouteAuthMenuTree(boolean showDeleted) {
 
         List<SysMenuRoute> menuRoutes = getMenuRoutes();
-        List<MenuRouteResp> routeResps = menuRoutes.stream().map(MenuRouteResp::from).collect(Collectors.toList());
+        List<MenuRouteResp> routeResps = menuRoutes.stream()
+                .filter(m-> showDeleted || !m.getDeleted())
+                .map(MenuRouteResp::from)
+                .collect(Collectors.toList());
         return TreeUtil.transfer(routeResps, 0L);
     }
 
@@ -110,13 +117,13 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
      * @return
      */
     @Override
-    public List<MenuRouteResp> getAuthsMenuRouteTree(Collection<BaseAuth> authorities) {
-        List<MenuApiAndAuthResp> trees = getAuthsMenuRequestAuthTree(authorities);
+    public List<MenuRouteResp> getRouteAuthMenuTree(Collection<BaseAuth> authorities) {
+        List<MenuApiAndAuthResp> trees = getApiAuthMenuTree(authorities);
         //克隆副本并转换成 MenuRequestResp
         List<MenuApiResp> requestRespTrees = TreeUtil.convertList(trees, MenuApiResp.class);
 
         //获取路由树
-        List<MenuRouteResp> routeRespTree = getAuthsMenuRouteTree();
+        List<MenuRouteResp> routeRespTree = getRouteAuthMenuTree(false);
         //移除无用的节点
         //1. 判断MenuRoute对应的请求id是否在拥有的请求树中
         Set<Long> requestIds = requestRespTrees.stream()
@@ -181,7 +188,7 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
         } else if (MenuTypeConstant.AUTH_TYPE.PARENT.equals(sysMenuApi.getAuthType())){
             //基于父菜单的权限
             Long parentId = sysMenuApi.getParentId();
-            Optional<SysMenuApi> first = getMenuRequests().stream().filter(m -> m.getId().equals(parentId)).findFirst();
+            Optional<SysMenuApi> first = getApiMenus().stream().filter(m -> m.getId().equals(parentId)).findFirst();
             if (!first.isPresent()){
                 //已经到顶了，找不到 top对应的parent的菜单
                 log.info("上层追溯到根菜单，仍未找到对应的权限");
@@ -201,17 +208,17 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
         if (!isCache){
             return sysMenuRouteMpService.list();
         }
-        return authMenuStore.getMenuRoutes(() -> sysMenuRouteMpService.list());
+        return authMenuStore.getRouteMenus(() -> sysMenuRouteMpService.list());
     }
     /**
      * 获取菜单列表
      * @return
      */
-    private List<SysMenuApi> getMenuRequests(){
+    private List<SysMenuApi> getApiMenus(){
         if (!isCache){
             return sysMenuPathMpService.list();
         }
-        return authMenuStore.getMenuRequests(() -> sysMenuPathMpService.list());
+        return authMenuStore.getApiMenus(() -> sysMenuPathMpService.list());
     }
     /**
      * 获取菜单权限

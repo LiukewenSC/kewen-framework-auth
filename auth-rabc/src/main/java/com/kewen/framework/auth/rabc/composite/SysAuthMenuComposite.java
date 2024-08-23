@@ -26,28 +26,29 @@ public interface SysAuthMenuComposite {
 
     /**
      * 获取树形结构菜单
+     * @param showDeleted 显示已删除的
      * @return 树形结构的菜单返回对象
      */
-    List<MenuApiAndAuthResp> getMenuRequestAuthTree();
+    List<MenuApiAndAuthResp> getApiAuthMenuTree(boolean showDeleted);
 
     /**
      * 获取权限集的请求菜单树
      * @param authorities
      * @return
      */
-    List<MenuApiAndAuthResp> getAuthsMenuRequestAuthTree(Collection<BaseAuth> authorities);
+    List<MenuApiAndAuthResp> getApiAuthMenuTree(Collection<BaseAuth> authorities);
 
     /**
      * 获取所有菜单路由树（管理使用）
      * @return
      */
-    List<MenuRouteResp> getAuthsMenuRouteTree();
+    List<MenuRouteResp> getRouteAuthMenuTree(boolean showDeleted);
     /**
      * 获取权限集对应的有权限的路由
      * @param authorities
      * @return
      */
-    List<MenuRouteResp> getAuthsMenuRouteTree(Collection<BaseAuth> authorities);
+    List<MenuRouteResp> getRouteAuthMenuTree(Collection<BaseAuth> authorities);
 
 
     /**

@@ -26,7 +26,7 @@ public class RabcMenuApiController {
 
     @GetMapping("/tree")
     public Result<List<MenuApiAndAuthResp>> menuTree(){
-        List<MenuApiAndAuthResp> menuTree = sysAuthMenuComposite.getMenuRequestAuthTree();
+        List<MenuApiAndAuthResp> menuTree = sysAuthMenuComposite.getApiAuthMenuTree(true);
         return Result.success(menuTree);
     }
     @PostMapping("/update")

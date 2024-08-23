@@ -1,6 +1,7 @@
 package com.kewen.framework.auth.rabc.controller;
 
 import com.kewen.framework.auth.core.context.AuthUserContext;
+import com.kewen.framework.auth.core.context.CurrentUser;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.rabc.extension.RabcCurrentUserService;
@@ -34,12 +35,12 @@ public class RabcCurrentUserController implements ApplicationContextAware {
     @GetMapping("/routeMenus")
     public Result<List<MenuRouteResp>> routeTrees(){
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
-        List<MenuRouteResp> menuTree = sysAuthMenuComposite.getAuthsMenuRouteTree(auths);
+        List<MenuRouteResp> menuTree = sysAuthMenuComposite.getRouteAuthMenuTree(auths);
         return Result.success(menuTree);
     }
     @PostMapping("/updatePassword")
     public Result updatePassword(@RequestBody @Validated UpdatePasswordReq req){
-        rabcCurrentUserService.updatePassword(req);
+        rabcCurrentUserService.updatePassword(AuthUserContext.getCurrentUser(),req.getOldPassword(), req.getNewPassword());
         return Result.success();
     }
 
@@ -69,8 +70,9 @@ public class RabcCurrentUserController implements ApplicationContextAware {
     static class UnsupportedRabcCurrentUserService implements RabcCurrentUserService {
 
         @Override
-        public void updatePassword(UpdatePasswordReq req) {
+        public void updatePassword(CurrentUser currentUser, String oldPassword, String newPassword) {
             throw new UnsupportedOperationException("Not supported updatePassword");
+
         }
     }
 }

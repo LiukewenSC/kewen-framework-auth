@@ -15,9 +15,9 @@ import java.util.concurrent.Callable;
  */
 public interface AuthMenuStore {
 
-    List<SysMenuApi> getMenuRequests(Callable<List<SysMenuApi>> callable);
+    List<SysMenuApi> getApiMenus(Callable<List<SysMenuApi>> callable);
 
-    List<SysMenuRoute> getMenuRoutes(Callable<List<SysMenuRoute>> callable);
+    List<SysMenuRoute> getRouteMenus(Callable<List<SysMenuRoute>> callable);
 
     List<SysAuthMenu> getAuthMenus(Callable<List<SysAuthMenu>> callable);
 }

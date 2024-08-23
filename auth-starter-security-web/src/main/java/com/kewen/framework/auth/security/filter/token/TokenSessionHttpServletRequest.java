@@ -1,6 +1,7 @@
 package com.kewen.framework.auth.security.filter.token;
 
-import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
+import org.apache.catalina.session.StandardSessionFacade;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,21 +22,23 @@ public class TokenSessionHttpServletRequest extends HttpServletRequestWrapper {
     private final boolean isToken;
 
     String tokenParameter;
+
     /**
      * Constructs a request object wrapping the given request.
      *
      * @param request The request to wrap
      * @throws IllegalArgumentException if the request is null
      */
-    public TokenSessionHttpServletRequest(HttpServletRequest request,String tokenParameter) {
+    public TokenSessionHttpServletRequest(HttpServletRequest request, String tokenParameter) {
         super(request);
         String token = request.getHeader(tokenParameter);
         tokenThreadLocal.set(token);
         isToken = token != null;
     }
+
     @Override
     public String getRequestedSessionId() {
-        if (!isToken){
+        if (!isToken) {
             return super.getRequestedSessionId();
         }
         if (StringUtils.hasText(getToken())) {
@@ -47,6 +50,7 @@ public class TokenSessionHttpServletRequest extends HttpServletRequestWrapper {
 
     /**
      * 没有token，说明没有从前端传入，可能是登录请求
+     *
      * @return
      */
     private String getToken() {
@@ -70,20 +74,25 @@ public class TokenSessionHttpServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public HttpSession getSession(boolean create) {
+        HttpSession innerSession = getInnerSession(create);
+        return new TokenSession(innerSession);
+    }
+
+    public HttpSession getInnerSession(boolean create) {
         String token = getToken();
         //没有token则生成一个
         if (token == null) {
             HttpSession session = super.getSession(create);
-            if (session != null){
+            if (session != null) {
                 token = session.getId();
                 tokenThreadLocal.set(token);
-                tokenMap.put(token,session);
+                tokenMap.put(token, session);
             }
             return session;
         }
 
         HttpSession session = tokenMap.get(getToken());
-        if (session != null){
+        if (session != null) {
 
             return session;
         }
@@ -96,9 +105,26 @@ public class TokenSessionHttpServletRequest extends HttpServletRequestWrapper {
         session = super.getSession(true);
         token = session.getId();
 
-        tokenMap.put(token,session);
+        tokenMap.put(token, session);
         tokenThreadLocal.set(token);
 
         return session;
+    }
+
+    static class TokenSession extends StandardSessionFacade {
+
+        public TokenSession(HttpSession session) {
+            super(session);
+        }
+
+        @Override
+        public Object getAttribute(String name) {
+            try {
+                return super.getAttribute(name);
+            } catch (IllegalStateException e) {
+                //java.lang.IllegalStateException: getAttribute: Session already invalidated
+                throw new CredentialsExpiredException("登录已过期", e);
+            }
+        }
     }
 }

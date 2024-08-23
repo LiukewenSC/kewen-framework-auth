@@ -30,13 +30,16 @@ public class WebGlobalExceptionHandlerFilter  implements BeforeSecurityFilter {
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String requestURI = request.getRequestURI();
         if (requestURI.startsWith("/error")) {
+            log.error("又跑到了错误页面");
             resolver(request,response,new RuntimeException("没有此页面 /error"));
         }
         try {
             filterChain.doFilter(request, response);
         } catch (Exception ex){
             log.warn("security前处理返回异常，一般说明SpringSecurity过滤器出异常了");
-            throw ex;
+            //这里不能再往外抛了，会导致tomcat的重定向
+            //throw ex;
+            resolver(request,response,ex);
         }
     }
     private void resolver(HttpServletRequest request, HttpServletResponse response, Exception ex){

@@ -23,7 +23,7 @@ public class RabcMenuRouteController {
      */
     @GetMapping("/tree")
     public Result<List<MenuRouteResp>> routeTrees(){
-        List<MenuRouteResp> menuTree = sysAuthMenuComposite.getAuthsMenuRouteTree();
+        List<MenuRouteResp> menuTree = sysAuthMenuComposite.getRouteAuthMenuTree(true);
         return Result.success(menuTree);
     }
 

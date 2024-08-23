@@ -1,8 +1,6 @@
 package com.kewen.framework.auth.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kewen.framework.auth.rabc.composite.SysUserComposite;
-import com.kewen.framework.auth.rabc.extension.RabcCurrentUserService;
 import com.kewen.framework.auth.security.before.BeforeSecurityFilter;
 import com.kewen.framework.auth.security.before.BeforeSecurityFilterProxy;
 import com.kewen.framework.auth.security.before.WebGlobalExceptionHandlerFilter;
@@ -12,7 +10,6 @@ import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.service.RabcSecurityUserDetailsService;
-import com.kewen.framework.auth.security.service.SecurityRabcCurrentUserService;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -43,19 +40,11 @@ public class SecurityBeanConfig {
     }
 
 
-    @Bean
-    @ConditionalOnClass(RabcSecurityUserDetailsService.class)
-    SecurityUserDetailsService securityUserDetailsService(SysUserComposite sysUserComposite){
-        RabcSecurityUserDetailsService service = new RabcSecurityUserDetailsService();
-        service.setSysUserComposite(sysUserComposite);
-        return service;
-    };
     @Bean(autowire = Autowire.BY_TYPE)
-    @ConditionalOnMissingBean(RabcCurrentUserService.class)
-    RabcCurrentUserService rabcCurrentUserService(){
-        return new SecurityRabcCurrentUserService();
-    }
-
+    @ConditionalOnClass(RabcSecurityUserDetailsService.class)
+    SecurityUserDetailsService securityUserDetailsService(){
+        return new RabcSecurityUserDetailsService();
+    };
     @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
     PasswordEncoder passwordEncoder() {
