@@ -14,6 +14,8 @@ import lombok.EqualsAndHashCode;
 public class Role extends AbstractIdNameFlagAuthEntity<Long> {
 
 
+    private static final long serialVersionUID = 7783176371589001528L;
+
     public Role() {
         super();
     }

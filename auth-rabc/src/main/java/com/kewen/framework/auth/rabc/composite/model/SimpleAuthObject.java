@@ -1,9 +1,9 @@
 package com.kewen.framework.auth.rabc.composite.model;
 
 
-import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.extension.AbstractAuthObject;
 import com.kewen.framework.auth.core.extension.IFlagAuthEntity;
+import com.kewen.framework.auth.core.model.BaseAuth;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,6 +18,7 @@ import java.util.*;
 @Data
 public class SimpleAuthObject extends AbstractAuthObject {
 
+    private static final long serialVersionUID = 842909202036381753L;
     /**
      * 用户集合
      */

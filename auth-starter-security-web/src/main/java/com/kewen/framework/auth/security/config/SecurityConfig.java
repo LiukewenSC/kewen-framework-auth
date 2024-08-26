@@ -103,14 +103,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .maximumSessions(loginProperties.getMaximumSessions())
                     .maxSessionsPreventsLogin(loginProperties.getMaxSessionsPreventsLogin()).and()
                     .and()
+                .rememberMe().alwaysRemember(true).and()
                 .csrf().disable()
                 //.cors().configurationSource(corsConfigurationSource()).and()
-                //这里添加一个处于最顶端的异常处理过滤器，用来处理默认拦截器未到时发生的异常，
-                // 默认的过滤器一般在倒数第二个处理，前面十多个过滤器中的异常都不会捕获
-                // WebGlobalExceptionHandlerFilter 已经移动至BeforeSecurityFilter中实现全局控制
-                // todo 这里就是封装一层request以便获取session ，session失效的问题存在
-                //.addFilterBefore(new TokenSessionRequestFilter(loginProperties.getTokenParameter()), WebAsyncManagerIntegrationFilter.class)
-                //这里添加权限用户上下文过滤器
                 .addFilterAfter(new AuthUserContextFilter(loginProperties.getCurrentUserUrl(),resultResolverProvider,objectMapper), JsonLoginFilter.class)
         ;
     }

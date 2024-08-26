@@ -2,6 +2,7 @@ package com.kewen.framework.auth.core.model;
 
 import org.springframework.util.CollectionUtils;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Collection;
  * @author kewen
  * @since 2023-12-27
  */
-public interface IAuthObject {
+public interface IAuthObject extends Serializable {
 
     default boolean isEmpty(){
         return CollectionUtils.isEmpty(listBaseAuth());

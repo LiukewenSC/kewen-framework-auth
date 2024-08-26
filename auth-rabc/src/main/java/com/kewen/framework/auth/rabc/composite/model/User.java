@@ -10,6 +10,8 @@ import com.kewen.framework.auth.core.extension.AbstractIdNameFlagAuthEntity;
 public class User extends AbstractIdNameFlagAuthEntity<Long> {
 
 
+    private static final long serialVersionUID = 1054682942113759074L;
+
     public User() {
         super();
     }

@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 @Data
 public class Dept extends AbstractIdNameFlagAuthEntity<Long> {
 
+    private static final long serialVersionUID = 6638347959892346419L;
 
     public Dept() {
         super();
