@@ -10,15 +10,24 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author kewen
  * @since 2024-07-02
  */
-@ConfigurationProperties("kewen-framework.security.login")
+@ConfigurationProperties("kewen-framework.auth.security.login")
 @Data
 public class SecurityLoginProperties {
     /**
      * 登录的url
      */
     private String loginUrl = "/login";
+    /**
+     * 用户名参数名
+     */
     private String usernameParameter = "username";
+    /**
+     * 密码参数名
+     */
     private String passwordParameter = "password";
+    /**
+     * 当前用户登录
+     */
     private String currentUserUrl = "/currentUser";
 
     /**

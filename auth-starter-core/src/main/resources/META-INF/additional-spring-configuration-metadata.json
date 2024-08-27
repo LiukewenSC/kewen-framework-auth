@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "kewen-framework.auth.cache-auth",
+      "description": "是否缓存菜单.",
+      "type": "java.lang.Boolean",
+      "defaultValue": false
+    }
+  ]
+}

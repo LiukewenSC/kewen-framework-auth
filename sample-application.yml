@@ -1,6 +1,4 @@
 kewen-framework:
-  environment:
-    prod: false
   auth:
     auth-data-table:
       table-name: sys_auth_data
@@ -10,6 +8,7 @@ kewen-framework:
       description-column: description
       business-function-column: business_function
       operate-column: operate
+    cache-auth: false  # 是否缓存菜单权限
   security:
     login:
       login-url: /login                 #登录地址
@@ -18,4 +17,3 @@ kewen-framework:
       max-sessions-prevents-login: true # 是否不允许挤下线
       username-parameter: username      # username参数
       password-parameter: password      # password参数
-      token-parameter: Authorization    # token请求头参数

@@ -44,7 +44,7 @@ public class DefaultSysAuthMenuComposite implements SysAuthMenuComposite {
     @Autowired
     private SysAuthMenuMpService menuAuthService;
 
-    @Value("${kewen-framework.environment.prod:false}")
+    @Value("${kewen-framework.auth.cache-auth:false}")
     private boolean isCache = false;
 
     @Autowired
