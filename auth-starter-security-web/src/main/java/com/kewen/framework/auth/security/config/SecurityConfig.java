@@ -13,12 +13,14 @@ import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -103,7 +105,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .maximumSessions(loginProperties.getMaximumSessions())
                     .maxSessionsPreventsLogin(loginProperties.getMaxSessionsPreventsLogin()).and()
                     .and()
-                .rememberMe().alwaysRemember(true).and()
+                .rememberMe(rememberMeConfigurer -> {
+                    ApplicationContext applicationContext = getApplicationContext();
+                    RememberMeServices ifAvailable = applicationContext.getBeanProvider(RememberMeServices.class).getIfAvailable();
+                    if (ifAvailable != null) {
+                        rememberMeConfigurer.rememberMeServices(ifAvailable);
+                    }
+                })
                 .csrf().disable()
                 //.cors().configurationSource(corsConfigurationSource()).and()
                 .addFilterAfter(new AuthUserContextFilter(loginProperties.getCurrentUserUrl(),resultResolverProvider,objectMapper), JsonLoginFilter.class)
