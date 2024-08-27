@@ -1,9 +1,7 @@
 package com.kewen.framework.auth.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kewen.framework.auth.security.before.BeforeSecurityFilter;
-import com.kewen.framework.auth.security.before.BeforeSecurityFilterProxy;
-import com.kewen.framework.auth.security.before.WebGlobalExceptionHandlerFilter;
+import com.kewen.framework.auth.security.filter.WebSecurityGlobalExceptionHandlerFilter;
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
 import com.kewen.framework.auth.security.response.DefaultSecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
@@ -13,6 +11,7 @@ import com.kewen.framework.auth.security.service.RabcSecurityUserDetailsService;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -25,18 +24,12 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class SecurityBeanConfig {
 
     /**
-     *  执行在SpringSecurity前面的过滤器链
+     * 在SpringSecurity之前的过滤器，最后保底处理异常，保证每个异常都会抛出，不会走 Tomcat的 /error重定向
      */
     @Bean
-    BeforeSecurityFilterProxy beforeSecurityFilter(ObjectProvider<BeforeSecurityFilter> beforeSecurityFilterProvider){
-        return new BeforeSecurityFilterProxy(beforeSecurityFilterProvider);
-    }
-    /**
-     * 在SpringSecurity之前的过滤器，处理最后的逻辑
-     */
-    @Bean
-    WebGlobalExceptionHandlerFilter WebGlobalExceptionHandlerFilter(HandlerExceptionResolver handlerExceptionResolver){
-        return new WebGlobalExceptionHandlerFilter(handlerExceptionResolver);
+    @ConditionalOnBean(HandlerExceptionResolver.class)
+    WebSecurityGlobalExceptionHandlerFilter webSecurityGlobalExceptionHandlerFilter(HandlerExceptionResolver handlerExceptionResolver){
+        return new WebSecurityGlobalExceptionHandlerFilter(handlerExceptionResolver);
     }
 
 

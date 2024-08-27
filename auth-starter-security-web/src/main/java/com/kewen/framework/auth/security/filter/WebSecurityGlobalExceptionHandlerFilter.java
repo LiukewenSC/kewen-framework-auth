@@ -1,13 +1,14 @@
-package com.kewen.framework.auth.security.before;
+package com.kewen.framework.auth.security.filter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,17 +18,18 @@ import java.io.PrintWriter;
  * @author kewen
  * @since 2024-07-10
  */
-public class WebGlobalExceptionHandlerFilter  implements BeforeSecurityFilter {
+@Order(-101)
+public class WebSecurityGlobalExceptionHandlerFilter extends OncePerRequestFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(WebGlobalExceptionHandlerFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(WebSecurityGlobalExceptionHandlerFilter.class);
     HandlerExceptionResolver handlerExceptionResolver;
 
-    public WebGlobalExceptionHandlerFilter(HandlerExceptionResolver handlerExceptionResolver) {
+    public WebSecurityGlobalExceptionHandlerFilter(HandlerExceptionResolver handlerExceptionResolver) {
         this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
-    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)  {
         String requestURI = request.getRequestURI();
         if (requestURI.startsWith("/error")) {
             log.error("又跑到了错误页面");
@@ -57,4 +59,5 @@ public class WebGlobalExceptionHandlerFilter  implements BeforeSecurityFilter {
             }
         }
     }
+
 }

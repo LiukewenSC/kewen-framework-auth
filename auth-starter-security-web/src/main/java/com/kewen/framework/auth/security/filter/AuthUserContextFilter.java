@@ -21,7 +21,8 @@ import java.util.Optional;
 
 /**
  * 用户权限上下文，过滤器，添加用户权限上下文，这个是在登录之后进行
- * 即在{@link com.kewen.framework.auth.security.filter.JsonLoginFilter}之后
+ * 因为涉及到rememberMe，因此需要在remember之后进行处理，
+ * 那这里就直接在{@link org.springframework.security.web.session.SessionManagementFilter}后面执行了
  *
  * @author kewen
  * @since 2024-07-02
@@ -51,7 +52,10 @@ public class AuthUserContextFilter extends OncePerRequestFilter {
                 throw new NoLoginException("No SecurityUser found");
             }
             Object currentUser = principalOptional.get();
-            Object resolver = resultResolver.resolver(request, response, ((SecurityUser) currentUser));
+            SecurityUser securityUser = (SecurityUser) currentUser;
+            //清除密码
+            securityUser.setPassword("");
+            Object resolver = resultResolver.resolver(request, response, securityUser);
             writeResponseBody(response,resolver);
             return;
         }
