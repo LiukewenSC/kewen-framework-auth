@@ -9,11 +9,11 @@ kewen-framework:
       business-function-column: business_function
       operate-column: operate
     cache-auth: false  # 是否缓存菜单权限
-  security:
-    login:
-      login-url: /login                 #登录地址
-      current-user-url: /currentUser    #当前用户接口地址
-      maximum-sessions: 1               #最大session数量
-      max-sessions-prevents-login: true # 是否不允许挤下线
-      username-parameter: username      # username参数
-      password-parameter: password      # password参数
+    security:
+      login:
+        login-url: /login                 #登录地址
+        current-user-url: /currentUser    #当前用户接口地址
+        maximum-sessions: 1               #最大session数量
+        max-sessions-prevents-login: true # 是否不允许挤下线
+        username-parameter: username      # username参数
+        password-parameter: password      # password参数

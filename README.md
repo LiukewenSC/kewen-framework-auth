@@ -60,12 +60,12 @@
 <dependencies>
    <dependency>
       <groupId>com.kewen.framework.auth</groupId>
-      <artifactId>auth-starter-security-web</artifactId>
+      <artifactId>auth-spring-boot-starter</artifactId>
       <version>1.0-SNAPSHOT</version>
    </dependency>
    <dependency>
       <groupId>com.kewen.framework.auth</groupId>
-      <artifactId>auth-starter-rabc</artifactId>
+      <artifactId>auth-rabc-spring-boot-starter</artifactId>
       <version>1.0-SNAPSHOT</version>
    </dependency>
    <dependency>
