@@ -11,9 +11,9 @@
     <modules>
         <module>auth-core</module>
         <module>auth-rabc</module>
-        <module>auth-starter-core</module>
-        <module>auth-starter-rabc</module>
-        <module>auth-starter-security-web</module>
+        <module>auth-core-spring-boot-starter</module>
+        <module>auth-rabc-spring-boot-starter</module>
+        <module>auth-spring-boot-starter</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
     <properties>
@@ -43,7 +43,7 @@
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>auth-starter-core</artifactId>
+                <artifactId>auth-core-spring-boot-starter</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
@@ -53,12 +53,12 @@
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>auth-starter-rabc</artifactId>
+                <artifactId>auth-rabc-spring-boot-starter</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>auth-starter-security-web</artifactId>
+                <artifactId>auth-spring-boot-starter</artifactId>
                 <version>${framework-version}</version>
             </dependency>
 
