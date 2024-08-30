@@ -20,35 +20,35 @@ public class RabcRoleController {
 
     @GetMapping("/list")
     @AuthMenu(name = "角色列表")
-    public Result listRole(){
+    public RabcResult listRole(){
         List<SysRole> list = sysRoleMpService.list();
-        return Result.success(list);
+        return RabcResult.success(list);
     }
     @GetMapping("/page")
     @AuthMenu(name = "角色分页")
-    public Result pageRole(@Validated PageReq req){
+    public RabcResult pageRole(@Validated PageReq req){
         PageResult<SysRole> sysRolePageResult = PageConverter.pageAndConvert(req, sysRoleMpService);
-        return Result.success(sysRolePageResult);
+        return RabcResult.success(sysRolePageResult);
     }
     @PostMapping("/add")
     @AuthMenu(name = "添加角色")
-    public Result add(@RequestBody SysRole sysRole){
+    public RabcResult add(@RequestBody SysRole sysRole){
         boolean b = sysRoleMpService.save(sysRole);
-        return Result.success(b);
+        return RabcResult.success(b);
     }
     @PostMapping("/update")
     @AuthMenu(name = "修改角色")
-    public Result update(@RequestBody SysRole sysUser){
+    public RabcResult update(@RequestBody SysRole sysUser){
         if (sysUser.getId()==null){
             throw new RuntimeException("用户ID为空");
         }
         boolean b = sysRoleMpService.updateById(sysUser);
-        return Result.success(b);
+        return RabcResult.success(b);
     }
     @PostMapping("/delete")
     @AuthMenu(name = "删除角色")
-    public Result delete(@RequestBody @Validated IdReq idReq){
+    public RabcResult delete(@RequestBody @Validated IdReq idReq){
         boolean b = sysRoleMpService.removeById(idReq.getId());
-        return Result.success(b);
+        return RabcResult.success(b);
     }
 }

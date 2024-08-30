@@ -20,34 +20,34 @@ public class RabcDeptController {
 
     @GetMapping("/list")
     @AuthMenu(name = "部门列表")
-    public Result listDept(){
+    public RabcResult listDept(){
         List<SysDept> list = sysDeptMpService.list();
-        return Result.success(list);
+        return RabcResult.success(list);
     }
     @GetMapping("/page")
     @AuthMenu(name = "部门分页")
-    public Result pageDept(@Validated PageReq req){
-        return Result.success(PageConverter.pageAndConvert(req, sysDeptMpService));
+    public RabcResult pageDept(@Validated PageReq req){
+        return RabcResult.success(PageConverter.pageAndConvert(req, sysDeptMpService));
     }
     @PostMapping("/add")
     @AuthMenu(name = "添加部门")
-    public Result add(@RequestBody SysDept sysDept){
+    public RabcResult add(@RequestBody SysDept sysDept){
         boolean b = sysDeptMpService.save(sysDept);
-        return Result.success(b);
+        return RabcResult.success(b);
     }
     @PostMapping("/update")
     @AuthMenu(name = "部门列表")
-    public Result update(@RequestBody SysDept sysDept){
+    public RabcResult update(@RequestBody SysDept sysDept){
         if (sysDept.getId()==null){
             throw new RuntimeException("用户ID为空");
         }
         boolean b = sysDeptMpService.updateById(sysDept);
-        return Result.success(b);
+        return RabcResult.success(b);
     }
     @PostMapping("/delete")
     @AuthMenu(name = "删除部门")
-    public Result delete(@RequestBody @Validated IdReq idReq){
+    public RabcResult delete(@RequestBody @Validated IdReq idReq){
         boolean b = sysDeptMpService.removeById(idReq.getId());
-        return Result.success(b);
+        return RabcResult.success(b);
     }
 }

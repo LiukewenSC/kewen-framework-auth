@@ -3,10 +3,7 @@ package com.kewen.framework.auth.security.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.filter.WebSecurityGlobalExceptionHandlerFilter;
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
-import com.kewen.framework.auth.security.response.DefaultSecurityAuthenticationSuccessHandler;
-import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
-import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
-import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessHandler;
+import com.kewen.framework.auth.security.response.*;
 import com.kewen.framework.auth.security.service.RabcSecurityUserDetailsService;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.ObjectProvider;
@@ -49,7 +46,7 @@ public class SecurityBeanConfig {
     @Bean
     @ConditionalOnMissingBean(SecurityAuthenticationSuccessHandler.class)
     SecurityAuthenticationSuccessHandler securityAuthenticationSuccessHandler(
-            ObjectProvider<ResponseBodyResultResolver> resultResolverProvider, ObjectMapper objectMapper){
+            AuthenticationSuccessResultResolver resultResolverProvider, ObjectMapper objectMapper){
         return new DefaultSecurityAuthenticationSuccessHandler(resultResolverProvider,objectMapper);
     }
 
@@ -64,4 +61,9 @@ public class SecurityBeanConfig {
         return new PermitUrlContainer();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(AuthenticationSuccessResultResolver.class)
+    AuthenticationSuccessResultResolver authenticationSuccessResultResolver(){
+        return new NoneAuthenticationSuccessResultResolver();
+    }
 }

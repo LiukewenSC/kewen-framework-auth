@@ -2,7 +2,7 @@ package com.kewen.framework.auth.rabc.controller;
 
 import com.kewen.framework.auth.core.annotation.AuthMenu;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
-import com.kewen.framework.auth.rabc.model.Result;
+import com.kewen.framework.auth.rabc.model.RabcResult;
 import com.kewen.framework.auth.rabc.model.resp.MenuRouteResp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +22,9 @@ public class RabcMenuRouteController {
      * @return
      */
     @GetMapping("/tree")
-    public Result<List<MenuRouteResp>> routeTrees(){
+    public RabcResult<List<MenuRouteResp>> routeTrees(){
         List<MenuRouteResp> menuTree = sysAuthMenuComposite.getRouteAuthMenuTree(true);
-        return Result.success(menuTree);
+        return RabcResult.success(menuTree);
     }
 
 }

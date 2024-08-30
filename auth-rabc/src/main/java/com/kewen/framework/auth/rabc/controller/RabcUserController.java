@@ -25,33 +25,33 @@ public class RabcUserController {
 
     @GetMapping("/list")
     @AuthMenu(name = "用户列表")
-    public Result listUser(){
+    public RabcResult listUser(){
         List<SysUser> list = sysUserMpService.list();
-        return Result.success(list);
+        return RabcResult.success(list);
     }
     @GetMapping("/page")
     @AuthMenu(name = "分页")
-    public Result pageUser(@Validated PageReq pageReq){
+    public RabcResult pageUser(@Validated PageReq pageReq){
         PageResult<SysUser> result = PageConverter.pageAndConvert(pageReq,sysUserMpService);
-        return Result.success(result);
+        return RabcResult.success(result);
     }
     @PostMapping("/add")
     @AuthMenu(name = "新增")
-    public Result add(@RequestBody SysUser sysUser){
+    public RabcResult add(@RequestBody SysUser sysUser){
         boolean b = sysUserMpService.save(sysUser);
-        return Result.success(b);
+        return RabcResult.success(b);
     }
     @PostMapping("/update")
-    public Result update(@RequestBody SysUser sysUser){
+    public RabcResult update(@RequestBody SysUser sysUser){
         if (sysUser.getId()==null){
             throw new RuntimeException("用户ID为空");
         }
         boolean b = sysUserMpService.updateById(sysUser);
-        return Result.success(b);
+        return RabcResult.success(b);
     }
     @PostMapping("/delete")
-    public Result delete(@RequestBody @Validated IdReq idReq){
+    public RabcResult delete(@RequestBody @Validated IdReq idReq){
         boolean b = sysUserMpService.removeById(idReq.getId());
-        return Result.success(b);
+        return RabcResult.success(b);
     }
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.security.exception.NoLoginException;
 import com.kewen.framework.auth.security.model.SecurityUser;
-import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
+import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -31,11 +31,11 @@ public class AuthUserContextFilter extends OncePerRequestFilter {
 
     private String currentUserUrl;
     private ObjectMapper objectMapper;
-    private ResponseBodyResultResolver resultResolver;
+    private AuthenticationSuccessResultResolver resultResolver;
 
-    public AuthUserContextFilter(String currentUserUrl, ObjectProvider<ResponseBodyResultResolver> resultResolverProvider , ObjectMapper objectMapper) {
+    public AuthUserContextFilter(String currentUserUrl, AuthenticationSuccessResultResolver resultResolver , ObjectMapper objectMapper) {
         this.currentUserUrl = currentUserUrl;
-        this.resultResolver = resultResolverProvider.getIfAvailable();
+        this.resultResolver = resultResolver;
         this.objectMapper = objectMapper;
     }
 
@@ -55,8 +55,8 @@ public class AuthUserContextFilter extends OncePerRequestFilter {
             SecurityUser securityUser = (SecurityUser) currentUser;
             //清除密码
             securityUser.setPassword("");
-            Object resolver = resultResolver.resolver(request, response, securityUser);
-            writeResponseBody(response,resolver);
+            Object result = resultResolver.resolver(request, response, securityUser);
+            writeResponseBody(response,result);
             return;
         }
         principalOptional.ifPresent(principal -> {

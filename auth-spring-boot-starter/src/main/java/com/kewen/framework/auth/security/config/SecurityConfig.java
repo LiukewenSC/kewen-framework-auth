@@ -5,7 +5,7 @@ import com.kewen.framework.auth.security.configurer.JsonLoginAuthenticationFilte
 import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
 import com.kewen.framework.auth.security.filter.AuthUserContextFilter;
 import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
-import com.kewen.framework.auth.security.response.ResponseBodyResultResolver;
+import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationExceptionResolverHandler;
 import com.kewen.framework.auth.security.response.SecurityAuthenticationSuccessHandler;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     PermitUrlContainer permitUrlContainer;
 
     @Autowired
-    ObjectProvider<ResponseBodyResultResolver> resultResolverProvider ;
+    AuthenticationSuccessResultResolver resultResolverProvider ;
 
     @Autowired
     ObjectMapper objectMapper;

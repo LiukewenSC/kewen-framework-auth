@@ -5,7 +5,7 @@ import com.kewen.framework.auth.core.context.CurrentUser;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.rabc.extension.RabcCurrentUserService;
-import com.kewen.framework.auth.rabc.model.Result;
+import com.kewen.framework.auth.rabc.model.RabcResult;
 import com.kewen.framework.auth.rabc.model.req.UpdatePasswordReq;
 import com.kewen.framework.auth.rabc.model.resp.MenuRouteResp;
 import org.springframework.beans.BeansException;
@@ -33,15 +33,15 @@ public class RabcCurrentUserController implements ApplicationContextAware {
     RabcCurrentUserService rabcCurrentUserService;
 
     @GetMapping("/routeMenus")
-    public Result<List<MenuRouteResp>> routeTrees(){
+    public RabcResult<List<MenuRouteResp>> routeTrees(){
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
         List<MenuRouteResp> menuTree = sysAuthMenuComposite.getRouteAuthMenuTree(auths);
-        return Result.success(menuTree);
+        return RabcResult.success(menuTree);
     }
     @PostMapping("/updatePassword")
-    public Result updatePassword(@RequestBody @Validated UpdatePasswordReq req){
+    public RabcResult updatePassword(@RequestBody @Validated UpdatePasswordReq req){
         rabcCurrentUserService.updatePassword(AuthUserContext.getCurrentUser(),req.getOldPassword(), req.getNewPassword());
-        return Result.success();
+        return RabcResult.success();
     }
 
 

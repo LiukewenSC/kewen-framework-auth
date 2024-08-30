@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +24,11 @@ public class DefaultSecurityAuthenticationSuccessHandler implements SecurityAuth
 
     private static final Logger log = LoggerFactory.getLogger(DefaultSecurityAuthenticationSuccessHandler.class);
     private ObjectMapper objectMapper;
-    private ResponseBodyResultResolver resultResolver;
+    private AuthenticationSuccessResultResolver resultResolver;
 
-    public DefaultSecurityAuthenticationSuccessHandler(ObjectProvider<ResponseBodyResultResolver> resultResolverProvider , ObjectMapper objectMapper) {
+    public DefaultSecurityAuthenticationSuccessHandler(AuthenticationSuccessResultResolver resultResolver , ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.resultResolver = resultResolverProvider.getIfAvailable();
+        this.resultResolver = resultResolver;
     }
 
     /**
@@ -53,12 +51,7 @@ public class DefaultSecurityAuthenticationSuccessHandler implements SecurityAuth
         user.setLoginTime(LocalDateTime.now());
         //清空密码
         user.setPassword("");
-        Object result= principal;
-        if (resultResolver !=null){
-            result = resultResolver.resolver(request,response,user);
-        } else {
-            log.warn("No ResultResolver available , you will return original SecurityUser");
-        }
+        Object result =  resultResolver.resolver(request,response,user);
         writeResponseBody(response, result);
     }
     private void writeResponseBody(HttpServletResponse response,Object result) throws IOException {
@@ -79,10 +72,7 @@ public class DefaultSecurityAuthenticationSuccessHandler implements SecurityAuth
      */
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        Object result = null;
-        if (resultResolver !=null){
-            result = resultResolver.resolver(request,response,null);
-        }
+        Object result = resultResolver.resolver(request,response,null);
         writeResponseBody(response, result);
     }
 }

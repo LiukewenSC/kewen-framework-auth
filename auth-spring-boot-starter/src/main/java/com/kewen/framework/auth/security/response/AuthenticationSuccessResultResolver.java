@@ -1,17 +1,17 @@
 package com.kewen.framework.auth.security.response;
 
-import com.kewen.framework.auth.security.model.SecurityUser;
 import org.springframework.lang.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 认证成功用户转化类，处理用户的额外信息
+ * 认证相关成功用户转化解析器，
+ * 用于认证成功返回、登出成功返回、获取当前用户等在security层面不经过业务的数据返回封装
  * @author kewen
  * @since 2024-07-04
  */
-public interface ResponseBodyResultResolver {
+public interface AuthenticationSuccessResultResolver {
     /**
      * 处理返回格式
      * @param request  请求
