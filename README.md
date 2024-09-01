@@ -9,9 +9,35 @@
 
 本框架主要是用`Java+Maven+Spring+SpringMVC+SpringBoot+SpringSecurity+MybatisPlus+Mysql`来搭建的，主要基于Spring5和SpringBoot2搭建。
 
-# 2. 核心概念
+# 2. 特性
 
-## 2.1. 权限说明
+## 注解驱动菜单权限和数据权限
+
+只通过注解的形式则可以完成菜单权限的验证和数据权限的验证及范围查询
+
+## 基于用户-角色-部门的默认实现
+
+实现了用户-角色-部门的rabc用户体系的实现
+
+## 整合SpringSecurity加强安全
+
+引入SpringSecurity加强安全
+
+- 修改SpringSecurity的原生登录，改为json登录
+- 解决SpringSecurity异常的重定向/error问题，统一通过springmvc异常处理方式
+- 添加`@SecurityIgnore`白名单及配置文件白名单方式，其余全部拦截
+
+## 菜单权限注解启动时添加新的api路径入库
+
+启动时将需要验证的菜单入库到数据库表中，启动之后配置对应的菜单权限即可，无需逐一配置API信息。
+
+## 预留诸多扩展满足差异化的实现
+
+预留出扩展接口，方便自行实现定制化需求
+
+# 3. 核心概念
+
+## 3.1. 权限说明
 
 **菜单权限**：访问某个菜单需要的权限。框架中涉及到有前端访问路由的菜单路由权限和请求后端接口的菜单API请求权限。通过对菜单的控制完成粗粒度的鉴权，达到可见/不可见的效果。
 
@@ -19,7 +45,7 @@
 
 **数据权限-操作类型** 数据的权限应该还需要进一步的划分，一条数据对应不同的操作应该有不同的权限。如：会议室可以编辑，也可以预约，这两个操作的基础数据都是会议室，但是编辑应当由管理员来执行，而预约应当大部分人都可以执行的，它肯定不应该只能管理员可以预约。
 
-## 2.2. 核心注解
+## 3.2. 核心注解
 
 主要涉及到4个核心注解，1个菜单注解+3个数据注解，分别对应不同的功能实现
 
@@ -28,22 +54,39 @@
 `@AuthDataOperation`：数据操作注解，加上此注解会在请求时校验是否对单条数据有操作权限，避免通过接口进行越权攻击，一般业务配合`@AuthDataRange`使用。
 `@AuthDataAuthEdit`： 数据编辑注解，加上此注解会直接把请求中的权限编辑到权限表中，此注解依赖菜单的权限校验。
 
-## 2.3. 核心调用类
+## 3.3. 核心调用类
 
 `AnnotationAuthHandler<ID>` 注解核心控制器，注解对应的所有实现由此Handler完成。其中，泛型ID是指业务权限中的data_id类型`String Integer Long`中的一种
 `AuthDataAdaptor<ID>` 业务调用适配器，可以不使用注解`@AuthDataAuthEdit`来编辑权限了，更灵活。其中，泛型ID是指业务权限中的data_id类型`String Integer Long`中的一种
 
-# 3. 快速开始
+# 4. 快速开始
 
-框架通过maven引入，下载本框架工程然后`npm install`到本地maven仓库。这样，一个框架的依赖包就安装好了。
+1.下载本框架工程然后`mvn install`到本地maven仓库。
 
-## 3.1. 启动示例工程
+2.工程引入,通过继承`auth-parent`，引入`auth-spring-boot-starter`模块即可
+
+```xml
+<parent>
+   <groupId>com.kewen.framework.auth</groupId>
+   <artifactId>auth-parent</artifactId>
+   <version>1.0-SNAPSHOT</version>
+</parent>
+
+<dependencies>
+   <dependency>
+      <groupId>com.kewen.framework.auth</groupId>
+      <artifactId>auth-spring-boot-starter</artifactId>
+   </dependency>
+</dependencies>
+```
+
+## 4.1. 启动示例工程
 
 框架配置了一个示例工程，受mysql开源协议影响，示例工程已经移动至[kewen-framework-auth-sample](https://gitee.com/LiuKewenSc/kewen-framework-auth-sample)下，可以查看其**README.md**文档
 
 此外，框架还搭配了我的另外一个前端模板项目[kewen-web-admin](https://gitee.com/LiuKewenSc/kewen-web-admin)，可以fork到自己工程中也可以复制下来，然后启动。
 
-## 3.2. 引入到自己的工程
+## 4.2. 引入到自己的工程
 
 框架自带了一套基于RABC(User-Dept-Role)的权限实现，同时配置了安全模块，可以直接引入依赖即可完成，下面说一下快速启动的步骤
 
@@ -87,7 +130,7 @@ spring.datasource.password=framework123456_
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 ```
 
-## 3.3. 应用可选配置
+## 4.3. 应用可选配置
 
 然后应用中有部分可选配置，可以参考`kewen-framework-auth-sample`启动示例工程选择使用
 `ExceptionAdviceHandler`主要用于返回异常，方便在报错时可以准确处理异常
@@ -95,13 +138,13 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 另外，示例工程还包含了代码生成相关的类，可以忽略不管，新的表需要一键生成MybatisPlus代码时也可以是使用，后续来完善这部分功能
 
-## 3.4. 启动
+## 4.4. 启动
 
 完成了以上配置，启动普通的springboot项目即可。
 
 快速开始的内容中包含了完全实现了功能的最小配置，引入即可使用。一个自带的权限管理功能引入完成。
 
-# 4. 项目结构
+# 5. 项目结构
 
 ```txt
 kewen-framework-auth
@@ -132,17 +175,17 @@ kewen-framework-auth
 │    ├─composite                    拆分服务，根据数据、菜单、登录人维度各自完成对应的服务
 │    └─controller                   RABC用户、部门、角色相关的业务逻辑，方便维护
 |
-├─auth-starter-core   
+├─auth-core-spring-boot-starter   
 │    ├─config                       核心注解相关的启动类，主要是注解及其依赖相关的配置
 │    ├─init                         初始化菜单API并入库
 │    └─properties                   表结构相关的参数定义
 |
-├─auth-starter-rabc                 RABC快速配置模块，以SpringBoot方式配置
+├─auth-rabc-spring-boot-starter                 RABC快速配置模块，以SpringBoot方式配置
 │    └─config                       配置
 │         ├─AuthRabcConfig          默认的对象配置，配置auth-rabc模块的相关的Bean
 │         └─AuthRabcScanConfig      RABC配置扫描，配置相关Bean
 |
-├─auth-starter-security-web         框架安全相关的配置，同时包括登录
+├─auth-spring-boot-starter         框架安全相关的配置，同时包括登录
 │    ├─annotation
 │    │    └─SecurityIgnore          忽略登录校验路径
 │    ├─before  
@@ -162,17 +205,19 @@ kewen-framework-auth
 │         ├─SecurityUserDetailsService 用户登录相关需要实现的类
 │         └─RabcSecurityUserDetailsService RABC方式默认实现的类
 |
-└─script(文件夹)
+└─docs(文件夹)
+     ├─properties                   示例配置文件
      └─sql                          RABC初始化数据库脚本文件
+     
 ```
 
-# 5. 技术选型
+# 6. 技术选型
 
 框架：本框架主要使用了`Spring+SpringMVC+SpringBoot+SpringSecurity+MybatisPlus` 相关框架完成基础框架的搭建
 构建工具：采用Maven作为构建工具，。
 数据库：采用Mysql作为后端数据库，但是框架本身是支持其他类型的数据库的，因此也可以自行选择数据库（需要修改初始化的sql脚本，可能还需要修改自定义Mapper中的sql）
 
-# 6. 注解使用
+# 7. 注解使用
 
 前面我们说道，框架主要由4个注解实现，
 `@AuthMenu`：菜单权限注解，判断登录人是否能访问注解对应的API接口。
@@ -180,7 +225,7 @@ kewen-framework-auth
 `@AuthDataOperation`：数据操作注解，加上此注解会在请求时校验是否对单条数据有操作权限，避免通过接口进行越权攻击，一般业务配合@AuthDataRange使用。
 `@AuthDataAuthEdit`： 数据编辑注解，加上此注解会直接把请求中的权限编辑到权限表中，此注解依赖菜单的权限校验。
 
-## 6.1. `@AuthMenu`
+## 7.1. `@AuthMenu`
 
 注解如下：
 
@@ -244,7 +289,7 @@ public @interface AuthMenu {
 
    此时`/testAnnoClassMenuController/hello`、`/testAnnoClassMenuController/hello2`均会加入API菜单校验
 
-## 6.2. `@AuthDataRange`
+## 7.2. `@AuthDataRange`
 
 注解如下：
 
@@ -401,7 +446,7 @@ LEFT JOIN (select * from dept d  where
 )  t2 ON t1.id = t2.id 
 ```
 
-## 6.3. `@AuthDataOperation`
+## 7.3. `@AuthDataOperation`
 
 注解如下：
 
@@ -459,7 +504,7 @@ public Result testDataEdit(@RequestBody EditIdDataEdit editBusinessData) {
 }
 ```
 
-## 6.4. `@AuthDataAuthEdit`
+## 7.4. `@AuthDataAuthEdit`
 
 注解如下：
 
@@ -513,7 +558,7 @@ public Result<EditIdDataAuthEdit> testDataAuthEdit(@RequestBody EditIdDataAuthEd
 
 也可以用`AuthDataAdaptor#editDataAuths()`来代替
 
-## 6.5. `AuthDataAdaptor` 数据权限适配器
+## 7.5. `AuthDataAdaptor` 数据权限适配器
 
 使用此可以不使用注解`@AuthDataAuthEdit`
 
@@ -541,20 +586,20 @@ public class AuthDataAdaptor<ID> {
 }
 ```
 
-# 7. 示例案例
+# 8. 示例案例
 
 示例案例新建工程`kewen-framework-auth-sample`中，可以参考此工程来引入及配置
 
-# 8. 高级配置扩展
+# 9. 高级配置扩展
 
 框架实现了基于RABC的权限体系，同时也预留了很多扩展点，这其实也是一个框架应该具有的基本要求。
 这里将从基础到复杂进行配置说明
 
-## 8.1. 安全登录相关
+## 9.1. 安全登录相关
 
 框架引入了SpringSecurity安全框架，大部分安全功能都是在SpringSecurity上进行扩展
 
-### 8.1.1. 登录相关的参数配置
+### 9.1.1. 登录相关的参数配置
 
 登录重写了SpringSecurity的表单登录逻辑，因为前后端分离项目本身就是使用json交互的，所以改成了json交互，
 可以自定义登录的API请求地址、username参数、password参数、token头参数、当前登录人接口、最大session数量、是否可以挤下线
@@ -574,7 +619,7 @@ kewen-framework:
 
 以上是基于yml配置的默认的值，不修改默认为以上的地址。
 
-### 8.1.2. 认证成功处理器
+### 9.1.2. 认证成功处理器
 
 在认证成功后，默认会提供一个成功返回的处理器`DefaultSecurityAuthenticationSuccessHandler`，将成功认证的数据经过转换写入输出流中。
 我们这里可以自定义一个成功返回解析器，也可以自定义成功处理器。一般只需要定义解析器就可以了。
@@ -624,7 +669,7 @@ kewen-framework:
    }
    ```
 
-### 8.1.3. 认证失败、授权失败处理器
+### 9.1.3. 认证失败、授权失败处理器
 
 认证失败的处理相对而言就简单了，框架封装了SpringMVC的异常解析器，只需要按照SpringMVC的异常处理`@ControllerAdvice` + `@ExceptionHandler` 就可以
 比如配置一下异常增强，
@@ -653,11 +698,11 @@ public class ExceptionAdviceHandler {
 
 也可以参考 **kewen-framework-auth-sample**下的`ExceptionAdviceHandler`
 
-## 8.2. 注解权限相关
+## 9.2. 注解权限相关
 
 注解定义了主体的逻辑，除了既定的配置外，不支持扩展，能扩展的主要是在它的处理器中以及处理器的实现逻辑
 
-### 8.2.1. 权限处理器`AnnotationAuthHandler`
+### 9.2.1. 权限处理器`AnnotationAuthHandler`
 
 `AnnotationAuthHandler`是权限校验和配置的实现类，它主要包含四个注解对应的校验方法。
 框架默认在auth-rabc中对其有一个RABC框架的实现，如果不需要的话也可以自己定义实现
@@ -722,18 +767,18 @@ public interface AnnotationAuthHandler<ID> {
 
 因此，如果用RABC权限体系的话一般不建议实现此接口，如有自定义的可以修改`RabcAnnotationAuthHandler`内部的一些逻辑
 
-### 8.2.2. `AbstractAuthDatraAnnotationAuthHandler`扩展
+### 9.2.2. `AbstractAuthDatraAnnotationAuthHandler`扩展
 
 AbstractAuthDatraAnnotationAuthHandler 本身实现了数据权限的相关操作功能，使用的是jdbcTemplate操作数据库。
 此类的配置主要是权限数据表的定义可以自己指定，并且全局统一
 
-### 8.2.3. `RabcAnnotationAuthHandler`内部的扩展
+### 9.2.3. `RabcAnnotationAuthHandler`内部的扩展
 
 内部扩展主要是在`SysAuthMenuComposite`和`SysAuthDataComposite`两个。
 
 - `SysAuthMenuComposite`承载了菜单相关的逻辑，默认实现是基于内存的菜单管理关系，这里可以扩展将其修改为基于redis的等。后续看情况单独抽离一个存储容器让其可以自定义
 
-## 8.3. RABC默认权限结构体的扩展
+## 9.3. RABC默认权限结构体的扩展
 
 RABC默认目前只实现了基于部门-用户-角色的三个维度的权限，且没有完成上下级的相关（后续拟加入上下级和复杂组合的权限实现）
 如果目前不满足也可以自行扩展基础类
@@ -825,7 +870,7 @@ public class EditIdDataAuthEdit implements IdDataAuthEdit<Long> {
 }
  ```
 
-# 9. 权限粒度说明
+# 10. 权限粒度说明
 
 - 数据创建、删除的权限应当由菜单权限控制，同时，需要有一个编辑接口专门编辑主权限（即创建之后交于其他人管理的最大权限，其他人应当可以管理除了主权限之外的信息），这样实现了管理分离
 - 菜单权限拥有对接口的最大控制，没有接口权限不能访问任何数据。建议在高级接口才使用菜单权限控制，其余的数据的操作接口，可以设置为所有人均拥有权限（避免两种权限搞混）

@@ -1,4 +1,4 @@
-package com.kewen.framework.auth.security.configurer;
+package com.kewen.framework.auth.security.extension;
 
 import com.kewen.framework.auth.security.annotation.SecurityIgnore;
 import lombok.extern.slf4j.Slf4j;

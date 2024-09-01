@@ -2,11 +2,10 @@ package com.kewen.framework.auth.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.filter.WebSecurityGlobalExceptionHandlerFilter;
-import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
+import com.kewen.framework.auth.security.extension.PermitUrlContainer;
 import com.kewen.framework.auth.security.response.*;
 import com.kewen.framework.auth.security.service.RabcSecurityUserDetailsService;
 import com.kewen.framework.auth.security.service.SecurityUserDetailsService;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

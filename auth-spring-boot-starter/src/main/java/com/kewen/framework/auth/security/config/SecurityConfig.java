@@ -2,7 +2,7 @@ package com.kewen.framework.auth.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kewen.framework.auth.security.configurer.JsonLoginAuthenticationFilterConfigurer;
-import com.kewen.framework.auth.security.configurer.PermitUrlContainer;
+import com.kewen.framework.auth.security.extension.PermitUrlContainer;
 import com.kewen.framework.auth.security.filter.AuthUserContextFilter;
 import com.kewen.framework.auth.security.properties.SecurityLoginProperties;
 import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
