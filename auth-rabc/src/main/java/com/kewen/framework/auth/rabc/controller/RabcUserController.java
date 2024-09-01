@@ -31,8 +31,8 @@ public class RabcUserController {
     }
     @GetMapping("/page")
     @AuthMenu(name = "分页")
-    public RabcResult pageUser(@Validated PageReq pageReq){
-        PageResult<SysUser> result = PageConverter.pageAndConvert(pageReq,sysUserMpService);
+    public RabcResult pageUser(@Validated RabcPageReq rabcPageReq){
+        RabcPageResult<SysUser> result = RabcPageConverter.pageAndConvert(rabcPageReq,sysUserMpService);
         return RabcResult.success(result);
     }
     @PostMapping("/add")
@@ -50,8 +50,8 @@ public class RabcUserController {
         return RabcResult.success(b);
     }
     @PostMapping("/delete")
-    public RabcResult delete(@RequestBody @Validated IdReq idReq){
-        boolean b = sysUserMpService.removeById(idReq.getId());
+    public RabcResult delete(@RequestBody @Validated RabcIdReq rabcIdReq){
+        boolean b = sysUserMpService.removeById(rabcIdReq.getId());
         return RabcResult.success(b);
     }
 }

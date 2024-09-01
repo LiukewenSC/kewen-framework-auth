@@ -26,9 +26,9 @@ public class RabcRoleController {
     }
     @GetMapping("/page")
     @AuthMenu(name = "角色分页")
-    public RabcResult pageRole(@Validated PageReq req){
-        PageResult<SysRole> sysRolePageResult = PageConverter.pageAndConvert(req, sysRoleMpService);
-        return RabcResult.success(sysRolePageResult);
+    public RabcResult pageRole(@Validated RabcPageReq req){
+        RabcPageResult<SysRole> sysRoleRabcPageResult = RabcPageConverter.pageAndConvert(req, sysRoleMpService);
+        return RabcResult.success(sysRoleRabcPageResult);
     }
     @PostMapping("/add")
     @AuthMenu(name = "添加角色")
@@ -47,8 +47,8 @@ public class RabcRoleController {
     }
     @PostMapping("/delete")
     @AuthMenu(name = "删除角色")
-    public RabcResult delete(@RequestBody @Validated IdReq idReq){
-        boolean b = sysRoleMpService.removeById(idReq.getId());
+    public RabcResult delete(@RequestBody @Validated RabcIdReq rabcIdReq){
+        boolean b = sysRoleMpService.removeById(rabcIdReq.getId());
         return RabcResult.success(b);
     }
 }

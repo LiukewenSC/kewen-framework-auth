@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class IdReq {
+public class RabcIdReq {
     @NotNull
     private Long id;
 }

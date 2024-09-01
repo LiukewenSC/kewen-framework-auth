@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class IdsReq {
+public class RabcIdsReq {
     @NotNull
     private List<Long> ids;
 }

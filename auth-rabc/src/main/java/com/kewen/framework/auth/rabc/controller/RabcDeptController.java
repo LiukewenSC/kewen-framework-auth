@@ -26,8 +26,8 @@ public class RabcDeptController {
     }
     @GetMapping("/page")
     @AuthMenu(name = "部门分页")
-    public RabcResult pageDept(@Validated PageReq req){
-        return RabcResult.success(PageConverter.pageAndConvert(req, sysDeptMpService));
+    public RabcResult pageDept(@Validated RabcPageReq req){
+        return RabcResult.success(RabcPageConverter.pageAndConvert(req, sysDeptMpService));
     }
     @PostMapping("/add")
     @AuthMenu(name = "添加部门")
@@ -46,8 +46,8 @@ public class RabcDeptController {
     }
     @PostMapping("/delete")
     @AuthMenu(name = "删除部门")
-    public RabcResult delete(@RequestBody @Validated IdReq idReq){
-        boolean b = sysDeptMpService.removeById(idReq.getId());
+    public RabcResult delete(@RequestBody @Validated RabcIdReq rabcIdReq){
+        boolean b = sysDeptMpService.removeById(rabcIdReq.getId());
         return RabcResult.success(b);
     }
 }

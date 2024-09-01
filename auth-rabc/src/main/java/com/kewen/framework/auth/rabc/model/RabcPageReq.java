@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class PageReq {
+public class RabcPageReq {
 
     /**
      * 页码，从1开始

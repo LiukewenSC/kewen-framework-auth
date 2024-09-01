@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class PageConverter {
+public class RabcPageConverter {
 
-    public static <T> Page<T> pageReq2BaomidouPage(PageReq pageReq) {
-        return new Page<>(pageReq.getPage(), pageReq.getSize());
+    public static <T> Page<T> pageReq2BaomidouPage(RabcPageReq rabcPageReq) {
+        return new Page<>(rabcPageReq.getPage(), rabcPageReq.getSize());
     }
 
     /**
@@ -22,7 +22,7 @@ public class PageConverter {
      * @param <T>
      * @return
      */
-    public static <T> PageResult<T> baomidouPage2PageResult(Page<T> page) {
+    public static <T> RabcPageResult<T> baomidouPage2PageResult(Page<T> page) {
         return baomidouPage2PageResult(page, page.getRecords());
     }
 
@@ -33,8 +33,8 @@ public class PageConverter {
      * @param <T>
      * @return
      */
-    public static <T> PageResult<T> baomidouPage2PageResult(Page page, List<T> data) {
-        return PageResult.of(page.getCurrent(),page.getSize(),page.getTotal(),data);
+    public static <T> RabcPageResult<T> baomidouPage2PageResult(Page page, List<T> data) {
+        return RabcPageResult.of(page.getCurrent(),page.getSize(),page.getTotal(),data);
     }
 
     /**
@@ -44,7 +44,7 @@ public class PageConverter {
      * @param <T> 数据类型
      * @return
      */
-    public static <T> PageResult<T> pageAndConvert(PageReq req, IService<T> service) {
+    public static <T> RabcPageResult<T> pageAndConvert(RabcPageReq req, IService<T> service) {
         return pageAndConvert(req, service, new Query<T>());
     }
 
@@ -56,7 +56,7 @@ public class PageConverter {
      * @param <T> 数据类型
      * @return
      */
-    public static <T> PageResult<T> pageAndConvert(PageReq req, IService<T> service, Query<T> query) {
+    public static <T> RabcPageResult<T> pageAndConvert(RabcPageReq req, IService<T> service, Query<T> query) {
         Page<T> baomidoPage = new Page<>(req.getPage(), req.getSize());
 
         Consumer<Page<T>> consumer = query == null ? null : query.getPageConsumer();
@@ -82,11 +82,11 @@ public class PageConverter {
      * @param <R> 返回参数
      * @return
      */
-    public static <T, R> PageResult<R> pageAndConvert(PageReq req, IService<T> service, Query<T> query, Function<List<T>, List<R>> function) {
-        PageResult<T> pageResult = pageAndConvert(req, service, query);
-        List<T> listT = pageResult.getData();
+    public static <T, R> RabcPageResult<R> pageAndConvert(RabcPageReq req, IService<T> service, Query<T> query, Function<List<T>, List<R>> function) {
+        RabcPageResult<T> rabcPageResult = pageAndConvert(req, service, query);
+        List<T> listT = rabcPageResult.getData();
         List<R> listR = function.apply(listT);
-        return PageResult.of(pageResult.getPage(), pageResult.getSize(), pageResult.getTotal(), listR);
+        return RabcPageResult.of(rabcPageResult.getPage(), rabcPageResult.getSize(), rabcPageResult.getTotal(), listR);
     }
 
     @Data
