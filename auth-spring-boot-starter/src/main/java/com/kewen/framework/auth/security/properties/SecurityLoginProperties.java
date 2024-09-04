@@ -29,13 +29,4 @@ public class SecurityLoginProperties {
      * 当前用户登录
      */
     private String currentUserUrl = "/currentUser";
-
-    /**
-     * 允许的最大session数量
-     */
-    private Integer maximumSessions = 1;
-    /**
-     * 到达最大session阻止登录
-     */
-    private Boolean maxSessionsPreventsLogin = true;
 }

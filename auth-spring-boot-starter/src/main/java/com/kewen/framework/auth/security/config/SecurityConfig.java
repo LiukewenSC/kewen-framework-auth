@@ -18,11 +18,15 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Iterator;
 
 /**
  * @author kewen
@@ -100,20 +104,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .accessDeniedHandler(exceptionResolverHandler)
                     .authenticationEntryPoint(exceptionResolverHandler)
                     .and()
-                .sessionManagement()
+                /*.sessionManagement()
                 //.sessionFixation().changeSessionId()  //这里改为none则不会出现postman连续登录会报session过多 ， 要么就是允许挤下线
-                .sessionFixation().none()  //这里改为none则不会出现postman连续登录会报session过多
-                    .maximumSessions(loginProperties.getMaximumSessions())
-                    .maxSessionsPreventsLogin(loginProperties.getMaxSessionsPreventsLogin()).and()
-                    .and()
+                    .sessionFixation().none()  //这里改为none则不会出现postman连续登录会报session过多
+                        .maximumSessions(loginProperties.getMaximumSessions())
+                        .maxSessionsPreventsLogin(loginProperties.getMaxSessionsPreventsLogin()).and()
+                        .and()*/
                 .csrf().disable()
                 //.cors().configurationSource(corsConfigurationSource()).and()
                 .addFilterAfter(new AuthUserContextFilter(loginProperties.getCurrentUserUrl(),resultResolverProvider,objectMapper), SessionManagementFilter.class)
         ;
         //如果有自定义配置就继续执行自定义的，会覆盖当前的配置
-        httpSecurityCustomizers.stream().forEach(c->{
-            c.customizer(http);
-        });
+        Iterator<HttpSecurityCustomizer> iterator = httpSecurityCustomizers.stream().iterator();
+        while (iterator.hasNext()) {
+            HttpSecurityCustomizer httpSecurityCustomizer = iterator.next();
+            httpSecurityCustomizer.customizer(http);
+        }
     }
 
     /**

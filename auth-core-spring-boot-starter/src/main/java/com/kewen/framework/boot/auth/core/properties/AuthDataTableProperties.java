@@ -32,7 +32,7 @@ public class AuthDataTableProperties {
     /**
      * 操作字段名
      */
-    private String operateColumn="operation";
+    private String operateColumn="operate";
 
 
     /**

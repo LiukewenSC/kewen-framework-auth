@@ -13,5 +13,5 @@ public interface HttpSecurityCustomizer {
      * 自定义security相关的参数，会覆盖原来的数据
      * @param http
      */
-    void customizer(HttpSecurity http);
+    void customizer(HttpSecurity http) throws Exception;
 }
