@@ -1,5 +1,6 @@
 package com.kewen.framework.auth.rabc.composite.mapper;
 
+import com.kewen.framework.auth.rabc.composite.model.CurrentUserSimpleAuthObject;
 import com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,5 +18,5 @@ public interface SysUserUnionCompositeMapper {
      * @param id
      * @return
      */
-    SimpleAuthObject getUserAuthObject(@Param("id") Long id);
+    CurrentUserSimpleAuthObject getUserAuthObject(@Param("id") Long id);
 }

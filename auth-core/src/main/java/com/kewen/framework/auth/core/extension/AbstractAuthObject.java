@@ -1,6 +1,7 @@
 package com.kewen.framework.auth.core.extension;
 
 import cn.hutool.core.util.ClassUtil;
+import com.kewen.framework.auth.core.exception.AuthEntityException;
 import com.kewen.framework.auth.core.model.AuthConstant;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.model.IAuthObject;
@@ -48,21 +49,25 @@ public abstract class AbstractAuthObject implements IAuthObject {
                     authEntityMap.put(flag, abstractAuthEntity.getClass());
                 }
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException("AbstractIdNameAuthEntity 子类需要保留无参构造", e);
+                throw new AuthEntityException("AbstractIdNameAuthEntity 子类需要保留无参构造", e);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    @SneakyThrows
     public IFlagAuthEntity parseBaseAuth(BaseAuth baseAuth) {
         String[] strings = baseAuth.getAuth().split(AuthConstant.AUTH_SPLIT);
         String flag = strings[0];
         Class<? extends IFlagAuthEntity> aClass = authEntityMap.get(flag);
         if (aClass == null) {
-            throw new RuntimeException("权限标记错误: "+flag);
+            throw new AuthEntityException("权限标记错误: "+flag);
         }
-        IFlagAuthEntity abstractAuthEntity = aClass.newInstance();
+        IFlagAuthEntity abstractAuthEntity = null;
+        try {
+            abstractAuthEntity = aClass.newInstance();
+        } catch (Exception e) {
+            throw new AuthEntityException("实例化["+aClass.getName()+"]错误",e);
+        }
         abstractAuthEntity.setProperties(baseAuth);
         return abstractAuthEntity;
     }

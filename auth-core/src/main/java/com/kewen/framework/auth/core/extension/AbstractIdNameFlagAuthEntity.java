@@ -1,10 +1,12 @@
 package com.kewen.framework.auth.core.extension;
 
 import com.alibaba.fastjson.JSONObject;
+import com.kewen.framework.auth.core.exception.AuthEntityException;
 import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.exception.AuthServiceException;
 import com.kewen.framework.auth.core.util.ClassUtil;
 import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
 
@@ -20,6 +22,7 @@ import java.util.Objects;
 @Data
 public abstract class AbstractIdNameFlagAuthEntity<ID> implements IFlagAuthEntity<ID> {
 
+    private static final long serialVersionUID = 5347275476740629152L;
     /**
      * ID
      */
@@ -30,29 +33,14 @@ public abstract class AbstractIdNameFlagAuthEntity<ID> implements IFlagAuthEntit
      */
     protected String name;
 
-
     @Override
-    public BaseAuth getAuth() {
-        String flag = flag();
-        String split = split();
-        return new BaseAuth(
-                flag + split + getId(),
-                flag + split + getName()
-        );
+    public Pair<String, String> serialize(int pos) {
+        return Pair.of(id.toString(), name);
     }
 
-    /**
-     * 填充属性值
-     * @param baseAuth
-     */
-    public void setProperties(BaseAuth baseAuth){
-        String split = split();
-        String[] authStrs = baseAuth.getAuth().split(split);
-        String[] descStrs = baseAuth.getDescription().split(split);
-        if (!authStrs[0].equals(flag())){
-            throw new AuthServiceException("权限字符串格式错误"+ JSONObject.toJSONString(baseAuth));
-        }
-        String idStr = authStrs[1];
+    @Override
+    public void deSerialize(int pos, String idStr, String descStr) {
+        //只有一个
         Class actualT = ClassUtil.parseSuperActualT(this.getClass(), Object.class);
         //这里也还是硬伤啊
         if (actualT== Integer.class){
@@ -62,9 +50,9 @@ public abstract class AbstractIdNameFlagAuthEntity<ID> implements IFlagAuthEntit
         } else if (actualT == String.class){
             setId((ID) idStr);
         } else {
-            throw new AuthServiceException("ID的 格式 仅支持基本数据类型 int long String");
+            throw new AuthEntityException("ID的 格式 仅支持基本数据类型 int long String");
         }
-        setName(descStrs[1]);
+        setName(descStr);
     }
 
     @Override

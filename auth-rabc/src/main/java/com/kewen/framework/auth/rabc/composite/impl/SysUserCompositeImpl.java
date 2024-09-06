@@ -2,6 +2,7 @@ package com.kewen.framework.auth.rabc.composite.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.kewen.framework.auth.rabc.composite.model.CurrentUserSimpleAuthObject;
 import com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject;
 import com.kewen.framework.auth.rabc.composite.SysUserComposite;
 import com.kewen.framework.auth.rabc.composite.mapper.SysUserUnionCompositeMapper;
@@ -54,8 +55,8 @@ public class SysUserCompositeImpl implements SysUserComposite {
         }
         userAuthObject.setSysUserCredential(credential);
         //查找用户权限体
-        SimpleAuthObject authObject = unionCompositeMapper.getUserAuthObject(user.getId());
-
+        CurrentUserSimpleAuthObject authObject = unionCompositeMapper.getUserAuthObject(user.getId());
+        authObject.fillUserAuth();
         userAuthObject.setAuthObject(authObject);
 
         return userAuthObject;

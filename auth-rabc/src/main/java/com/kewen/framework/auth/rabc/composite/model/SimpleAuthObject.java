@@ -32,6 +32,11 @@ public class SimpleAuthObject extends AbstractAuthObject {
      */
     protected List<Dept> depts = new ArrayList<>();
 
+    /**
+     * 部门角色集合
+     */
+    protected List<DeptRole> deptRoles = new ArrayList<>();
+
     public void addUsers(User... users){
         this.users.addAll(Arrays.asList(users));
     }
@@ -40,6 +45,9 @@ public class SimpleAuthObject extends AbstractAuthObject {
     }
     public void addRoles(Role... roles){
         this.roles.addAll(Arrays.asList(roles));
+    }
+    public void addDeptRoles(DeptRole... roles){
+        this.deptRoles.addAll(Arrays.asList(roles));
     }
 
 
@@ -59,6 +67,11 @@ public class SimpleAuthObject extends AbstractAuthObject {
         if (depts != null) {
             for (Dept dept : depts) {
                 baseAuths.add(dept.getAuth());
+            }
+        }
+        if (deptRoles != null) {
+            for (DeptRole deptRole : deptRoles) {
+                baseAuths.add(deptRole.getAuth());
             }
         }
         addAnotherBashAuth(baseAuths);
@@ -82,7 +95,9 @@ public class SimpleAuthObject extends AbstractAuthObject {
                 roles.add(((Role) abstractAuthEntity));
             } else if (abstractAuthEntity instanceof Dept) {
                 depts.add(((Dept) abstractAuthEntity));
-            } else {
+            } else if (abstractAuthEntity instanceof DeptRole){
+                deptRoles.add(((DeptRole) abstractAuthEntity));
+            }else {
                 setAnotherBaseAuth(abstractAuthEntity);
             }
         }

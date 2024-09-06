@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kewen.framework.auth.rabc.composite.mapper.SysUserUnionCompositeMapper">
 
-    <resultMap id="UserAuthObjectResult" type="com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject">
+    <resultMap id="UserAuthObjectResult" type="com.kewen.framework.auth.rabc.composite.model.CurrentUserSimpleAuthObject">
         <collection property="users" ofType="com.kewen.framework.auth.rabc.composite.model.User">
             <id property="id" column="user_id"/>
-            <result property="name" column="user_id"/>
+            <result property="name" column="user_name"/>
         </collection>
         <collection property="depts" ofType="com.kewen.framework.auth.rabc.composite.model.Dept">
             <id property="id" column="dept_id"/>

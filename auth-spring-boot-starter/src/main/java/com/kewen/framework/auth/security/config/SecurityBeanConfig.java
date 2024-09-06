@@ -16,6 +16,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import java.util.List;
+
 @Configuration
 public class SecurityBeanConfig {
 
@@ -51,9 +53,9 @@ public class SecurityBeanConfig {
 
 
     @Bean
-    SecurityAuthenticationExceptionResolverHandler authenticationCompositeHandler(HandlerExceptionResolver handlerExceptionResolver){
+    SecurityAuthenticationExceptionResolverHandler authenticationCompositeHandler(List<HandlerExceptionResolver> handlerExceptionResolvers){
         return new SecurityAuthenticationExceptionResolverHandler()
-                .setHandlerExceptionResolver(handlerExceptionResolver);
+                .setHandlerExceptionResolvers(handlerExceptionResolvers);
     }
     @Bean
     PermitUrlContainer permitUrlContainer(){
