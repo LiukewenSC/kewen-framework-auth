@@ -5,6 +5,7 @@ import com.kewen.framework.auth.core.model.BaseAuth;
 import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
 import com.kewen.framework.auth.core.context.AuthUserContext;
 import com.kewen.framework.auth.core.exception.AuthException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -39,8 +40,9 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
         if (checkEndpoint ==null){
             return true;
         }
-        //校验url，优先校验注解url，如果为空则校验请求路径（即controller的Path）
-        String url = request.getRequestURI();
+        //校验url
+        String url = getUrl(request);
+
 
         //获取当前用户的权限
         Collection<BaseAuth> auths = AuthUserContext.getAuths();
@@ -54,6 +56,15 @@ public class MenuAccessInterceptor implements HandlerInterceptor {
             throw new AuthException("没有API菜单"+url+"访问权限");
         }
         return true;
+    }
+    private String getUrl(HttpServletRequest request){
+        String url = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        if (StringUtils.isBlank(contextPath)){
+            return url;
+        } else {
+            return url.replaceFirst(contextPath, "");
+        }
     }
 
     public void setAnnotationAuthHandler(AnnotationAuthHandler annotationAuthHandler) {
