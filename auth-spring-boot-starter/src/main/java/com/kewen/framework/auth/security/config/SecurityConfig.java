@@ -85,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .regexMatchers(permitUrlContainer.getPermitUrls()).permitAll()
+                    .antMatchers(permitUrlContainer.getPermitUrls()).permitAll()
                     .anyRequest().authenticated()
                     .and()
                 //.formLogin()  不再用表单登录了，采用Json登录方式，因此不需要再formLogin引入FormLoginConfigurer配置UsernamePasswordAuthenticationFilter

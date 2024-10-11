@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author kewen
  * @since 2024-07-02
  */
-@ConfigurationProperties("kewen-framework.auth.security.login")
+@ConfigurationProperties("kewen.auth.security.login")
 @Data
 public class SecurityLoginProperties {
     /**
