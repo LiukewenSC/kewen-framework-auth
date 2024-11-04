@@ -1,9 +1,9 @@
 package com.kewen.framework.auth.rabc.composite.model;
 
 
-import com.kewen.framework.auth.core.extension.AbstractAuthObject;
-import com.kewen.framework.auth.core.extension.IFlagAuthEntity;
-import com.kewen.framework.auth.core.model.BaseAuth;
+import com.kewen.framework.auth.core.entity.AbstractAuthObject;
+import com.kewen.framework.auth.core.entity.IFlagAuthEntity;
+import com.kewen.framework.auth.core.entity.BaseAuth;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

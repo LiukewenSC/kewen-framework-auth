@@ -1,6 +1,6 @@
 package com.kewen.framework.auth.rabc.controller;
 
-import com.kewen.framework.auth.core.annotation.AuthMenu;
+import com.kewen.framework.auth.core.AuthMenu;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.rabc.model.RabcResult;
 import com.kewen.framework.auth.rabc.model.resp.MenuRouteResp;

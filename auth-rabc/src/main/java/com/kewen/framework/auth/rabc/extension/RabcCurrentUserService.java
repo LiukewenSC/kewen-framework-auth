@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.rabc.extension;
 
 
-import com.kewen.framework.auth.core.context.CurrentUser;
+import com.kewen.framework.auth.core.entity.CurrentUser;
 
 /**
  *  当前用户登录

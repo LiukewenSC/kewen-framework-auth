@@ -1,19 +1,19 @@
 package com.kewen.framework.boot.auth.core.config;
 
-import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.data.JdbcAuthDataPersistent;
-import com.kewen.framework.auth.core.annotation.data.authedit.AuthDataEditAspect;
-import com.kewen.framework.auth.core.annotation.data.edit.DataCheckAspect;
-import com.kewen.framework.auth.core.annotation.data.AuthDataTable;
-import com.kewen.framework.auth.core.annotation.data.range.DataRangeAspect;
-import com.kewen.framework.auth.core.annotation.data.range.MybatisDataRangeInterceptor;
-import com.kewen.framework.auth.core.annotation.data.range.SqlAuthInject;
-import com.kewen.framework.auth.core.annotation.menu.MenuAccessInterceptor;
-import com.kewen.framework.auth.core.annotation.menu.MenuApiGeneratorProcessor;
+import com.kewen.framework.auth.core.data.AuthDataHandler;
+import com.kewen.framework.auth.core.data.JdbcAuthDataHandler;
+import com.kewen.framework.auth.core.data.JdbcAuthDataPersistent;
+import com.kewen.framework.auth.core.data.authedit.AuthDataEditAspect;
+import com.kewen.framework.auth.core.data.edit.DataCheckAspect;
+import com.kewen.framework.auth.core.data.AuthDataTable;
+import com.kewen.framework.auth.core.data.range.DataRangeAspect;
+import com.kewen.framework.auth.core.data.range.MybatisDataRangeInterceptor;
+import com.kewen.framework.auth.core.data.range.SqlAuthInject;
+import com.kewen.framework.auth.core.menu.MenuAccessInterceptor;
+import com.kewen.framework.auth.core.menu.MenuApiGeneratorProcessor;
 import com.kewen.framework.boot.auth.core.init.InitMenuApiCommandLineRunner;
 import com.kewen.framework.boot.auth.core.properties.AuthDataTableProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,7 @@ public class AuthCoreConfig {
      * 注解处理器
      */
     @Autowired
-    private AnnotationAuthHandler annotationAuthHandler;
+    private AuthDataHandler annotationAuthHandler;
 
 
     /*--------------------------------------core.annotation.下配置--------------------------------------*/
@@ -69,6 +69,11 @@ public class AuthCoreConfig {
     @Bean
     DataRangeAspect dataRangeAspect() {
         return new DataRangeAspect();
+    }
+
+    @Bean
+    JdbcAuthDataHandler jdbcAuthDataHandler(){
+        return new JdbcAuthDataHandler();
     }
 
     /**
@@ -137,9 +142,7 @@ public class AuthCoreConfig {
      */
     @Bean
     MenuAccessInterceptor menuAccessInterceptor() {
-        MenuAccessInterceptor interceptor = new MenuAccessInterceptor();
-        interceptor.setAnnotationAuthHandler(annotationAuthHandler);
-        return interceptor;
+        return new MenuAccessInterceptor();
     }
 
     /**

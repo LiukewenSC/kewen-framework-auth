@@ -2,8 +2,8 @@ package com.kewen.framework.auth.rabc.composite.model;
 
 
 import com.kewen.framework.auth.core.exception.AuthEntityException;
-import com.kewen.framework.auth.core.extension.IFlagAuthEntity;
-import com.kewen.framework.auth.core.model.AuthConstant;
+import com.kewen.framework.auth.core.entity.IFlagAuthEntity;
+import com.kewen.framework.auth.core.entity.AuthConstant;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;

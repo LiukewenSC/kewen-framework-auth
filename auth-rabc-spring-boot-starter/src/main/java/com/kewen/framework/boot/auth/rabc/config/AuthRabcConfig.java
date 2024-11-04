@@ -1,8 +1,8 @@
 package com.kewen.framework.boot.auth.rabc.config;
 
-import com.kewen.framework.auth.core.annotation.AnnotationAuthHandler;
-import com.kewen.framework.auth.core.annotation.AuthDataAdaptor;
-import com.kewen.framework.auth.core.annotation.data.JdbcAuthDataPersistent;
+import com.kewen.framework.auth.core.data.AuthDataHandler;
+import com.kewen.framework.auth.core.AuthDataAdaptor;
+import com.kewen.framework.auth.core.data.JdbcAuthDataPersistent;
 import com.kewen.framework.auth.rabc.RabcAnnotationAuthHandler;
 import com.kewen.framework.auth.rabc.composite.AuthMenuStore;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
@@ -36,11 +36,10 @@ public class AuthRabcConfig {
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(AnnotationAuthHandler.class)
-    public AnnotationAuthHandler annotationAuthHandler(){
+    @ConditionalOnMissingBean(AuthDataHandler.class)
+    public RabcAnnotationAuthHandler annotationAuthHandler(){
         RabcAnnotationAuthHandler handler = new RabcAnnotationAuthHandler();
         handler.setSysAuthMenuComposite(sysAuthMenuComposite);
-        handler.setJdbcAuthDataPersistent(jdbcAuthDataPersistent);
         return handler;
     }
 
@@ -50,7 +49,7 @@ public class AuthRabcConfig {
      * @return
      */
     @Bean
-    public AuthDataAdaptor authDateAdaptor(AnnotationAuthHandler annotationAuthHandler){
+    public AuthDataAdaptor authDateAdaptor(AuthDataHandler annotationAuthHandler){
         AuthDataAdaptor authDataService = new AuthDataAdaptor();
         authDataService.setAnnotationAuthHandler(annotationAuthHandler);
         return authDataService;

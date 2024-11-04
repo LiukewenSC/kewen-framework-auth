@@ -1,7 +1,7 @@
 package com.kewen.framework.auth.rabc;
 
-import com.kewen.framework.auth.core.annotation.AbstractAuthDatraAnnotationAuthHandler;
-import com.kewen.framework.auth.core.model.BaseAuth;
+import com.kewen.framework.auth.core.menu.AuthMenuHandler;
+import com.kewen.framework.auth.core.entity.BaseAuth;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
 import lombok.Setter;
 
@@ -14,7 +14,7 @@ import java.util.Collection;
  * @since 2023-12-28
  */
 @Setter
-public class RabcAnnotationAuthHandler extends AbstractAuthDatraAnnotationAuthHandler<Long> {
+public class RabcAnnotationAuthHandler implements AuthMenuHandler {
 
     SysAuthMenuComposite sysAuthMenuComposite;
 

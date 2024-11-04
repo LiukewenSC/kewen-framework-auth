@@ -1,8 +1,8 @@
 package com.kewen.framework.auth.rabc.extension;
 
 import cn.hutool.core.util.IdUtil;
-import com.kewen.framework.auth.core.annotation.menu.MenuApiEntity;
-import com.kewen.framework.auth.core.annotation.menu.MenuApiServcie;
+import com.kewen.framework.auth.core.menu.MenuApiEntity;
+import com.kewen.framework.auth.core.menu.MenuApiServcie;
 import com.kewen.framework.auth.rabc.mp.entity.SysMenuApi;
 import com.kewen.framework.auth.rabc.mp.service.SysMenuApiMpService;
 import lombok.Setter;

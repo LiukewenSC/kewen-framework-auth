@@ -2,7 +2,7 @@ package com.kewen.framework.auth.rabc.composite;
 
 
 
-import com.kewen.framework.auth.core.model.BaseAuth;
+import com.kewen.framework.auth.core.entity.BaseAuth;
 import com.kewen.framework.auth.rabc.model.req.MenuApiSaveReq;
 import com.kewen.framework.auth.rabc.model.resp.MenuApiAndAuthResp;
 import com.kewen.framework.auth.rabc.model.resp.MenuRouteResp;

@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration= \
-  com.kewen.framework.boot.auth.core.config.AuthCoreConfig
+  com.kewen.framework.boot.auth.core.config.AuthCoreConfig,\
+  com.kewen.framework.boot.auth.core.config.AuthWebConfig

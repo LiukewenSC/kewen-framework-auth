@@ -1,11 +1,10 @@
 package com.kewen.framework.auth.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kewen.framework.auth.core.context.AuthUserContext;
+import com.kewen.framework.auth.core.AuthUserContext;
 import com.kewen.framework.auth.security.exception.NoLoginException;
 import com.kewen.framework.auth.security.model.SecurityUser;
 import com.kewen.framework.auth.security.response.AuthenticationSuccessResultResolver;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;

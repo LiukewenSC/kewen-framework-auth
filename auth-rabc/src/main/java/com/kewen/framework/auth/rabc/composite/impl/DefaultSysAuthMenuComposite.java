@@ -3,7 +3,7 @@ package com.kewen.framework.auth.rabc.composite.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.kewen.framework.auth.core.model.BaseAuth;
+import com.kewen.framework.auth.core.entity.BaseAuth;
 import com.kewen.framework.auth.rabc.composite.AuthMenuStore;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
 import com.kewen.framework.auth.rabc.composite.model.SimpleAuthObject;

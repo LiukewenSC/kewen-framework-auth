@@ -1,6 +1,6 @@
 package com.kewen.framework.boot.auth.core.init;
 
-import com.kewen.framework.auth.core.annotation.menu.MenuApiGeneratorProcessor;
+import com.kewen.framework.auth.core.menu.MenuApiGeneratorProcessor;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

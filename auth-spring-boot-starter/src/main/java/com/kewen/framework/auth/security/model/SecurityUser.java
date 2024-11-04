@@ -1,8 +1,8 @@
 package com.kewen.framework.auth.security.model;
 
-import com.kewen.framework.auth.core.context.CurrentUser;
-import com.kewen.framework.auth.core.model.BaseAuth;
-import com.kewen.framework.auth.core.model.IAuthObject;
+import com.kewen.framework.auth.core.entity.CurrentUser;
+import com.kewen.framework.auth.core.entity.BaseAuth;
+import com.kewen.framework.auth.core.entity.IAuthObject;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,6 +1,6 @@
 package com.kewen.framework.auth.rabc.composite.model;
 
-import com.kewen.framework.auth.core.extension.AbstractIdNameFlagAuthEntity;
+import com.kewen.framework.auth.core.entity.AbstractIdNameFlagAuthEntity;
 
 /**
  * @author kewen

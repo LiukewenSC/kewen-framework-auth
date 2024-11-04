@@ -2,13 +2,11 @@ package extension;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.kewen.framework.auth.core.model.AuthConstant;
-import com.kewen.framework.auth.core.model.BaseAuth;
+import com.kewen.framework.auth.core.entity.BaseAuth;
 import com.kewen.framework.auth.rabc.composite.model.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 public class AbstractAuthObjectTest {
