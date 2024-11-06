@@ -69,7 +69,7 @@
 <parent>
    <groupId>com.kewen.framework.auth</groupId>
    <artifactId>auth-parent</artifactId>
-   <version>1.0-SNAPSHOT</version>
+   <version>1.0.1-SNAPSHOT</version>
 </parent>
 
 <dependencies>
@@ -104,12 +104,12 @@
    <dependency>
       <groupId>com.kewen.framework.auth</groupId>
       <artifactId>auth-spring-boot-starter</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.1-SNAPSHOT</version>
    </dependency>
    <dependency>
       <groupId>com.kewen.framework.auth</groupId>
       <artifactId>auth-rabc-spring-boot-starter</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.1-SNAPSHOT</version>
    </dependency>
    <dependency>
       <groupId>mysql</groupId>

@@ -23,7 +23,7 @@ stages:
         artifacts:
           - name: BUILD_ARTIFACT
             path:
-              - ./auth-sample/target/auth-sample-1.0-SNAPSHOT.jar
+              - ./auth-sample/target/auth-sample-1.0.1-SNAPSHOT.jar
         settings:
           - certificate: kewen-snapshot
             isRelease: true
