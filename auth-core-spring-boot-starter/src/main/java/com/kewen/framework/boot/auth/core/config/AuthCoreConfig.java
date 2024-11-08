@@ -3,7 +3,6 @@ package com.kewen.framework.boot.auth.core.config;
 import com.kewen.framework.auth.core.data.AuthDataHandler;
 import com.kewen.framework.auth.core.data.JdbcAuthDataHandler;
 import com.kewen.framework.auth.core.data.JdbcAuthDataPersistent;
-import com.kewen.framework.auth.core.data.authedit.AuthDataEditAspect;
 import com.kewen.framework.auth.core.data.edit.DataCheckAspect;
 import com.kewen.framework.auth.core.data.AuthDataTable;
 import com.kewen.framework.auth.core.data.range.DataRangeAspect;
@@ -36,18 +35,6 @@ public class AuthCoreConfig {
 
 
     /*--------------------------------------core.annotation.下配置--------------------------------------*/
-
-    /**
-     * 数据编辑权限切面处理
-     *
-     * @return
-     */
-    @Bean
-    AuthDataEditAspect authDataEditAspect() {
-        AuthDataEditAspect aspect = new AuthDataEditAspect();
-        aspect.setAnnotationAuthAdaptor(annotationAuthHandler);
-        return aspect;
-    }
 
     /**
      * 数据校验切面处理

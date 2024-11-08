@@ -10,9 +10,9 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class AuthDataDO<ID> {
+public class AuthDataDO {
 
-    private ID id;
+    private Object id;
     /**
      * 业务功能
      */
@@ -20,7 +20,7 @@ public class AuthDataDO<ID> {
     /**
      * 业务ID存储
      */
-    private ID dataId;
+    private Object dataId;
     /**
      * 操作
      */
@@ -36,14 +36,14 @@ public class AuthDataDO<ID> {
      */
     private String description;
 
-    public AuthDataDO(String businessFunction, ID dataId, String operate, String authority, String description) {
+    public AuthDataDO(String businessFunction, Object dataId, String operate, String authority, String description) {
         this.businessFunction = businessFunction;
         this.dataId = dataId;
         this.operate = operate;
         this.authority = authority;
         this.description = description;
     }
-    public AuthDataDO(ID id, String businessFunction, ID dataId, String operate, String authority, String description) {
+    public AuthDataDO(Object id, String businessFunction, Object dataId, String operate, String authority, String description) {
         this(businessFunction, dataId, operate, authority, description);
         this.id = id;
     }
