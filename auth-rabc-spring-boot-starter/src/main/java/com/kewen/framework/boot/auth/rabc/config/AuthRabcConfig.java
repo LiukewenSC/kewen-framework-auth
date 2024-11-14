@@ -45,14 +45,11 @@ public class AuthRabcConfig {
 
     /**
      * 调用服务，可以从这里调用，就不再需要从注解 @AuthDataAuthEdit上执行了，提供了第二种可能
-     * @param annotationAuthHandler
      * @return
      */
     @Bean
-    public AuthDataAdaptor authDateAdaptor(AuthDataHandler annotationAuthHandler){
-        AuthDataAdaptor authDataService = new AuthDataAdaptor();
-        authDataService.setAnnotationAuthHandler(annotationAuthHandler);
-        return authDataService;
+    public AuthDataAdaptor authDateAdaptor(){
+        return new AuthDataAdaptor();
     }
 
     /**

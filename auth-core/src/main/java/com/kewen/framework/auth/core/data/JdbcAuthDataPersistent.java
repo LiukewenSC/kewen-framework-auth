@@ -21,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,13 +42,13 @@ public class JdbcAuthDataPersistent implements InitializingBean {
      * @param datas
      * @return
      */
-    public <ID> boolean insertBatchAuthData(Collection<AuthDataDO<ID>> datas) {
+    public boolean insertBatchAuthData(Collection<AuthDataDO> datas) {
         String sql = buildInsertBatchSql(datas);
         int update = jdbcTemplate.update(sql);
         return update > 0;
     }
 
-    private <ID> String buildInsertBatchSql(Collection<AuthDataDO<ID>> datas) {
+    private String buildInsertBatchSql(Collection<AuthDataDO> datas) {
         Insert insert = new Insert();
         insert.withTable(authDataTable.getTable())
                 .withColumns(new ExpressionList().withExpressions(
@@ -79,31 +76,31 @@ public class JdbcAuthDataPersistent implements InitializingBean {
      * @param ids
      * @return
      */
-    public <ID> int deleteBatchAuthData(List<ID> ids) {
+    public <Object> int deleteBatchAuthData(List ids) {
         String sql = removeByIdsSql(ids);
         return jdbcTemplate.update(sql);
     }
 
-    private <ID> String removeByIdsSql(List<ID> ids) {
+    private  String removeByIdsSql(List ids) {
+        ArrayList<Expression> expressions = new ArrayList<>();
+        for (Object id : ids) {
+            if (id instanceof Long) {
+                Long id1 = (Long) id;
+                expressions.add(new LongValue(id1));
+            } else if (id instanceof Integer) {
+                Integer id1 = (Integer) id;
+                expressions.add(new LongValue(id1));
+            } else if (id instanceof StringValue) {
+                expressions.add(new StringValue(id.toString()));
+            } else {
+                throw new RuntimeException("ID类型异常");
+            }
+        }
         Delete delete = new Delete();
         delete.withTable(authDataTable.getTable())
                 .withWhere(new InExpression()
                         .withLeftExpression(authDataTable.getIdColumn())
-                        .withRightExpression(new ParenthesedExpressionList<>(
-                                ids.stream().map(id -> {
-                                    if (id instanceof Long) {
-                                        Long id1 = (Long) id;
-                                        return new LongValue(id1);
-                                    } else if (id instanceof Integer) {
-                                        Integer id1 = (Integer) id;
-                                        return new LongValue(id1);
-                                    } else if (id instanceof StringValue) {
-                                        return new StringValue((String) id);
-                                    } else {
-                                        throw new RuntimeException("ID类型异常");
-                                    }
-                                }).collect(Collectors.toList())
-                        ))
+                        .withRightExpression(new ParenthesedExpressionList(expressions))
                 );
         return delete.toString();
     }
@@ -112,14 +109,14 @@ public class JdbcAuthDataPersistent implements InitializingBean {
      * 根据业务功能和dataID删除数据权限，即清空功能下特定ID的所有权限
      * @param businessFunction
      * @param dataId
-     * @param <ID>
+     * @param <Object>
      * @return
      */
-    public <ID> int deleteBusinessFunctionDataIdAuth(String businessFunction, ID dataId) {
+    public <Object> int deleteBusinessFunctionDataIdAuth(String businessFunction, Object dataId) {
         String sql = removeBusinessFunctionDataIdSql(businessFunction,dataId);
         return jdbcTemplate.update(sql);
     }
-    private <ID> String removeBusinessFunctionDataIdSql(String businessFunction, ID dataId) {
+    private <Object> String removeBusinessFunctionDataIdSql(String businessFunction, Object dataId) {
         Delete delete = new Delete();
 
         Expression dataIdExpression;
@@ -157,27 +154,25 @@ public class JdbcAuthDataPersistent implements InitializingBean {
      * @param businessFunction
      * @param dataId
      * @param operate
-     * @param <ID>
      * @return
      */
-    public <ID> List<AuthDataDO<ID>> listAuthData(String businessFunction, ID dataId, String operate) {
+    public List<AuthDataDO> listAuthData(String businessFunction, Object dataId, String operate) {
         String sql = listAuthDataSql(businessFunction, dataId, operate);
 
-        List<AuthDataDO<ID>> list = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            ID id;
+        List<AuthDataDO> list = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Object id;
             if (dataId instanceof Long) {
-                id = ((ID) Long.valueOf(rs.getLong(1)));
+                id = Long.valueOf(rs.getLong(1));
             } else if (dataId instanceof Integer) {
-                id = (ID) Integer.valueOf(rs.getInt(1));
-            } else if (dataId instanceof String) {
-                id = (ID) rs.getString(1);
-            } else {
+                id = Integer.valueOf(rs.getInt(1));
+            } else if (dataId instanceof String) id = (Object) rs.getString(1);
+            else {
                 log.error("ID类型不正确 {}", rs);
                 id = null;
             }
             String authority = rs.getString(2);
             String description = rs.getString(3);
-            return new AuthDataDO<>(id, businessFunction, dataId, operate, authority, description);
+            return new AuthDataDO(id, businessFunction, dataId, operate, authority, description);
         });
         if (list == null) {
             return Collections.emptyList();
@@ -186,7 +181,7 @@ public class JdbcAuthDataPersistent implements InitializingBean {
 
     }
 
-    private <ID> String listAuthDataSql(String businessFunction, ID dataId, String operate) {
+    private <Object> String listAuthDataSql(String businessFunction, Object dataId, String operate) {
         PlainSelect plainSelect = SelectUtils.buildSelectFromTable(authDataTable.getTable()).getPlainSelect();
         plainSelect.withWhere(
                 new AndExpression(

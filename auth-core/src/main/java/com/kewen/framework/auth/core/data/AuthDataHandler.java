@@ -13,7 +13,7 @@ import java.util.Collection;
  * @author kewen
  * @since 2023-04-10
  */
-public interface AuthDataHandler<ID> {
+public interface AuthDataHandler {
 
     Logger logger = LoggerFactory.getLogger(AuthDataHandler.class);
 
@@ -27,8 +27,8 @@ public interface AuthDataHandler<ID> {
      * @param dataId 业务id，如 1L 1011L等业务主键ID
      * @return 是否有权限
      */
-    boolean hasDataOperateAuths(Collection<BaseAuth> auths, String businessFunction, ID dataId,String operate);
-    default boolean hasDataOperateAuths(IAuthObject authObject, String businessFunction, ID dataId,String operate){
+    boolean hasDataOperateAuths(Collection<BaseAuth> auths, String businessFunction, Object dataId,String operate);
+    default boolean hasDataOperateAuths(IAuthObject authObject, String businessFunction, Object dataId,String operate){
         if (authObject==null){
             logger.info("authObject is null");
             return false;
@@ -46,8 +46,8 @@ public interface AuthDataHandler<ID> {
      * @param operate 操作
      * @param auths 权限结构
      */
-    void editDataAuths(String businessFunction,ID dataId,  String operate, Collection<BaseAuth> auths);
-    default void editDataAuths(String businessFunction,ID dataId,  String operate, IAuthObject authObject){
+    void editDataAuths(String businessFunction,Object dataId,  String operate, Collection<BaseAuth> auths);
+    default void editDataAuths(String businessFunction,Object dataId,  String operate, IAuthObject authObject){
         if (authObject==null){
             logger.info("authObject is null");
             return;
@@ -58,12 +58,12 @@ public interface AuthDataHandler<ID> {
     /**
      * 获取数据
      */
-    Collection<BaseAuth> getDataAuths(String businessFunction,ID dataId,  String operate);
+    Collection<BaseAuth> getDataAuths(String businessFunction,Object dataId,  String operate);
 
     /**
      * 填充数据
      */
-    default void fillDataAuths(String businessFunction,ID dataId,  String operate,IAuthObject authObject){
+    default void fillDataAuths(String businessFunction,Object dataId,  String operate,IAuthObject authObject){
         authObject.setProperties(getDataAuths(businessFunction, dataId, operate));
     }
 
@@ -71,6 +71,6 @@ public interface AuthDataHandler<ID> {
      * 根据业务功能数据ID删除权限
      * 其实就是清空dataID对应的数据，在业务中删除了此条数据需要调用
      */
-    void deleteBusinessFunctionAuthByDataId(String businessFunction,ID dataId);
+    void deleteBusinessFunctionAuthByDataId(String businessFunction,Object dataId);
 
 }
