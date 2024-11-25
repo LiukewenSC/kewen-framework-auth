@@ -3,6 +3,7 @@ package com.kewen.framework.boot.auth.rabc.config;
 import com.kewen.framework.auth.core.data.AuthDataHandler;
 import com.kewen.framework.auth.core.AuthDataAdaptor;
 import com.kewen.framework.auth.core.data.JdbcAuthDataPersistent;
+import com.kewen.framework.auth.core.menu.AuthMenuHandler;
 import com.kewen.framework.auth.rabc.RabcAnnotationAuthHandler;
 import com.kewen.framework.auth.rabc.composite.AuthMenuStore;
 import com.kewen.framework.auth.rabc.composite.SysAuthMenuComposite;
@@ -36,7 +37,7 @@ public class AuthRabcConfig {
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(AuthDataHandler.class)
+    @ConditionalOnMissingBean(AuthMenuHandler.class)
     public RabcAnnotationAuthHandler annotationAuthHandler(){
         RabcAnnotationAuthHandler handler = new RabcAnnotationAuthHandler();
         handler.setSysAuthMenuComposite(sysAuthMenuComposite);
