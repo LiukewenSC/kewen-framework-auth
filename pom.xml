@@ -10,10 +10,12 @@
     <packaging>pom</packaging>
     <modules>
         <module>auth-core</module>
-        <module>auth-rabc</module>
+        <module>auth-rbac</module>
         <module>auth-core-spring-boot-starter</module>
-        <module>auth-rabc-spring-boot-starter</module>
+        <module>auth-rbac-spring-boot-starter</module>
         <module>auth-spring-boot-starter</module>
+        <module>idaas-application</module>
+        <module>idaas-authtication</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
     <properties>
@@ -50,12 +52,12 @@
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>auth-rabc</artifactId>
+                <artifactId>auth-rbac</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.kewen.framework.auth</groupId>
-                <artifactId>auth-rabc-spring-boot-starter</artifactId>
+                <artifactId>auth-rbac-spring-boot-starter</artifactId>
                 <version>${framework-version}</version>
             </dependency>
             <dependency>
