@@ -1,6 +1,6 @@
 package com.kewen.framework.idaas.application.saml.util;
 
-import com.kewen.idaas.application.saml.SamlException;
+import com.kewen.framework.idaas.application.saml.SamlException;
 import net.shibboleth.utilities.java.support.security.RandomIdentifierGenerationStrategy;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;

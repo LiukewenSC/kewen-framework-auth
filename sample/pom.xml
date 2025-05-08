@@ -9,7 +9,11 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>auth-core-spring-boot-starter</artifactId>
+    <artifactId>sample</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>idaas-sample</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -17,18 +21,4 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.kewen.framework.auth</groupId>
-            <artifactId>auth-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-    </dependencies>
 </project>
