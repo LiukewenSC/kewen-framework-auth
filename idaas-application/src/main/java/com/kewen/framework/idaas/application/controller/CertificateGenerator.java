@@ -73,7 +73,7 @@ public class CertificateGenerator {
             // 序列号
             BigInteger serial = BigInteger.valueOf(System.currentTimeMillis());
 
-            // 定义证书主体和颁发者（自签名）
+            // 定义证书主体（自签名）
             X500Name subject = new X500Name(certificateReq.getSubject());
 
             //定义有效期
@@ -99,9 +99,19 @@ public class CertificateGenerator {
 
             String privateKeyBase64 = Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
             String publicKeyBase64 = Base64.encodeBase64String(keyPair.getPublic().getEncoded());
+            //TIP 在处理没有中文或其他非ASCII字符的情况时，newStringUsAscii 和 newStringUtf8 的结果通常是相同的，
+            // 因为 ASCII 字符集是 UTF-8 字符集的一个子集。不过，这两个方法的具体行为取决于它们是如何定义和使用的。
+            //newStringUsAscii 方法:
+            //
+            //使用 US-ASCII 编码将字节数组转换为字符串。
+            //US-ASCII 编码只支持 7 位字符 (0-127)，对于超过 127 的值会被截断或替换为默认字符。
+            //newStringUtf8 方法:
+            //
+            //使用 UTF-8 编码将字节数组转换为字符串。
+            //UTF-8 编码可以表示所有 Unicode 字符，但对于纯 ASCII 字符串来说，其表现与 US-ASCII 相同。
+            String strCertData = StringUtils.newStringUsAscii(Base64.encodeBase64Chunked(encoded));
+            //String strCertData = Base64.encodeBase64String(encoded);
 
-            String strCertData = StringUtils.newStringUtf8(Base64
-                    .encodeBase64Chunked(encoded));
             System.out.println("strCertData: " + strCertData);
             System.out.println("privateKeyBase64: " + privateKeyBase64);
             System.out.println("publicKeyBase64: " + publicKeyBase64);

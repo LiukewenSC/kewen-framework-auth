@@ -64,7 +64,7 @@ public class ApplicationEndpoint {
     private static CertificateGenerator.CertificateResp certificateResp = new CertificateGenerator.CertificateResp();
 
     @GetMapping("/generateCertificate")
-    public CertificateGenerator.CertificateResp generateCertificate(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public CertificateGenerator.CertificateResp generateCertificate() {
         CertificateGenerator.CertificateReq certificateReq = new CertificateGenerator.CertificateReq();
         certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
@@ -79,6 +79,7 @@ public class ApplicationEndpoint {
 
     @GetMapping("/generateMetadata")
     public String generateMetadata() {
+        generateCertificate();
 
         EntityDescriptor entityDescriptor = new EntityDescriptorBuilder().buildObject();
         entityDescriptor.setEntityID("kewen-idp");
@@ -93,7 +94,7 @@ public class ApplicationEndpoint {
         X509Data x509Data = new X509DataBuilder().buildObject();
 
         X509Certificate x509Certificate = new X509CertificateBuilder().buildObject();
-        //x509Certificate.setValue("这里是秘钥"); //todo 这里需要加密数据
+        //这里是证书
         x509Certificate.setValue(certificateResp.getCertData());
         x509Data.getX509Certificates().add(x509Certificate);
 
