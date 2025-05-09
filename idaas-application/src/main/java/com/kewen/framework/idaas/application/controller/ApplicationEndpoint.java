@@ -31,10 +31,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
 import java.io.StringWriter;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * 2025/04/13
@@ -58,22 +57,28 @@ import java.security.cert.CertificateException;
  * @since 1.0.0
  */
 @RestController
-@RequestMapping("/com/kewen/framework/idaas/application")
+@RequestMapping("/application")
 public class ApplicationEndpoint {
     private static final Logger log = LoggerFactory.getLogger(ApplicationEndpoint.class);
-    //X509CertInfo a;
-    //X509Certificate b = new X509CertImpl();
-    //X500PrivateCredential d;
 
-    @GetMapping("/certData")
-    public String certData() throws NoSuchAlgorithmException, CertificateException, IOException {
+    private static CertificateGenerator.CertificateResp certificateResp = new CertificateGenerator.CertificateResp();
 
-        return null;
+    @GetMapping("/generateCertificate")
+    public CertificateGenerator.CertificateResp generateCertificate(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        CertificateGenerator.CertificateReq certificateReq = new CertificateGenerator.CertificateReq();
+        certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
+                .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
+                .setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24))
+                .setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)))
+        ;
+        CertificateGenerator.CertificateResp generate = CertificateGenerator.generate(certificateReq);
+        certificateResp = generate;
+
+        return generate;
     }
 
-    @GetMapping("/hello")
-    public String hello(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        //X509CertImpl x509CertImpl = new X509CertImpl();
+    @GetMapping("/generateMetadata")
+    public String generateMetadata() {
 
         EntityDescriptor entityDescriptor = new EntityDescriptorBuilder().buildObject();
         entityDescriptor.setEntityID("kewen-idp");
@@ -88,7 +93,8 @@ public class ApplicationEndpoint {
         X509Data x509Data = new X509DataBuilder().buildObject();
 
         X509Certificate x509Certificate = new X509CertificateBuilder().buildObject();
-        x509Certificate.setValue("这里是秘钥"); //todo 这里需要加密数据
+        //x509Certificate.setValue("这里是秘钥"); //todo 这里需要加密数据
+        x509Certificate.setValue(certificateResp.getCertData());
         x509Data.getX509Certificates().add(x509Certificate);
 
         KeyInfo keyInfo = new KeyInfoBuilder().buildObject();
@@ -129,7 +135,6 @@ public class ApplicationEndpoint {
             marshaller.marshall(entityDescriptor);
             String formatXml = formatXMLObject(entityDescriptor);
             log.info(formatXml);
-            httpServletResponse.setContentType("com/kewen/framework/idaas/application/xml");
             return formatXml;
         } catch (MarshallingException e) {
             throw new RuntimeException(e);
