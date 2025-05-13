@@ -92,6 +92,17 @@ public class ApplicationEndpoint {
         return generate;
     }
 
+    @GetMapping("/generateMetadataBytes")
+    public void generateMetadata(HttpServletResponse response) {
+        String metadata = generateMetadata();
+        response.setContentType("application/xml");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            response.getWriter().write(metadata);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     @GetMapping("/generateMetadata")
     @ResponseBody
     public String generateMetadata() {

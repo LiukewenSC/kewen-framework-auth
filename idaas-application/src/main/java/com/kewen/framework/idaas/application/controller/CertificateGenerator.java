@@ -58,6 +58,7 @@ public class CertificateGenerator {
 
     public static CertificateResp generate(CertificateReq certificateReq){
         try {
+
             // 生成密钥对
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             //keyPairGenerator.initialize(2048, JCAUtil.getSecureRandom());
@@ -67,21 +68,21 @@ public class CertificateGenerator {
             //rsaKeyPairGenerator.initialize(2048, SecureRandom.getInstance("SHA1PRNG"));
             //KeyPair keyPair1 = rsaKeyPairGenerator.generateKeyPair();
 
-            // 颁发者
-            X500Name issuer = new X500Name(certificateReq.getIssuer());
-
             // 序列号
             BigInteger serial = BigInteger.valueOf(System.currentTimeMillis());
 
-            // 定义证书主体（自签名）
-            X500Name subject = new X500Name(certificateReq.getSubject());
+            // 签名算法
+            ContentSigner signer = new JcaContentSignerBuilder(certificateReq.getSignatureAlgorithm()).build(keyPair.getPrivate());
+
+            // 颁发者
+            X500Name issuer = new X500Name(certificateReq.getIssuer());
 
             //定义有效期
             Date notBefore = certificateReq.getNotBefore();
             Date notAfter = certificateReq.getNotAfter();
 
-            // 签名算法
-            ContentSigner signer = new JcaContentSignerBuilder(certificateReq.getSignatureAlgorithm()).build(keyPair.getPrivate());
+            // 定义证书主体（自签名）
+            X500Name subject = new X500Name(certificateReq.getSubject());
 
             // 构建生成证书
             JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
