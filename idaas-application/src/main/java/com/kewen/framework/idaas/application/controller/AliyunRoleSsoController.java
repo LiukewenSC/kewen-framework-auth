@@ -42,8 +42,17 @@ import org.opensaml.saml.saml2.core.impl.StatusCodeBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectConfirmationBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectConfirmationDataBuilder;
+import org.opensaml.xmlsec.signature.KeyInfo;
+import org.opensaml.xmlsec.signature.impl.KeyInfoBuilder;
 import org.opensaml.xmlsec.signature.impl.SignatureBuilder;
 import org.opensaml.xmlsec.signature.impl.SignatureImpl;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 2025/05/13
@@ -120,9 +129,13 @@ import org.opensaml.xmlsec.signature.impl.SignatureImpl;
  * @author kewen
  * @since 4.23.0-mysql-aliyun-sovereign
  */
+@RequestMapping("/sso")
+@Controller
 public class AliyunRoleSsoController {
 
-    public void goSso(){
+    @GetMapping("/go")
+    @ResponseBody
+    public void goSso(HttpServletRequest request, HttpServletResponse httpServletResponse) {
         // 跳转到阿里云角色sso
         Response response = new ResponseBuilder().buildObject();
         response.setID("_34679165192bb618761a2a588325811d");
@@ -139,8 +152,8 @@ public class AliyunRoleSsoController {
         response.setStatus(status);
 
         Assertion assertion = new AssertionBuilder().buildObject();
-        assertion.setIssuer(issuer);
-        assertion.setIssueInstant(issueInstant);
+        //assertion.setIssuer(issuer);
+        //assertion.setIssueInstant(issueInstant);
         assertion.setID("_894ac19e4a9eda2d283059e0f1821889");
         assertion.setVersion(SAMLVersion.VERSION_20);
 
@@ -148,6 +161,9 @@ public class AliyunRoleSsoController {
         SignatureImpl signature = new SignatureBuilder().buildObject();
         //todo
         signature.setSignatureAlgorithm(null);
+        KeyInfo keyInfo = new KeyInfoBuilder().buildObject();
+        signature.setKeyInfo(keyInfo);
+
         assertion.setSignature(signature);
 
         Subject subject = new SubjectBuilder().buildObject();
@@ -180,6 +196,8 @@ public class AliyunRoleSsoController {
         attributeStatement.getAttributes().add(attribute);
 
         assertion.getAttributeStatements().add(attributeStatement);
+
+
 
     }
 
