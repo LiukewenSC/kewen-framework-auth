@@ -11,6 +11,7 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.*;
 import org.opensaml.saml.saml2.metadata.impl.*;
 import org.opensaml.security.credential.UsageType;
+import org.opensaml.security.x509.BasicX509Credential;
 import org.opensaml.xmlsec.signature.KeyInfo;
 import org.opensaml.xmlsec.signature.X509Certificate;
 import org.opensaml.xmlsec.signature.X509Data;
@@ -19,8 +20,10 @@ import org.opensaml.xmlsec.signature.impl.X509CertificateBuilder;
 import org.opensaml.xmlsec.signature.impl.X509DataBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,14 +59,26 @@ import java.util.HashMap;
  * @author kewen
  * @since 1.0.0
  */
-@RestController
+@Controller
 @RequestMapping("/application")
 public class ApplicationEndpoint {
     private static final Logger log = LoggerFactory.getLogger(ApplicationEndpoint.class);
 
     private static CertificateGenerator.CertificateResp certificateResp = new CertificateGenerator.CertificateResp();
 
+
+
+    @GetMapping("/goSso")
+    public void goSso(HttpServletResponse response, HttpServletRequest request) {
+        String privateKey = certificateResp.getPrivateKey();
+        String publicKey = certificateResp.getPublicKey();
+        /*BasicX509Credential credential = new BasicX509Credential(
+
+        );*/
+    }
+
     @GetMapping("/generateCertificate")
+    @ResponseBody
     public CertificateGenerator.CertificateResp generateCertificate() {
         CertificateGenerator.CertificateReq certificateReq = new CertificateGenerator.CertificateReq();
         certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
@@ -78,7 +93,9 @@ public class ApplicationEndpoint {
     }
 
     @GetMapping("/generateMetadata")
+    @ResponseBody
     public String generateMetadata() {
+
         generateCertificate();
 
         EntityDescriptor entityDescriptor = new EntityDescriptorBuilder().buildObject();

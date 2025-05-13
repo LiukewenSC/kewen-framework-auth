@@ -109,8 +109,8 @@ public class CertificateGenerator {
             //
             //使用 UTF-8 编码将字节数组转换为字符串。
             //UTF-8 编码可以表示所有 Unicode 字符，但对于纯 ASCII 字符串来说，其表现与 US-ASCII 相同。
-            String strCertData = StringUtils.newStringUsAscii(Base64.encodeBase64Chunked(encoded));
-            //String strCertData = Base64.encodeBase64String(encoded);
+            //String strCertData = StringUtils.newStringUsAscii(Base64.encodeBase64Chunked(encoded));
+            String strCertData = Base64.encodeBase64String(encoded);
 
             System.out.println("strCertData: " + strCertData);
             System.out.println("privateKeyBase64: " + privateKeyBase64);
