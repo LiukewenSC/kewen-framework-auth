@@ -12,23 +12,28 @@
 
 package com.kewen.framework.idaas.application.controller;
 
+import com.kewen.framework.idaas.application.config.IDPConstants;
+import com.kewen.framework.idaas.application.config.IDPCredentials;
+import com.kewen.framework.idaas.application.saml.util.OpenSAMLUtils;
 import com.kewen.framework.idaas.application.saml.util.ResponseUtil;
+import com.kewen.framework.idaas.application.saml.util.SPConstants;
+import com.kewen.framework.idaas.application.saml.util.SPCredentials;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
+import org.apache.xml.security.utils.EncryptionConstants;
 import org.joda.time.DateTime;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.MarshallingException;
+import org.opensaml.core.xml.schema.XSString;
+import org.opensaml.core.xml.schema.impl.XSStringBuilder;
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.messaging.decoder.MessageDecodingException;
+import org.opensaml.messaging.encoder.MessageEncodingException;
+import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.SAMLVersion;
-import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Attribute;
-import org.opensaml.saml.saml2.core.AttributeStatement;
-import org.opensaml.saml.saml2.core.AttributeValue;
-import org.opensaml.saml.saml2.core.Audience;
-import org.opensaml.saml.saml2.core.AudienceRestriction;
-import org.opensaml.saml.saml2.core.Conditions;
-import org.opensaml.saml.saml2.core.Issuer;
-import org.opensaml.saml.saml2.core.NameID;
-import org.opensaml.saml.saml2.core.Response;
-import org.opensaml.saml.saml2.core.Status;
-import org.opensaml.saml.saml2.core.Subject;
-import org.opensaml.saml.saml2.core.SubjectConfirmation;
-import org.opensaml.saml.saml2.core.SubjectConfirmationData;
+import org.opensaml.saml.saml2.binding.decoding.impl.HTTPSOAP11Decoder;
+import org.opensaml.saml.saml2.binding.encoding.impl.HTTPSOAP11Encoder;
+import org.opensaml.saml.saml2.core.*;
 import org.opensaml.saml.saml2.core.impl.AssertionBuilder;
 import org.opensaml.saml.saml2.core.impl.AttributeBuilder;
 import org.opensaml.saml.saml2.core.impl.AttributeStatementBuilder;
@@ -43,19 +48,30 @@ import org.opensaml.saml.saml2.core.impl.StatusCodeBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectConfirmationBuilder;
 import org.opensaml.saml.saml2.core.impl.SubjectConfirmationDataBuilder;
+import org.opensaml.saml.saml2.encryption.Encrypter;
+import org.opensaml.xmlsec.encryption.support.DataEncryptionParameters;
+import org.opensaml.xmlsec.encryption.support.EncryptionException;
+import org.opensaml.xmlsec.encryption.support.KeyEncryptionParameters;
 import org.opensaml.xmlsec.signature.KeyInfo;
+import org.opensaml.xmlsec.signature.Signature;
 import org.opensaml.xmlsec.signature.impl.KeyInfoBuilder;
 import org.opensaml.xmlsec.signature.impl.SignatureBuilder;
 import org.opensaml.xmlsec.signature.impl.SignatureImpl;
+import org.opensaml.xmlsec.signature.support.SignatureConstants;
+import org.opensaml.xmlsec.signature.support.SignatureException;
+import org.opensaml.xmlsec.signature.support.Signer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 2025/05/13
@@ -156,6 +172,17 @@ public class AliyunRoleSsoController {
         status.setStatusCode(new StatusCodeBuilder().buildObject());
         response.setStatus(status);
 
+        Assertion assertion = getAssertion();
+
+        response.getAssertions().add(assertion);
+        response.setDestination("https://signin.aliyun.com/saml-role/sso");
+
+
+        ResponseUtil.redirect(httpServletResponse, response, "https://signin.aliyun.com/saml-role/sso");
+
+    }
+
+    private static Assertion getAssertion() {
         Assertion assertion = new AssertionBuilder().buildObject();
         //assertion.setIssuer(issuer);
         //assertion.setIssueInstant(issueInstant);
@@ -163,11 +190,7 @@ public class AliyunRoleSsoController {
         assertion.setVersion(SAMLVersion.VERSION_20);
 
         //签名
-        SignatureImpl signature = new SignatureBuilder().buildObject();
-        //todo
-        signature.setSignatureAlgorithm(null);
-        KeyInfo keyInfo = new KeyInfoBuilder().buildObject();
-        signature.setKeyInfo(keyInfo);
+        Signature signature = getSignature();
 
         assertion.setSignature(signature);
 
@@ -195,16 +218,252 @@ public class AliyunRoleSsoController {
 
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         Attribute attribute = new AttributeBuilder().buildObject();
-        //todo attribute value 没有Builder
-        AttributeValue attributeValue = null;
-        attribute.getAttributeValues().add(attributeValue);
-        attributeStatement.getAttributes().add(attribute);
+        // attribute value 没有Builder
+        //AttributeValue attributeValue = null;
+        XSString xsString = new XSStringBuilder().buildObject(XSString.TYPE_NAME);
+        xsString.setValue("xsStringValue");
+        attribute.getAttributeValues().add(attribute);
 
         assertion.getAttributeStatements().add(attributeStatement);
+        return assertion;
+    }
 
-        response.setDestination("https://signin.aliyun.com/saml-role/sso");
+    private static SignatureImpl getSignature() {
+        SignatureImpl signature = new SignatureBuilder().buildObject();
+        signature.setSigningCredential(IDPCredentials.getCredential());
+        signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
+        signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+        return signature;
+    }
 
-        ResponseUtil.redirect(httpServletResponse, response, "https://signin.aliyun.com/saml-role/sso");
+    @PostMapping("/go2")
+    public void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+        log.debug("recieved artifactResolve:");
+        HTTPSOAP11Decoder decoder = new HTTPSOAP11Decoder();
+
+
+        /*decoder.setHttpServletRequest(req);
+
+        try {
+            BasicParserPool parserPool = new BasicParserPool();
+            parserPool.initialize();
+            decoder.setParserPool(parserPool);
+            decoder.initialize();
+            decoder.decode();
+        } catch (MessageDecodingException e) {
+            throw new RuntimeException(e);
+        } catch (ComponentInitializationException e) {
+            throw new RuntimeException(e);
+        }
+
+        OpenSAMLUtils.logSAMLObject(decoder.getMessageContext().getMessage());*/
+
+        ArtifactResponse artifactResponse = buildArtifactResponse();
+
+        MessageContext<SAMLObject> context = new MessageContext<SAMLObject>();
+        context.setMessage(artifactResponse);
+
+        HTTPSOAP11Encoder encoder = new HTTPSOAP11Encoder();
+        encoder.setMessageContext(context);
+        encoder.setHttpServletResponse(resp);
+        try {
+            encoder.prepareContext();
+            encoder.initialize();
+            encoder.encode();
+        } catch (MessageEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (ComponentInitializationException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+
+    private ArtifactResponse buildArtifactResponse() {
+
+        ArtifactResponse artifactResponse = OpenSAMLUtils.buildSAMLObject(ArtifactResponse.class);
+
+        Issuer issuer = OpenSAMLUtils.buildSAMLObject(Issuer.class);
+        issuer.setValue(IDPConstants.IDP_ENTITY_ID);
+        artifactResponse.setIssuer(issuer);
+        artifactResponse.setIssueInstant(new DateTime());
+        artifactResponse.setDestination(SPConstants.ASSERTION_CONSUMER_SERVICE);
+
+        artifactResponse.setID(OpenSAMLUtils.generateSecureRandomId());
+
+        Status status = OpenSAMLUtils.buildSAMLObject(Status.class);
+        StatusCode statusCode = OpenSAMLUtils.buildSAMLObject(StatusCode.class);
+        statusCode.setValue(StatusCode.SUCCESS);
+        status.setStatusCode(statusCode);
+        artifactResponse.setStatus(status);
+
+        Response response = OpenSAMLUtils.buildSAMLObject(Response.class);
+        response.setDestination(SPConstants.ASSERTION_CONSUMER_SERVICE);
+        response.setIssueInstant(new DateTime());
+        response.setID(OpenSAMLUtils.generateSecureRandomId());
+        Issuer issuer2 = OpenSAMLUtils.buildSAMLObject(Issuer.class);
+        issuer2.setValue(IDPConstants.IDP_ENTITY_ID);
+
+        response.setIssuer(issuer2);
+
+        Status status2 = OpenSAMLUtils.buildSAMLObject(Status.class);
+        StatusCode statusCode2 = OpenSAMLUtils.buildSAMLObject(StatusCode.class);
+        statusCode2.setValue(StatusCode.SUCCESS);
+        status2.setStatusCode(statusCode2);
+
+        response.setStatus(status2);
+
+        artifactResponse.setMessage(response);
+
+        Assertion assertion = buildAssertion();
+
+        signAssertion(assertion);
+        EncryptedAssertion encryptedAssertion = encryptAssertion(assertion);
+
+        response.getEncryptedAssertions().add(encryptedAssertion);
+        return artifactResponse;
+    }
+
+    /**
+     * 加密断言
+     */
+    private EncryptedAssertion encryptAssertion(Assertion assertion) {
+        DataEncryptionParameters encryptionParameters = new DataEncryptionParameters();
+        encryptionParameters.setAlgorithm(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES128);
+
+        KeyEncryptionParameters keyEncryptionParameters = new KeyEncryptionParameters();
+        keyEncryptionParameters.setEncryptionCredential(SPCredentials.getCredential());
+        keyEncryptionParameters.setAlgorithm(EncryptionConstants.ALGO_ID_KEYTRANSPORT_RSAOAEP);
+
+        Encrypter encrypter = new Encrypter(encryptionParameters, keyEncryptionParameters);
+        encrypter.setKeyPlacement(Encrypter.KeyPlacement.INLINE);
+
+        try {
+            return encrypter.encrypt(assertion);
+        } catch (EncryptionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void signAssertion(Assertion assertion) {
+        Signature signature = OpenSAMLUtils.buildSAMLObject(Signature.class);
+        signature.setSigningCredential(IDPCredentials.getCredential());
+        signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
+        signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+
+        assertion.setSignature(signature);
+
+        try {
+            //noinspection ConstantConditions =》marshall 要求输入Nonnull且输出为Nonull；
+            XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(assertion).marshall(assertion);
+        } catch (MarshallingException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            Signer.signObject(signature);
+        } catch (SignatureException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Assertion buildAssertion() {
+
+        Assertion assertion = OpenSAMLUtils.buildSAMLObject(Assertion.class);
+
+        Issuer issuer = OpenSAMLUtils.buildSAMLObject(Issuer.class);
+        issuer.setValue(IDPConstants.IDP_ENTITY_ID);
+        assertion.setIssuer(issuer);
+        assertion.setIssueInstant(new DateTime());
+
+        assertion.setID(OpenSAMLUtils.generateSecureRandomId());
+
+        Subject subject = OpenSAMLUtils.buildSAMLObject(Subject.class);
+        assertion.setSubject(subject);
+
+        NameID nameID = OpenSAMLUtils.buildSAMLObject(NameID.class);
+        nameID.setFormat(NameIDType.TRANSIENT);
+        nameID.setValue("Some NameID value");
+        nameID.setSPNameQualifier("SP name qualifier");
+        nameID.setNameQualifier("Name qualifier");
+
+        subject.setNameID(nameID);
+
+        subject.getSubjectConfirmations().add(buildSubjectConfirmation());
+
+        assertion.setConditions(buildConditions());
+
+        assertion.getAttributeStatements().add(buildAttributeStatement());
+
+        assertion.getAuthnStatements().add(buildAuthnStatement());
+
+        return assertion;
+    }
+
+    private SubjectConfirmation buildSubjectConfirmation() {
+        SubjectConfirmation subjectConfirmation = OpenSAMLUtils.buildSAMLObject(SubjectConfirmation.class);
+        subjectConfirmation.setMethod(SubjectConfirmation.METHOD_BEARER);
+
+        SubjectConfirmationData subjectConfirmationData = OpenSAMLUtils.buildSAMLObject(SubjectConfirmationData.class);
+        subjectConfirmationData.setInResponseTo("Made up ID");
+        subjectConfirmationData.setNotBefore(new DateTime().minusDays(2));
+        subjectConfirmationData.setNotOnOrAfter(new DateTime().plusDays(2));
+        subjectConfirmationData.setRecipient(SPConstants.ASSERTION_CONSUMER_SERVICE);
+
+        subjectConfirmation.setSubjectConfirmationData(subjectConfirmationData);
+
+        return subjectConfirmation;
+    }
+
+    private AuthnStatement buildAuthnStatement() {
+        AuthnStatement authnStatement = OpenSAMLUtils.buildSAMLObject(AuthnStatement.class);
+        AuthnContext authnContext = OpenSAMLUtils.buildSAMLObject(AuthnContext.class);
+        AuthnContextClassRef authnContextClassRef = OpenSAMLUtils.buildSAMLObject(AuthnContextClassRef.class);
+        authnContextClassRef.setAuthnContextClassRef(AuthnContext.SMARTCARD_AUTHN_CTX);
+        authnContext.setAuthnContextClassRef(authnContextClassRef);
+        authnStatement.setAuthnContext(authnContext);
+
+        authnStatement.setAuthnInstant(new DateTime());
+
+        return authnStatement;
+    }
+
+    private Conditions buildConditions() {
+        Conditions conditions = OpenSAMLUtils.buildSAMLObject(Conditions.class);
+        conditions.setNotBefore(new DateTime().minusDays(2));
+        conditions.setNotOnOrAfter(new DateTime().plusDays(2));
+        AudienceRestriction audienceRestriction = OpenSAMLUtils.buildSAMLObject(AudienceRestriction.class);
+        Audience audience = OpenSAMLUtils.buildSAMLObject(Audience.class);
+        audience.setAudienceURI(SPConstants.ASSERTION_CONSUMER_SERVICE);
+        audienceRestriction.getAudiences().add(audience);
+        conditions.getAudienceRestrictions().add(audienceRestriction);
+        return conditions;
+    }
+
+    private AttributeStatement buildAttributeStatement() {
+        AttributeStatement attributeStatement = OpenSAMLUtils.buildSAMLObject(AttributeStatement.class);
+
+        Attribute attributeUserName = OpenSAMLUtils.buildSAMLObject(Attribute.class);
+
+        XSStringBuilder stringBuilder = (XSStringBuilder)XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilder(XSString.TYPE_NAME);
+        assert stringBuilder != null;
+        XSString userNameValue = stringBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);
+        userNameValue.setValue("bob");
+
+        attributeUserName.getAttributeValues().add(userNameValue);
+        attributeUserName.setName("username");
+        attributeStatement.getAttributes().add(attributeUserName);
+
+        Attribute attributeLevel = OpenSAMLUtils.buildSAMLObject(Attribute.class);
+        XSString levelValue = stringBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);
+        levelValue.setValue("999999999");
+
+        attributeLevel.getAttributeValues().add(levelValue);
+        attributeLevel.setName("telephone");
+        attributeStatement.getAttributes().add(attributeLevel);
+
+        return attributeStatement;
 
     }
 
