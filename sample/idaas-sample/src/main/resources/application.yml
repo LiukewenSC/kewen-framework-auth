@@ -1,0 +1,4 @@
+kewen:
+  framework:
+    authentication:
+      ignore: true

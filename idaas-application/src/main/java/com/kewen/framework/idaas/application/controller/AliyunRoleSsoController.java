@@ -12,6 +12,7 @@
 
 package com.kewen.framework.idaas.application.controller;
 
+import com.kewen.framework.idaas.application.saml.util.ResponseUtil;
 import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.saml2.core.Assertion;
@@ -46,6 +47,8 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 import org.opensaml.xmlsec.signature.impl.KeyInfoBuilder;
 import org.opensaml.xmlsec.signature.impl.SignatureBuilder;
 import org.opensaml.xmlsec.signature.impl.SignatureImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -133,6 +136,8 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class AliyunRoleSsoController {
 
+    private static final Logger log = LoggerFactory.getLogger(AliyunRoleSsoController.class);
+
     @GetMapping("/go")
     @ResponseBody
     public void goSso(HttpServletRequest request, HttpServletResponse httpServletResponse) {
@@ -197,7 +202,9 @@ public class AliyunRoleSsoController {
 
         assertion.getAttributeStatements().add(attributeStatement);
 
+        response.setDestination("https://signin.aliyun.com/saml-role/sso");
 
+        ResponseUtil.redirect(httpServletResponse, response, "https://signin.aliyun.com/saml-role/sso");
 
     }
 

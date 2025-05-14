@@ -10,6 +10,7 @@ import com.kewen.framework.idaas.authentication.store.AuthenticationStore;
 import com.kewen.framework.idaas.model.Result;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -40,9 +41,16 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     AuthenticationStore authenticationStore;
 
+    @Value("${kewen.framework.authentication.ignore:false}")
+    private boolean ignoreAuthentication;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        if (ignoreAuthentication) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // 认证，如果是认证对应的接口，就需要再次认证，即使已经是认证过的；
         UserDetails userDetails = authentication(request);
