@@ -1,6 +1,6 @@
 package com.kewen.framework.idaas.application.saml.util;
 
-import com.kewen.framework.idaas.application.controller.CertificateGenerator;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.joda.time.DateTime;
 import org.opensaml.core.xml.schema.XSAny;
@@ -14,6 +14,8 @@ import org.opensaml.xmlsec.encryption.support.EncryptionException;
 import org.opensaml.xmlsec.encryption.support.KeyEncryptionParameters;
 import org.opensaml.xmlsec.signature.KeyInfo;
 
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 
 public class SamlXmlObjectUtil {
@@ -28,7 +30,7 @@ public class SamlXmlObjectUtil {
         artifactResponse.setIssueInstant(new DateTime());
         artifactResponse.setDestination(destination);
 
-        artifactResponse.setID(CertificateUtil.generateSecureRandomId());
+        artifactResponse.setID(SamlCertificateUtil.generateSecureRandomId());
 
         Status status = getStatus();
         artifactResponse.setStatus(status);
@@ -42,7 +44,7 @@ public class SamlXmlObjectUtil {
     public static Response getResponse(String entityId, String destination) {
         Response response = new ResponseBuilder().buildObject();
         //response.setID("_34679165192bb618761a2a588325811d");
-        response.setID(CertificateUtil.generateSecureRandomId());
+        response.setID(SamlCertificateUtil.generateSecureRandomId());
 
         Issuer issuer = new IssuerBuilder().buildObject();
         issuer.setValue(entityId);
@@ -62,8 +64,8 @@ public class SamlXmlObjectUtil {
 
         Assertion assertion = getAssertion(destination);
         String certData = getCertData();
-        KeyInfo keyInfo = CertificateUtil.getKeyInfo(certData);
-        CertificateUtil.signAssertion(assertion, keyInfo);
+        KeyInfo keyInfo = SamlCertificateUtil.getKeyInfo(certData);
+        SamlCertificateUtil.signAssertion(assertion, keyInfo);
 
         response.getAssertions().add(assertion);
 
@@ -75,14 +77,17 @@ public class SamlXmlObjectUtil {
     }
 
     private static String getCertData() {
-        CertificateGenerator.CertificateReq certificateReq = new CertificateGenerator.CertificateReq();
+        BcCertificateUtil.CertificateReq certificateReq = new BcCertificateUtil.CertificateReq();
         certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24))
                 .setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)))
         ;
-        CertificateGenerator.CertificateResp generate = CertificateGenerator.generate(certificateReq);
-        return generate.getCertData();
+        Pair<KeyPair, X509Certificate> keyX509Certificate = BcCertificateUtil.generate(certificateReq);
+        BcCertificateUtil.CertificateResp certificateResp = BcCertificateUtil.getCertificateResp(
+                keyX509Certificate.getLeft(), keyX509Certificate.getRight()
+        );
+        return certificateResp.getCertData();
     }
 
     public static Status getStatus() {
@@ -103,8 +108,8 @@ public class SamlXmlObjectUtil {
         Assertion assertion = new AssertionBuilder().buildObject();
         assertion.setIssuer(getIssuer("kewen"));
         assertion.setIssueInstant(new DateTime());
-        assertion.setID(CertificateUtil.generateSecureRandomId());
-        assertion.setID(CertificateUtil.generateSecureRandomId());
+        assertion.setID(SamlCertificateUtil.generateSecureRandomId());
+        assertion.setID(SamlCertificateUtil.generateSecureRandomId());
         assertion.setVersion(SAMLVersion.VERSION_20);
 
         assertion.setSubject(getSubject(recipient));
@@ -154,7 +159,7 @@ public class SamlXmlObjectUtil {
 
     private static AuthnStatement buildAuthnStatement() {
         AuthnStatement authnStatement = new AuthnStatementBuilder().buildObject();
-        AuthnContext authnContext = OpenSAMLUtils.buildSAMLObject(AuthnContext.class);
+        AuthnContext authnContext = new AuthnContextBuilder().buildObject();
         AuthnContextClassRef authnContextClassRef = new AuthnContextClassRefBuilder().buildObject();
         authnContextClassRef.setAuthnContextClassRef(AuthnContext.SMARTCARD_AUTHN_CTX);
         authnContext.setAuthnContextClassRef(authnContextClassRef);

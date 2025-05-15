@@ -6,14 +6,19 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.Marshaller;
+import org.opensaml.core.xml.io.MarshallerFactory;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.SignableSAMLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
@@ -55,30 +60,44 @@ public class OpenSAMLUtils {
         if (object instanceof SignableSAMLObject && ((SignableSAMLObject) object).isSigned() && object.getDOM() != null) {
             element = object.getDOM();
         } else {
-            try {
-                Marshaller out = XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(object);
-                out.marshall(object);
-                element = object.getDOM();
-
-            } catch (MarshallingException e) {
-                logger.error(e.getMessage(), e);
-            }
+            marshall(object);
+            element = object.getDOM();
         }
+        formatXMLObject(element);
+    }
 
+    public static void marshall(final XMLObject object) {
+        MarshallerFactory marshallerFactory = XMLObjectProviderRegistrySupport.getMarshallerFactory();
+        Marshaller marshaller = marshallerFactory.getMarshaller(object);
+        try {
+            marshaller.marshall(object);
+        } catch (MarshallingException e) {
+            throw new SamlException("marshall error : " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 格式化树形dom
+     *
+     * @param node
+     * @return
+     */
+    public static String formatXMLObject(Node node) {
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            StreamResult result = new StreamResult(new StringWriter());
-            DOMSource source = new DOMSource(element);
 
-            transformer.transform(source, result);
-            String xmlString = result.getWriter().toString();
-
-            logger.info(xmlString);
-        } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
+            // create string from xml tree
+            StringWriter stringWriter = new StringWriter();
+            StreamResult streamResult = new StreamResult(stringWriter);
+            DOMSource source = new DOMSource(node);
+            transformer.transform(source, streamResult);
+            String formatXml = stringWriter.toString();
+            logger.info(formatXml);
+            return formatXml;
         } catch (TransformerException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

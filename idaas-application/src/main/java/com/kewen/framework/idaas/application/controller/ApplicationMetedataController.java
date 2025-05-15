@@ -1,22 +1,15 @@
 package com.kewen.framework.idaas.application.controller;
 
 
-import org.opensaml.core.config.ConfigurationService;
-import org.opensaml.core.xml.XMLObject;
-import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
-import org.opensaml.core.xml.io.Marshaller;
-import org.opensaml.core.xml.io.MarshallerFactory;
-import org.opensaml.core.xml.io.MarshallingException;
+import com.kewen.framework.idaas.application.saml.util.BcCertificateUtil;
+import com.kewen.framework.idaas.application.saml.util.OpenSAMLUtils;
+import com.kewen.framework.idaas.application.saml.util.SamlCertificateUtil;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.*;
 import org.opensaml.saml.saml2.metadata.impl.*;
 import org.opensaml.security.credential.UsageType;
 import org.opensaml.xmlsec.signature.KeyInfo;
-import org.opensaml.xmlsec.signature.X509Certificate;
-import org.opensaml.xmlsec.signature.X509Data;
-import org.opensaml.xmlsec.signature.impl.KeyInfoBuilder;
-import org.opensaml.xmlsec.signature.impl.X509CertificateBuilder;
-import org.opensaml.xmlsec.signature.impl.X509DataBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -26,13 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
+import java.security.KeyPair;
 import java.util.Date;
 
 /**
@@ -58,11 +45,10 @@ import java.util.Date;
  */
 @Controller
 @RequestMapping("/application")
-public class ApplicationEndpoint {
-    private static final Logger log = LoggerFactory.getLogger(ApplicationEndpoint.class);
+public class ApplicationMetedataController {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationMetedataController.class);
 
-    private static CertificateGenerator.CertificateResp certificateResp = new CertificateGenerator.CertificateResp();
-
+    private static BcCertificateUtil.CertificateResp certificateResp = new BcCertificateUtil.CertificateResp();
 
 
     @GetMapping("/goSso")
@@ -76,17 +62,19 @@ public class ApplicationEndpoint {
 
     @GetMapping("/generateCertificate")
     @ResponseBody
-    public CertificateGenerator.CertificateResp generateCertificate() {
-        CertificateGenerator.CertificateReq certificateReq = new CertificateGenerator.CertificateReq();
+    public BcCertificateUtil.CertificateResp generateCertificate() {
+        BcCertificateUtil.CertificateReq certificateReq = new BcCertificateUtil.CertificateReq();
         certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24))
                 .setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)))
         ;
-        CertificateGenerator.CertificateResp generate = CertificateGenerator.generate(certificateReq);
-        certificateResp = generate;
 
-        return generate;
+        Pair<KeyPair, java.security.cert.X509Certificate> generate = BcCertificateUtil.generate(certificateReq);
+        BcCertificateUtil.CertificateResp certificateResp = BcCertificateUtil.getCertificateResp(
+                generate.getLeft(), generate.getRight()
+        );
+        return certificateResp;
     }
 
     @GetMapping("/generateMetadataBytes")
@@ -100,6 +88,7 @@ public class ApplicationEndpoint {
             throw new RuntimeException(e);
         }
     }
+
     @GetMapping("/generateMetadata")
     @ResponseBody
     public String generateMetadata() {
@@ -116,7 +105,7 @@ public class ApplicationEndpoint {
         KeyDescriptor keyDescriptor = new KeyDescriptorBuilder().buildObject();
         keyDescriptor.setUse(UsageType.SIGNING);
 
-        KeyInfo keyInfo = getKeyInfo();
+        KeyInfo keyInfo = SamlCertificateUtil.getKeyInfo(certificateResp.getCertData());
 
         keyDescriptor.setKeyInfo(keyInfo);
 
@@ -145,48 +134,10 @@ public class ApplicationEndpoint {
         idpssoDescriptor.getSingleLogoutServices().add(singleLogoutServicePost);
 
         entityDescriptor.getRoleDescriptors().add(idpssoDescriptor);
+        OpenSAMLUtils.marshall(entityDescriptor);
+        return OpenSAMLUtils.formatXMLObject(entityDescriptor.getDOM());
 
-
-        MarshallerFactory marshallerFactory = ConfigurationService.get(XMLObjectProviderRegistry.class).getMarshallerFactory();
-        Marshaller marshaller = marshallerFactory.getMarshaller(entityDescriptor);
-        try {
-            marshaller.marshall(entityDescriptor);
-            String formatXml = formatXMLObject(entityDescriptor);
-            log.info(formatXml);
-            return formatXml;
-        } catch (MarshallingException e) {
-            throw new RuntimeException(e);
-        } catch (TransformerException e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    private static KeyInfo getKeyInfo() {
-        X509Data x509Data = new X509DataBuilder().buildObject();
 
-        X509Certificate x509Certificate = new X509CertificateBuilder().buildObject();
-        //这里是证书
-        x509Certificate.setValue(certificateResp.getCertData());
-        x509Data.getX509Certificates().add(x509Certificate);
-
-        KeyInfo keyInfo = new KeyInfoBuilder().buildObject();
-
-        keyInfo.getX509Datas().add(x509Data);
-        return keyInfo;
-    }
-
-    public static String formatXMLObject(XMLObject xmlObject) throws TransformerException, MarshallingException {
-
-        TransformerFactory transf = TransformerFactory.newInstance();
-        Transformer trans = transf.newTransformer();
-        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        trans.setOutputProperty(OutputKeys.INDENT, "yes");
-
-        // create string from xml tree
-        StringWriter sw = new StringWriter();
-        StreamResult result = new StreamResult(sw);
-        DOMSource source = new DOMSource(xmlObject.getDOM());
-        trans.transform(source, result);
-        return sw.toString();
-    }
 }
