@@ -11,7 +11,6 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.*;
 import org.opensaml.saml.saml2.metadata.impl.*;
 import org.opensaml.security.credential.UsageType;
-import org.opensaml.security.x509.BasicX509Credential;
 import org.opensaml.xmlsec.signature.KeyInfo;
 import org.opensaml.xmlsec.signature.X509Certificate;
 import org.opensaml.xmlsec.signature.X509Data;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +34,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * 2025/04/13
@@ -119,15 +116,7 @@ public class ApplicationEndpoint {
         KeyDescriptor keyDescriptor = new KeyDescriptorBuilder().buildObject();
         keyDescriptor.setUse(UsageType.SIGNING);
 
-        X509Data x509Data = new X509DataBuilder().buildObject();
-
-        X509Certificate x509Certificate = new X509CertificateBuilder().buildObject();
-        //这里是证书
-        x509Certificate.setValue(certificateResp.getCertData());
-        x509Data.getX509Certificates().add(x509Certificate);
-
-        KeyInfo keyInfo = new KeyInfoBuilder().buildObject();
-        keyInfo.getX509Datas().add(x509Data);
+        KeyInfo keyInfo = getKeyInfo();
 
         keyDescriptor.setKeyInfo(keyInfo);
 
@@ -170,6 +159,20 @@ public class ApplicationEndpoint {
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static KeyInfo getKeyInfo() {
+        X509Data x509Data = new X509DataBuilder().buildObject();
+
+        X509Certificate x509Certificate = new X509CertificateBuilder().buildObject();
+        //这里是证书
+        x509Certificate.setValue(certificateResp.getCertData());
+        x509Data.getX509Certificates().add(x509Certificate);
+
+        KeyInfo keyInfo = new KeyInfoBuilder().buildObject();
+
+        keyInfo.getX509Datas().add(x509Data);
+        return keyInfo;
     }
 
     public static String formatXMLObject(XMLObject xmlObject) throws TransformerException, MarshallingException {
