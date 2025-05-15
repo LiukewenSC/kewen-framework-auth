@@ -55,11 +55,7 @@ public class SamlXmlObjectUtil {
 
         response.setDestination(destination);
 
-        Status status = new StatusBuilder().buildObject();
-        StatusCode statusCode = new StatusCodeBuilder().buildObject();
-        //statusCode.setValue("urn:oasis:names:tc:SAML:2.0:status:Success");
-        statusCode.setValue(StatusCode.SUCCESS);
-        status.setStatusCode(statusCode);
+        Status status = getStatus();
         response.setStatus(status);
 
         Assertion assertion = getAssertion(destination);
