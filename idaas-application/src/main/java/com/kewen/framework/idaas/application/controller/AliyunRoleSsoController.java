@@ -393,6 +393,11 @@ public class AliyunRoleSsoController {
         if (x509CertificateValue == null) {
             return null;
         }
+        /*final X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
+        x509KeyInfoGeneratorFactory.setEmitEntityCertificate(true);
+        final KeyInfoGenerator keyInfoGenerator = x509KeyInfoGeneratorFactory.newInstance();
+        KeyInfo keyInfo = keyInfoGenerator.generate(credential);*/
+
         KeyInfo keyInfo = new KeyInfoBuilder().buildObject();
         X509Data x509Data = new X509DataBuilder().buildObject();
         X509Certificate x509Certificate = new X509CertificateBuilder().buildObject();
