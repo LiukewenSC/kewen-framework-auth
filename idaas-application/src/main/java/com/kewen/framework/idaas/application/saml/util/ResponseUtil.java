@@ -88,8 +88,9 @@ public class ResponseUtil {
             encoder.prepareContext();
             //*encode*方法将会压缩消息，生成签名，添加结果到URL并从定向用户到Idp.
             //先使用RFC1951作为默认方法压缩数据，在对压缩后的数据信息Base64编码
+            encoder.initialize();
             encoder.encode();
-        } catch (MessageEncodingException e) {
+        } catch (MessageEncodingException | ComponentInitializationException e) {
             throw new RuntimeException(e);
         }
     }
