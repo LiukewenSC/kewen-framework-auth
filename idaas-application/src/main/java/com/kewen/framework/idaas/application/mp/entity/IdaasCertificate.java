@@ -4,13 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * <p>
@@ -24,9 +23,7 @@ import java.time.LocalDateTime;
 @Setter
 @Accessors(chain = true)
 @TableName("idaas_certificate")
-public class IdaasCertificate extends Model<IdaasCertificate> {
-
-    private static final long serialVersionUID = 1L;
+public class IdaasCertificate {
 
     /**
      * 主键
@@ -38,20 +35,46 @@ public class IdaasCertificate extends Model<IdaasCertificate> {
      * 发行人
      */
     @TableField("issuer")
-    private Long issuer;
+    private String issuer;
 
     /**
      * 主体
      */
     @TableField("subject")
-    private Long subject;
+    private String subject;
 
     /**
      * 证书内容
      */
     @TableField("certificate")
     private String certificate;
+    /**
+     * 签名算法
+     */
+    @TableField("signature_algorithm")
+    private String signatureAlgorithm;
+    /**
+     * 签名算法
+     */
+    @TableField("private_key")
+    private String privateKey;
 
+    /**
+     * 签名算法
+     */
+    @TableField("public_key")
+    private String publicKey;
+
+    /**
+     * 生效时间
+     */
+    @TableField("effect_time")
+    private Date effectTime;
+    /**
+     * 过期时间
+     */
+    @TableField("expire_time")
+    private Date expireTime;
     /**
      * 创建时间
      */
@@ -70,10 +93,5 @@ public class IdaasCertificate extends Model<IdaasCertificate> {
     @TableField("deleted")
     private Integer deleted;
 
-
-    @Override
-    public Serializable pkVal() {
-        return this.id;
-    }
 
 }

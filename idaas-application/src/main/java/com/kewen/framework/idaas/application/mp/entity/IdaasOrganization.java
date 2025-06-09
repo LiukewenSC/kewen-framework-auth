@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -24,9 +22,7 @@ import java.time.LocalDateTime;
 @Setter
 @Accessors(chain = true)
 @TableName("idaas_organization")
-public class IdaasOrganization extends Model<IdaasOrganization> {
-
-    private static final long serialVersionUID = 1L;
+public class IdaasOrganization {
 
     /**
      * 主键
@@ -93,11 +89,5 @@ public class IdaasOrganization extends Model<IdaasOrganization> {
      */
     @TableField("deleted")
     private Integer deleted;
-
-
-    @Override
-    public Serializable pkVal() {
-        return this.id;
-    }
 
 }

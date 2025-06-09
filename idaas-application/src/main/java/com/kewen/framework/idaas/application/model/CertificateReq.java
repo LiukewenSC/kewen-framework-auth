@@ -14,4 +14,5 @@ public class CertificateReq {
     private Date notBefore;
     private Date notAfter;
     private String signatureAlgorithm = "SHA256withRSA";
+
 }
