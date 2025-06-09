@@ -1,4 +1,4 @@
-package com.kewen.framework.idaas.application.saml.util;
+package com.kewen.framework.idaas.application.util;
 
 import com.kewen.framework.idaas.application.saml.SamlException;
 import net.shibboleth.utilities.java.support.security.RandomIdentifierGenerationStrategy;

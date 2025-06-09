@@ -13,8 +13,8 @@
 package com.kewen.framework.idaas.application.controller;
 
 import com.kewen.framework.idaas.application.config.IDPConstants;
-import com.kewen.framework.idaas.application.saml.util.ResponseUtil;
-import com.kewen.framework.idaas.application.saml.util.SamlXmlObjectUtil;
+import com.kewen.framework.idaas.application.util.ResponseUtil;
+import com.kewen.framework.idaas.application.util.SamlXmlObjectUtil;
 import org.opensaml.saml.saml2.binding.decoding.impl.HTTPSOAP11Decoder;
 import org.opensaml.saml.saml2.core.ArtifactResponse;
 import org.opensaml.saml.saml2.core.Response;

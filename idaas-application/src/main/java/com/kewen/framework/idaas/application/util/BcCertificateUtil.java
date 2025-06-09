@@ -1,9 +1,9 @@
-package com.kewen.framework.idaas.application.saml.util;
+package com.kewen.framework.idaas.application.util;
 
 
+import com.kewen.framework.idaas.application.model.CertificateReq;
+import com.kewen.framework.idaas.application.model.CertificateResp;
 import com.kewen.framework.idaas.application.saml.SamlException;
-import lombok.Data;
-import lombok.experimental.Accessors;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -31,24 +31,6 @@ import java.util.Date;
 public class BcCertificateUtil {
     static {
         Security.addProvider(new BouncyCastleProvider());
-    }
-
-    @Data
-    @Accessors(chain = true)
-    public static class CertificateReq {
-        private String subject;
-        private String issuer;
-        private String serial;
-        private Date notBefore;
-        private Date notAfter;
-        private String signatureAlgorithm = "SHA256withRSA";
-    }
-    @Data
-    @Accessors(chain = true)
-    public static class CertificateResp {
-        private String certData;
-        private String privateKey;
-        private String publicKey;
     }
 
     public static Pair<KeyPair, X509Certificate> generate(CertificateReq certificateReq) {

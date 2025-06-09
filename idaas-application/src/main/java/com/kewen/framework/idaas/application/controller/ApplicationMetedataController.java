@@ -1,9 +1,11 @@
 package com.kewen.framework.idaas.application.controller;
 
 
-import com.kewen.framework.idaas.application.saml.util.BcCertificateUtil;
-import com.kewen.framework.idaas.application.saml.util.OpenSAMLUtils;
-import com.kewen.framework.idaas.application.saml.util.SamlCertificateUtil;
+import com.kewen.framework.idaas.application.model.CertificateReq;
+import com.kewen.framework.idaas.application.model.CertificateResp;
+import com.kewen.framework.idaas.application.util.BcCertificateUtil;
+import com.kewen.framework.idaas.application.util.OpenSAMLUtils;
+import com.kewen.framework.idaas.application.util.SamlCertificateUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.*;
@@ -48,7 +50,7 @@ import java.util.Date;
 public class ApplicationMetedataController {
     private static final Logger log = LoggerFactory.getLogger(ApplicationMetedataController.class);
 
-    private static BcCertificateUtil.CertificateResp certificateResp = new BcCertificateUtil.CertificateResp();
+    private static CertificateResp certificateResp = new CertificateResp();
 
 
     @GetMapping("/goSso")
@@ -62,8 +64,8 @@ public class ApplicationMetedataController {
 
     @GetMapping("/generateCertificate")
     @ResponseBody
-    public BcCertificateUtil.CertificateResp generateCertificate() {
-        BcCertificateUtil.CertificateReq certificateReq = new BcCertificateUtil.CertificateReq();
+    public CertificateResp generateCertificate() {
+        CertificateReq certificateReq = new CertificateReq();
         certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24))
@@ -71,7 +73,7 @@ public class ApplicationMetedataController {
         ;
 
         Pair<KeyPair, java.security.cert.X509Certificate> generate = BcCertificateUtil.generate(certificateReq);
-        BcCertificateUtil.CertificateResp certificateResp = BcCertificateUtil.getCertificateResp(
+        CertificateResp certificateResp = BcCertificateUtil.getCertificateResp(
                 generate.getLeft(), generate.getRight()
         );
         return certificateResp;

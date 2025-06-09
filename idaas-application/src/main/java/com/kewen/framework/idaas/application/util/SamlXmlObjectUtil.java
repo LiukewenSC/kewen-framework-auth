@@ -1,5 +1,7 @@
-package com.kewen.framework.idaas.application.saml.util;
+package com.kewen.framework.idaas.application.util;
 
+import com.kewen.framework.idaas.application.model.CertificateReq;
+import com.kewen.framework.idaas.application.model.CertificateResp;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.joda.time.DateTime;
@@ -73,14 +75,14 @@ public class SamlXmlObjectUtil {
     }
 
     private static String getCertData() {
-        BcCertificateUtil.CertificateReq certificateReq = new BcCertificateUtil.CertificateReq();
+        CertificateReq certificateReq = new CertificateReq();
         certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24))
                 .setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)))
         ;
         Pair<KeyPair, X509Certificate> keyX509Certificate = BcCertificateUtil.generate(certificateReq);
-        BcCertificateUtil.CertificateResp certificateResp = BcCertificateUtil.getCertificateResp(
+        CertificateResp certificateResp = BcCertificateUtil.getCertificateResp(
                 keyX509Certificate.getLeft(), keyX509Certificate.getRight()
         );
         return certificateResp.getCertData();

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 证书信息
+ * 组织信息
  * </p>
  *
  * @author kewen
@@ -23,8 +23,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Accessors(chain = true)
-@TableName("idaas_certificate")
-public class IdaasCertificate extends Model<IdaasCertificate> {
+@TableName("idaas_organization")
+public class IdaasOrganization extends Model<IdaasOrganization> {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,22 +35,46 @@ public class IdaasCertificate extends Model<IdaasCertificate> {
     private Long id;
 
     /**
-     * 发行人
+     * 机构名
      */
-    @TableField("issuer")
-    private Long issuer;
+    @TableField("name")
+    private String name;
 
     /**
-     * 主体
+     * 国家
      */
-    @TableField("subject")
-    private Long subject;
+    @TableField("c")
+    private String c;
 
     /**
-     * 证书内容
+     * 州/省
      */
-    @TableField("certificate")
-    private String certificate;
+    @TableField("st")
+    private String st;
+
+    /**
+     * 地名
+     */
+    @TableField("l")
+    private String l;
+
+    /**
+     * 组织
+     */
+    @TableField("o")
+    private String o;
+
+    /**
+     * 组织单位
+     */
+    @TableField("ou")
+    private String ou;
+
+    /**
+     * 通用名称
+     */
+    @TableField("cn")
+    private String cn;
 
     /**
      * 创建时间
