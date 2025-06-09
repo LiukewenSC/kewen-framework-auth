@@ -42,7 +42,7 @@ public class MybatisPlusCodeGenerator {
         /**
          * 基础包名
          */
-        public static final String BASE_PACKAGE = "com.kewen.framework.idaas.sample";
+        public static final String BASE_PACKAGE = "com.kewen.framework.idaas.application";
         /**
          * 模块名
          */

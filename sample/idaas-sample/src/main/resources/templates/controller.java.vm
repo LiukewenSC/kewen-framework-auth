@@ -3,14 +3,14 @@ package ${package.Controller};
 import ${package.Service}.${table.serviceName};
 import ${package.Entity}.${entity};
     #if(${restControllerStyle})
-    import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-    import org.springframework.web.bind.annotation.RestController;
-    #else
-    import org.springframework.stereotype.Controller;
-    #end
-    #if(${superControllerClassPackage})
-    import ${superControllerClassPackage};
-    #end
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.web.bind.annotation.RestController;
+#else
+import org.springframework.stereotype.Controller;
+#end
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +27,9 @@ import com.kewen.framework.common.core.model.RabcIdReq;
 import com.kewen.framework.common.core.model.IdsReq;
 import com.kewen.framework.common.core.model.RabcPageReq;
     #if(${swagger})
-    import io.swagger.annotations.Api;
-    import io.swagger.annotations.ApiOperation;
-    #end
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+#end
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -41,7 +41,7 @@ import java.util.List;
  * @since ${date}
  */
 #if(${swagger})
-@Api(value = "$!{table.comment}", tags = {"$!{table.comment}" })
+@Api(value = "$!{table.comment}", tags = { "$!{table.comment}" })
 #end
 #if(${restControllerStyle})
 @RestController
@@ -50,16 +50,16 @@ import java.util.List;
 #end
 @RequestMapping("/mp#if(${package.ModuleName})/${package.ModuleName}#end/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}#end")
 #if(${kotlin})
-        class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
+class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
 
 #else
-    #if(${superControllerClass})
-            public class ${table.controllerName} extends ${superControllerClass} {
-    #else
-            public class ${table.controllerName} {
-    #end
+#if(${superControllerClass})
+public class ${table.controllerName} extends ${superControllerClass} {
+#else
+public class ${table.controllerName} {
+#end
 
-        @Autowired
+    @Autowired
     ${table.serviceName} ${table.entityPath}Service;
 
 
@@ -68,76 +68,76 @@ import java.util.List;
     #if(${swagger})
     @ApiOperation(value = "添加", notes = "")
     #end
-@PostMapping("/add")
-public Result add(@RequestBody ${entity} entity){
+    @PostMapping("/add")
+    public Result add(@RequestBody ${entity} entity){
 
         ${table.entityPath}Service.save(entity);
 
-    return Result.success();
-}
+        return Result.success();
+    }
 
     #if(${swagger})
     @ApiOperation(value = "根据id修改", notes = "")
     #end
-@PostMapping("/updateById")
-public Result updateById(@RequestBody ${entity} entity){
+    @PostMapping("/updateById")
+    public Result updateById(@RequestBody ${entity} entity){
 
         ${table.entityPath}Service.updateById(entity);
 
-    return Result.success();
-}
+        return Result.success();
+    }
 
     #if(${swagger})
     @ApiOperation(value = "删除", notes = "")
     #end
-@PostMapping(value = "/deleteById")
-public Result deleteById(@RequestBody @Validated RabcIdReq req) {
+    @PostMapping(value = "/deleteById")
+    public Result deleteById(@RequestBody @Validated RabcIdReq req ) {
 
         ${table.entityPath}Service.removeById(req.getId());
 
-    return Result.success();
-}
+        return Result.success();
+    }
 
     #if(${swagger})
     @ApiOperation(value = "批量删除", notes = "")
     #end
-@PostMapping("/deleteBatchByIds")
-public Result deleteBatch(@Validated @RequestBody IdsReq req) {
+    @PostMapping("/deleteBatchByIds")
+    public Result deleteBatch(@Validated @RequestBody IdsReq req ) {
         ${table.entityPath}Service.removeBatchByIds(req.getIds());
-    return Result.success();
-}
+        return Result.success();
+    }
 
     #if(${swagger})
     @ApiOperation(value = "根据id查询", notes = "")
     #end
-@GetMapping(value = "/getById")
-public Result findById(@NotNull @RequestParam("id") Long id) {
+    @GetMapping(value = "/getById")
+    public Result findById(@NotNull @RequestParam("id") Long id) {
 
-    ${entity} entity = ${table.entityPath}Service.getById(id);
-    return Result.success(entity);
-}
+        ${entity} entity = ${table.entityPath}Service.getById(id);
+        return Result.success(entity);
+    }
 
     #if(${swagger})
     @ApiOperation(value = "分页查询", notes = "")
     #end
-@GetMapping(value = "/page")
-public Result<RabcPageResult<${entity}>> pageQuery(@Validated @ModelAttribute RabcPageReq RabcPageReq, @ModelAttribute ${entity} model) {
-    LambdaQueryWrapper<${entity}> wrapper = new LambdaQueryWrapper<>(model);
-    return Result.success(PageUtils.page(
-                ${table.entityPath}Service.page(PageUtils.page(RabcPageReq), wrapper)
-    ));
-}
+    @GetMapping(value = "/page")
+    public Result<RabcPageResult<${entity}>> pageQuery(@Validated @ModelAttribute RabcPageReq RabcPageReq,@ModelAttribute ${entity} model) {
+        LambdaQueryWrapper<${entity}> wrapper = new LambdaQueryWrapper<>(model);
+        return Result.success(PageUtils.page(
+            ${table.entityPath}Service.page(PageUtils.page(RabcPageReq), wrapper)
+        ));
+    }
 
     #if(${swagger})
     @ApiOperation(value = "列表查询", notes = "")
     #end
-@GetMapping(value = "/list")
-public Result findList(@ModelAttribute ${entity} model) {
+    @GetMapping(value = "/list")
+    public Result findList(@ModelAttribute ${entity} model) {
 
-    LambdaQueryWrapper<${entity}> wrapper = new LambdaQueryWrapper<>(model);
-    List<${entity}> list = ${table.entityPath}Service.list(wrapper);
-    return Result.success(list);
+        LambdaQueryWrapper<${entity}> wrapper = new LambdaQueryWrapper<>(model);
+        List<${entity}> list = ${table.entityPath}Service.list(wrapper);
+        return Result.success(list);
+    }
+
 }
-
-        }
 #end

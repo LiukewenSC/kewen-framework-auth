@@ -15,14 +15,12 @@ import org.apache.ibatis.annotations.Mapper;
  * @since ${date}
  */
 #if(${mapperAnnotation})
-        @Mapper
+@Mapper
 #end
 #if(${kotlin})
-        interface ${table.mapperName} : ${superMapperClass}<${entity}>
+interface ${table.mapperName} : ${superMapperClass}<${entity}>
 #else
-        public interface ${table.mapperName} extends
+public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
 
-            ${superMapperClass}<${entity}> {
-
-        }
+}
 #end
