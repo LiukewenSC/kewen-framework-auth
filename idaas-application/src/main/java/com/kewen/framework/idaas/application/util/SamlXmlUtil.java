@@ -23,7 +23,7 @@ import org.opensaml.xmlsec.signature.support.Signer;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-public class SamlCertificateUtil {
+public class SamlXmlUtil {
 
 
     public static KeyInfo getKeyInfo(String x509CertificateValue) {

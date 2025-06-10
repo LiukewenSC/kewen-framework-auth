@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.Date;
 
 
-public class BcSamlCertificateUtilTest {
+public class BcSamlXmlUtilTest {
 
     @Test
     public void generateTest() {

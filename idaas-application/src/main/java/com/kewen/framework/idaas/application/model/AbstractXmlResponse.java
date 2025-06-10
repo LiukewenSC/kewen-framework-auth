@@ -1,12 +1,9 @@
-package com.kewen.framework.idaas.application.util;
+package com.kewen.framework.idaas.application.model;
 
 import com.kewen.framework.idaas.application.config.SPCredentials;
-import com.kewen.framework.idaas.application.model.CertificateReq;
-import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
+import com.kewen.framework.idaas.application.util.SamlXmlUtil;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.joda.time.DateTime;
-import org.opensaml.core.xml.schema.XSAny;
-import org.opensaml.core.xml.schema.impl.XSAnyBuilder;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.saml2.core.*;
 import org.opensaml.saml.saml2.core.impl.*;
@@ -16,49 +13,128 @@ import org.opensaml.xmlsec.encryption.support.EncryptionException;
 import org.opensaml.xmlsec.encryption.support.KeyEncryptionParameters;
 import org.opensaml.xmlsec.signature.KeyInfo;
 
-import java.util.Date;
+import java.util.List;
 
-public class SamlXmlObjectUtil {
+/**
+ * 抽象的返回对象
+ *
+ * @author kewen
+ * @since 2025-06-10
+ */
+public abstract class AbstractXmlResponse {
 
-    public static ArtifactResponse getArtifactResponse(String entityId, String destination) {
+
+    /**
+     * 实体ID
+     *
+     * @return
+     */
+    public abstract String getEntityId();
+
+    /**
+     * 目标地址
+     *
+     * @return
+     */
+    public abstract String getDestination();
+
+
+    /**
+     * 证书内容
+     *
+     * @return
+     */
+    protected abstract String getCertData();
+
+
+    /**
+     * 签发有效期
+     *
+     * @return
+     */
+    protected DateTime issueInstant() {
+        return notAfter();
+    }
+
+    /**
+     * 截止时间
+     *
+     * @return
+     */
+    protected abstract DateTime notAfter();
+
+    /**
+     * 生效时间
+     *
+     * @return
+     */
+    protected DateTime notBefore() {
+        return new DateTime().minusMinutes(2);
+    }
+
+    /**
+     * @return
+     */
+    protected String getAudienceURI() {
+        return getDestination();
+    }
+
+    /**
+     * 是否获取签名报文，一般不需要
+     *
+     * @return
+     */
+    public boolean isEncryptResponse() {
+        return false;
+    }
+
+    /**
+     * 获取签名XML报文
+     *
+     * @return
+     */
+    public ArtifactResponse getArtifactResponse() {
 
         ArtifactResponse artifactResponse = new ArtifactResponseBuilder().buildObject();
 
-        Issuer issuer = getIssuer(entityId);
+        Issuer issuer = getIssuer();
         artifactResponse.setIssuer(issuer);
 
         artifactResponse.setIssueInstant(new DateTime());
-        artifactResponse.setDestination(destination);
+        artifactResponse.setDestination(getDestination());
 
         artifactResponse.setID(SamlXmlUtil.generateSecureRandomId());
 
         Status status = getStatus();
         artifactResponse.setStatus(status);
 
-        Response response = getResponse(entityId, destination);
+        Response response = getResponse();
         artifactResponse.setMessage(response);
 
         return artifactResponse;
     }
 
-    public static Response getResponse(String entityId, String destination) {
+
+    /**
+     * 获取ＸＭＬ报文
+     *
+     * @return
+     */
+    public Response getResponse() {
         Response response = new ResponseBuilder().buildObject();
         //response.setID("_34679165192bb618761a2a588325811d");
         response.setID(SamlXmlUtil.generateSecureRandomId());
 
-        Issuer issuer = new IssuerBuilder().buildObject();
-        issuer.setValue(entityId);
-        response.setIssuer(issuer);
+        response.setIssuer(getIssuer());
 
-        DateTime issueInstant = new DateTime().plusDays(1);
-        response.setIssueInstant(issueInstant);
+        response.setIssueInstant(issueInstant());
 
-        response.setDestination(destination);
+        response.setDestination(getDestination());
 
         Status status = getStatus();
         response.setStatus(status);
 
-        Assertion assertion = getAssertion(destination);
+        Assertion assertion = getAssertion();
         String certData = getCertData();
         KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certData);
         SamlXmlUtil.signAssertion(assertion, keyInfo);
@@ -72,18 +148,8 @@ public class SamlXmlObjectUtil {
         return response;
     }
 
-    private static String getCertData() {
-        CertificateReq certificateReq = new CertificateReq();
-        certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
-                .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
-                .setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24))
-                .setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)))
-        ;
-        CertificateInfo certificateInfo = BcCertificateUtil.generate(certificateReq);
-        return certificateInfo.getCertDataStr();
-    }
 
-    public static Status getStatus() {
+    public Status getStatus() {
         Status status = new StatusBuilder().buildObject();
         StatusCode statusCode = new StatusCodeBuilder().buildObject();
         statusCode.setValue(StatusCode.SUCCESS);
@@ -91,21 +157,21 @@ public class SamlXmlObjectUtil {
         return status;
     }
 
-    public static Issuer getIssuer(String issuerValue) {
+    public Issuer getIssuer() {
         Issuer issuer = new IssuerBuilder().buildObject();
-        issuer.setValue(issuerValue);
+        issuer.setValue(getEntityId());
         return issuer;
     }
 
-    public static Assertion getAssertion(String recipient) {
+    public Assertion getAssertion() {
         Assertion assertion = new AssertionBuilder().buildObject();
-        assertion.setIssuer(getIssuer("kewen"));
+        assertion.setIssuer(getIssuer());
         assertion.setIssueInstant(new DateTime());
         assertion.setID(SamlXmlUtil.generateSecureRandomId());
         assertion.setID(SamlXmlUtil.generateSecureRandomId());
         assertion.setVersion(SAMLVersion.VERSION_20);
 
-        assertion.setSubject(getSubject(recipient));
+        assertion.setSubject(getSubject());
 
         assertion.setConditions(getConditions());
 
@@ -119,7 +185,7 @@ public class SamlXmlObjectUtil {
     /**
      * 加密断言
      */
-    public static EncryptedAssertion encryptAssertion(Assertion assertion) {
+    public EncryptedAssertion encryptAssertion(Assertion assertion) {
         DataEncryptionParameters encryptionParameters = new DataEncryptionParameters();
         encryptionParameters.setAlgorithm(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES128);
 
@@ -137,20 +203,16 @@ public class SamlXmlObjectUtil {
         }
     }
 
-    public static AttributeStatement getAttributeStatement() {
+    public AttributeStatement getAttributeStatement() {
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
-
-        Attribute attribute = new AttributeBuilder().buildObject();
-        //AttributeValue attributeValue = null; XSAny  XSString
-        XSAny attrValue = new XSAnyBuilder().buildObject(AttributeValue.DEFAULT_ELEMENT_NAME);
-        attrValue.setTextContent("acs:ram::1555734646214700:role/old-idp-role,acs:ram::1555734646214700:saml-provider/old-idp");
-        attribute.getAttributeValues().add(attrValue);
-
-        attributeStatement.getAttributes().add(attribute);
+        attributeStatement.getAttributes().addAll(getAttributes());
         return attributeStatement;
     }
 
-    private static AuthnStatement buildAuthnStatement() {
+    public abstract List<Attribute> getAttributes();
+
+
+    private AuthnStatement buildAuthnStatement() {
         AuthnStatement authnStatement = new AuthnStatementBuilder().buildObject();
         AuthnContext authnContext = new AuthnContextBuilder().buildObject();
         AuthnContextClassRef authnContextClassRef = new AuthnContextClassRefBuilder().buildObject();
@@ -163,7 +225,7 @@ public class SamlXmlObjectUtil {
         return authnStatement;
     }
 
-    public static Subject getSubject(String recipient) {
+    public Subject getSubject() {
         Subject subject = new SubjectBuilder().buildObject();
         NameID nameID = new NameIDBuilder().buildObject();
         nameID.setValue("IDP4admin");
@@ -171,36 +233,36 @@ public class SamlXmlObjectUtil {
         nameID.setSPNameQualifier("SP name qualifier");
         nameID.setNameQualifier("Name qualifier");
         subject.setNameID(nameID);
-        SubjectConfirmation subjectConfirmation = getSubjectConfirmation(recipient);
+        SubjectConfirmation subjectConfirmation = getSubjectConfirmation();
         subject.getSubjectConfirmations().add(subjectConfirmation);
         return subject;
     }
 
-    private static SubjectConfirmation getSubjectConfirmation(String recipient) {
+    private SubjectConfirmation getSubjectConfirmation() {
         SubjectConfirmation subjectConfirmation = new SubjectConfirmationBuilder().buildObject();
         //可选可不选
         subjectConfirmation.setMethod(SubjectConfirmation.METHOD_BEARER);
         SubjectConfirmationData subjectConfirmationData = new SubjectConfirmationDataBuilder().buildObject();
-        subjectConfirmationData.setNotBefore(new DateTime().plusDays(-1));
-        subjectConfirmationData.setNotOnOrAfter(new DateTime().plusDays(1));
+        subjectConfirmationData.setNotBefore(notBefore());
+        subjectConfirmationData.setNotOnOrAfter(notAfter());
         //todo InResponseTo  是 request的唯一ID
         //subjectConfirmationData.setInResponseTo();
 
-        subjectConfirmationData.setRecipient(recipient);
+        subjectConfirmationData.setRecipient(getDestination());
         subjectConfirmation.setSubjectConfirmationData(subjectConfirmationData);
         return subjectConfirmation;
     }
 
-    public static Conditions getConditions() {
+    public Conditions getConditions() {
         Conditions conditions = new ConditionsBuilder().buildObject();
 
-        conditions.setNotBefore(new DateTime().minusDays(2));
+        conditions.setNotBefore(notBefore());
 
-        conditions.setNotOnOrAfter(new DateTime().plusDays(2));
+        conditions.setNotOnOrAfter(notAfter());
 
         AudienceRestriction audienceRestriction = new AudienceRestrictionBuilder().buildObject();
         Audience audience = new AudienceBuilder().buildObject();
-        audience.setAudienceURI("urn:alibaba:cloudcomputing");
+        audience.setAudienceURI(getAudienceURI());
         audienceRestriction.getAudiences().add(audience);
         conditions.getAudienceRestrictions().add(audienceRestriction);
 

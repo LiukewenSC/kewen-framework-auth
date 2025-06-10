@@ -12,24 +12,21 @@
 
 package com.kewen.framework.idaas.application.controller;
 
-import com.kewen.framework.idaas.application.config.IDPConstants;
+import com.kewen.framework.idaas.application.model.AliyunRoleSsoSimpleAttributeXmlResponse;
+import com.kewen.framework.idaas.application.model.CertificateResp;
+import com.kewen.framework.idaas.application.service.CertificateService;
 import com.kewen.framework.idaas.application.util.ResponseUtil;
-import com.kewen.framework.idaas.application.util.SamlXmlObjectUtil;
-import org.opensaml.saml.saml2.binding.decoding.impl.HTTPSOAP11Decoder;
-import org.opensaml.saml.saml2.core.ArtifactResponse;
-import org.opensaml.saml.saml2.core.Response;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * 2025/05/13
@@ -114,46 +111,22 @@ public class AliyunRoleSsoController {
 
     private static final String SSO_URL = "https://signin.aliyun.com/saml-role/sso";
 
+    CertificateService certificateService;
+
     @GetMapping("/go")
     @ResponseBody
-    public void goSso(HttpServletRequest request, HttpServletResponse httpServletResponse) {
-        // 跳转到阿里云角色sso
-        Response response = SamlXmlObjectUtil.getResponse("kewen-entityId", SSO_URL);
+    public void goSso(@RequestParam("id") Long id, HttpServletRequest request, HttpServletResponse httpServletResponse) {
 
-        ResponseUtil.redirect(httpServletResponse, response, SSO_URL);
-
-    }
-
-
-
-
-
-    @PostMapping("/go2")
-    public void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-        log.debug("recieved artifactResolve:");
-        HTTPSOAP11Decoder decoder = new HTTPSOAP11Decoder();
-
-
-        /*decoder.setHttpServletRequest(req);
-
-        try {
-            BasicParserPool parserPool = new BasicParserPool();
-            parserPool.initialize();
-            decoder.setParserPool(parserPool);
-            decoder.initialize();
-            decoder.decode();
-        } catch (MessageDecodingException e) {
-            throw new RuntimeException(e);
-        } catch (ComponentInitializationException e) {
-            throw new RuntimeException(e);
-        }
-
-        OpenSAMLUtils.logSAMLObject(decoder.getMessageContext().getMessage());*/
-
-        ArtifactResponse artifactResponse = SamlXmlObjectUtil.getArtifactResponse(IDPConstants.IDP_ENTITY_ID, SSO_URL);
-
-        ResponseUtil.redirect(resp, artifactResponse, SSO_URL);
-
+        CertificateResp certificate = certificateService.getCertificate(id);
+        //构造阿里云角色SSO对象
+        AliyunRoleSsoSimpleAttributeXmlResponse aliyunRoleSsoSimpleAttributeXmlResponse = new AliyunRoleSsoSimpleAttributeXmlResponse(
+                "kewen-entityId",
+                SSO_URL,
+                certificate.getCertData(),
+                DateTime.now().plusHours(2),
+                "acs:ram::1555734646214700:role/old-idp-role,acs:ram::1555734646214700:saml-provider/old-idp"
+        );
+        ResponseUtil.redirect(httpServletResponse, aliyunRoleSsoSimpleAttributeXmlResponse);
     }
 
 }

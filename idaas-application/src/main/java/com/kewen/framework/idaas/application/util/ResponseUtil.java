@@ -12,6 +12,7 @@
 
 package com.kewen.framework.idaas.application.util;
 
+import com.kewen.framework.idaas.application.model.AbstractXmlResponse;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
@@ -21,6 +22,7 @@ import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.binding.encoding.impl.BaseSAML2MessageEncoder;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
+import org.opensaml.saml.saml2.core.StatusResponseType;
 import org.opensaml.saml.saml2.metadata.Endpoint;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.saml.saml2.metadata.impl.SingleSignOnServiceBuilder;
@@ -38,8 +40,18 @@ import javax.servlet.http.HttpServletResponse;
 public class ResponseUtil {
     private static final Logger log = LoggerFactory.getLogger(ResponseUtil.class);
 
-    public static void redirect(HttpServletResponse httpServletResponse, SAMLObject message, String locationURL) {
+    public static void redirect(HttpServletResponse httpServletResponse, AbstractXmlResponse abstractXmlResponse) {
+        StatusResponseType statusResponseType;
+        if (abstractXmlResponse.isEncryptResponse()) {
+            statusResponseType = abstractXmlResponse.getArtifactResponse();
+        } else {
+            statusResponseType = abstractXmlResponse.getResponse();
+        }
+        redirect(httpServletResponse, statusResponseType);
+    }
 
+    public static void redirect(HttpServletResponse httpServletResponse, StatusResponseType message) {
+        String destination = message.getDestination();
         MessageContext<SAMLObject> context = new MessageContext<>();
 
         context.setMessage(message);
@@ -52,7 +64,7 @@ public class ResponseUtil {
         //端点信息；
         SAMLEndpointContext endpointContext =
                 peerEntityContext.getSubcontext(SAMLEndpointContext.class, true);
-        endpointContext.setEndpoint(getIPDEndpoint(locationURL));
+        endpointContext.setEndpoint(getIPDEndpoint(destination));
 
         /*//数据签名环境上线文
         SignatureSigningParameters signatureSigningParameters = new SignatureSigningParameters();

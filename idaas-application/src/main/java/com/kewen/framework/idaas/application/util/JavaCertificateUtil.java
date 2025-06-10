@@ -10,7 +10,6 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -55,8 +54,8 @@ public class JavaCertificateUtil {
 
 
             // 设置有效期
-            Date notBefore = Date.from(Instant.now().minusSeconds(5 * 60 * 60));
-            Date notAfter = Date.from(Instant.now().plusSeconds(5 * 60 * 60));
+            Date notBefore = certificateReq.getNotBefore();
+            Date notAfter = certificateReq.getNotAfter();
             x509CertInfo.set(X509CertInfo.VALIDITY, new CertificateValidity(notBefore, notAfter));
 
             // 设置主体名

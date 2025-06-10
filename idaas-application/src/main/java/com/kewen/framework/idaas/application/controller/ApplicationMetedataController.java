@@ -5,7 +5,7 @@ import com.kewen.framework.idaas.application.model.CertificateReq;
 import com.kewen.framework.idaas.application.model.CertificateResp;
 import com.kewen.framework.idaas.application.service.CertificateService;
 import com.kewen.framework.idaas.application.util.OpenSAMLUtils;
-import com.kewen.framework.idaas.application.util.SamlCertificateUtil;
+import com.kewen.framework.idaas.application.util.SamlXmlUtil;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.*;
 import org.opensaml.saml.saml2.metadata.impl.*;
@@ -95,7 +95,7 @@ public class ApplicationMetedataController {
         KeyDescriptor keyDescriptor = new KeyDescriptorBuilder().buildObject();
         keyDescriptor.setUse(UsageType.SIGNING);
 
-        KeyInfo keyInfo = SamlCertificateUtil.getKeyInfo(certificate.getCertData());
+        KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certificate.getCertData());
 
         keyDescriptor.setKeyInfo(keyInfo);
 

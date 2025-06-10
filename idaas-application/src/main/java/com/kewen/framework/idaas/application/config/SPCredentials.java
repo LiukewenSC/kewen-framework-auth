@@ -1,4 +1,4 @@
-package com.kewen.framework.idaas.application.util;
+package com.kewen.framework.idaas.application.config;
 
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.Criterion;
