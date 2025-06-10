@@ -24,18 +24,18 @@ public class CertificateService {
 
     public CertificateResp saveCertificate(CertificateReq req) {
 
-        CertificateInfo generate = BcCertificateUtil.generate(req);
+        CertificateInfo certificateInfo = BcCertificateUtil.generate(req);
         IdaasCertificate certificate = new IdaasCertificate()
                 .setIssuer(req.getIssuer())
                 .setSubject(req.getSubject())
                 .setSignatureAlgorithm(req.getSignatureAlgorithm())
-                .setCertificate(generate.getCertDataStr())
-                .setPrivateKey(generate.getPrivateKeyStr())
-                .setPublicKey(generate.getPublicKeyStr())
+                .setCertificate(certificateInfo.getCertDataStr())
+                .setPrivateKey(certificateInfo.getPrivateKeyStr())
+                .setPublicKey(certificateInfo.getPublicKeyStr())
                 .setEffectTime(req.getNotBefore())
                 .setExpireTime(req.getNotAfter());
         idaasCertificateMpService.save(certificate);
-        return new CertificateResp(certificate.getId(), generate);
+        return new CertificateResp(certificate.getId(), certificateInfo);
     }
 
     public CertificateResp getCertificate(Long id) {

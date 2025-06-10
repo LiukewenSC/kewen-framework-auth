@@ -13,7 +13,6 @@
 package com.kewen.framework.idaas.application.model.certificate;
 
 import com.kewen.framework.idaas.application.saml.SamlException;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 
@@ -28,21 +27,43 @@ import java.security.cert.X509Certificate;
  * @since 4.23.0-mysql-aliyun-sovereign
  */
 @Getter
-@AllArgsConstructor
 public class CertificateInfo {
 
-    private KeyPair keyPair;
+    /**
+     * 公私钥
+     */
+    private final KeyPair keyPair;
 
-    private X509Certificate certificate;
+    /**
+     * 证书内容
+     */
+    private final X509Certificate certificate;
 
+    public CertificateInfo(KeyPair keyPair, X509Certificate certificate) {
+        this.keyPair = keyPair;
+        this.certificate = certificate;
+    }
+
+    /**
+     * 私钥字符串
+     * @return
+     */
     public String getPrivateKeyStr() {
         return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
     }
 
+    /**
+     * 公钥字符串
+     * @return
+     */
     public String getPublicKeyStr() {
         return Base64.encodeBase64String(keyPair.getPublic().getEncoded());
     }
 
+    /**
+     * 获取证书数据
+     * @return
+     */
     public String getCertDataStr() {
         //TIP 在处理没有中文或其他非ASCII字符的情况时，newStringUsAscii 和 newStringUtf8 的结果通常是相同的，
         // 因为 ASCII 字符集是 UTF-8 字符集的一个子集。不过，这两个方法的具体行为取决于它们是如何定义和使用的。
