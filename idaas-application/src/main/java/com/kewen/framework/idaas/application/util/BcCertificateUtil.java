@@ -2,10 +2,8 @@ package com.kewen.framework.idaas.application.util;
 
 
 import com.kewen.framework.idaas.application.model.CertificateReq;
-import com.kewen.framework.idaas.application.model.CertificateResp;
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -16,8 +14,14 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import java.math.BigInteger;
-import java.security.*;
-import java.security.cert.CertificateEncodingException;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.Security;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -33,7 +37,7 @@ public class BcCertificateUtil {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    public static Pair<KeyPair, X509Certificate> generate(CertificateReq certificateReq) {
+    public static CertificateInfo generate(CertificateReq certificateReq) {
         try {
 
             //生成秘钥
@@ -62,8 +66,7 @@ public class BcCertificateUtil {
 
             // 验证证书
             x509Certificate.verify(keyPair.getPublic());
-
-            return Pair.of(keyPair, x509Certificate);
+            return new CertificateInfo(keyPair, x509Certificate);
 
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -78,45 +81,6 @@ public class BcCertificateUtil {
         } catch (SignatureException e) {
             throw new SamlException("SignatureException", e);
         }
-    }
-
-    public static CertificateResp getCertificateResp(KeyPair keyPair, X509Certificate x509Certificate) {
-        byte[] encoded = null;
-        try {
-            encoded = x509Certificate.getEncoded();
-        } catch (CertificateEncodingException e) {
-            throw new SamlException("x509Certificate.getEncoded error : " + e.getMessage(), e);
-        }
-
-        String privateKeyBase64 = Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
-        String publicKeyBase64 = Base64.encodeBase64String(keyPair.getPublic().getEncoded());
-        //TIP 在处理没有中文或其他非ASCII字符的情况时，newStringUsAscii 和 newStringUtf8 的结果通常是相同的，
-        // 因为 ASCII 字符集是 UTF-8 字符集的一个子集。不过，这两个方法的具体行为取决于它们是如何定义和使用的。
-        //newStringUsAscii 方法:
-        //
-        //使用 US-ASCII 编码将字节数组转换为字符串。
-        //US-ASCII 编码只支持 7 位字符 (0-127)，对于超过 127 的值会被截断或替换为默认字符。
-        //newStringUtf8 方法:
-        //
-        //使用 UTF-8 编码将字节数组转换为字符串。
-        //UTF-8 编码可以表示所有 Unicode 字符，但对于纯 ASCII 字符串来说，其表现与 US-ASCII 相同。
-        // encodeBase64Chunked 表示可以换行
-        //String strCertData = StringUtils.newStringUsAscii(Base64.encodeBase64Chunked(encoded));
-        String strCertData = Base64.encodeBase64String(encoded);
-
-        System.out.println("strCertData: " + strCertData);
-        System.out.println("privateKeyBase64: " + privateKeyBase64);
-        System.out.println("publicKeyBase64: " + publicKeyBase64);
-
-        System.out.println("x509Certificate: " + x509Certificate);
-        System.out.println("x509Certificate.getPublicKey(): " + x509Certificate.getPublicKey());
-
-        System.out.println("Certificate generated successfully!");
-
-        return new CertificateResp()
-                .setCertData(strCertData)
-                .setPrivateKey(privateKeyBase64)
-                .setPublicKey(publicKeyBase64);
     }
 
     /**
