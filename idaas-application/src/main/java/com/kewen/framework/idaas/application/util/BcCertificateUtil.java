@@ -14,14 +14,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PublicKey;
-import java.security.Security;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -33,10 +26,17 @@ import java.util.Date;
  * @since 1.0.0
  */
 public class BcCertificateUtil {
+
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
+    /**
+     * BC库算法生成证书
+     *
+     * @param certificateReq
+     * @return
+     */
     public static CertificateInfo generate(CertificateReq certificateReq) {
         try {
 
@@ -111,12 +111,14 @@ public class BcCertificateUtil {
     public static KeyPair getKeyPair() throws NoSuchAlgorithmException {
         // 生成密钥对
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        //JCAUtil.getSecureRandom()
+        //SecureRandom.getInstance("SHA1PRNG")
         //keyPairGenerator.initialize(2048, JCAUtil.getSecureRandom());
         keyPairGenerator.initialize(2048);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
         //RSAKeyPairGenerator rsaKeyPairGenerator = new RSAKeyPairGenerator();
-        //rsaKeyPairGenerator.initialize(2048, SecureRandom.getInstance("SHA1PRNG"));
-        //KeyPair keyPair1 = rsaKeyPairGenerator.generateKeyPair();
+        //rsaKeyPairGenerator.init(new KeyGenerationParameters(JCAUtil.getSecureRandom(),2048));
+        //AsymmetricCipherKeyPair keyPair1 = rsaKeyPairGenerator.generateKeyPair();
         return keyPair;
     }
 
