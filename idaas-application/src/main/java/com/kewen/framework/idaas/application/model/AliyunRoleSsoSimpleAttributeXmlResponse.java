@@ -1,6 +1,9 @@
 package com.kewen.framework.idaas.application.model;
 
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import org.joda.time.DateTime;
+import org.opensaml.saml.saml2.core.Audience;
+import org.opensaml.saml.saml2.core.impl.AudienceBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,13 +19,15 @@ public class AliyunRoleSsoSimpleAttributeXmlResponse extends AbstractSimpleAttri
     private final String entityId;
     private final String destination;
     private final String certData;
+    private final CertificateResp certificateResp;
     private final DateTime notAfter;
     private final String role;
 
-    public AliyunRoleSsoSimpleAttributeXmlResponse(String entityId, String destination, String certData, DateTime notAfter, String role) {
+    public AliyunRoleSsoSimpleAttributeXmlResponse(String entityId, String destination, CertificateResp certificateResp, DateTime notAfter, String role) {
         this.entityId = entityId;
         this.destination = destination;
-        this.certData = certData;
+        this.certData = certificateResp.getCertData();
+        this.certificateResp = certificateResp;
         this.notAfter = notAfter;
         this.role = role;
     }
@@ -73,7 +78,20 @@ public class AliyunRoleSsoSimpleAttributeXmlResponse extends AbstractSimpleAttri
     }
 
     @Override
+    protected CertificateInfo getCertificateInfo() {
+        return certificateResp.parseCertificateInfo();
+    }
+
+    @Override
     protected DateTime notAfter() {
         return notAfter;
+    }
+
+    @Override
+    protected Audience getAudience() {
+        Audience audience = new AudienceBuilder().buildObject();
+        //audience.setAudienceURI(getAudienceURI());
+        audience.setAudienceURI("urn:alibaba:cloudcomputing");
+        return audience;
     }
 }

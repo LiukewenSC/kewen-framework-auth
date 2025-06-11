@@ -5,10 +5,12 @@ import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
 import sun.security.x509.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
@@ -19,6 +21,33 @@ import java.util.Date;
  * @since 1.0.0
  */
 public class JavaCertificateUtil {
+
+    public static final String X509_TYPE = "X.509";
+    public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----";
+    public static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
+
+    public static X509Certificate getCertificate(String certData) throws SamlException {
+        try (InputStream inputStream = new ByteArrayInputStream(getFullCertData(certData).getBytes())) {
+            CertificateFactory certFactory = CertificateFactory
+                    .getInstance(X509_TYPE);
+            Certificate certificate = certFactory.generateCertificate(inputStream);
+            X509Certificate x509Certificate = (X509Certificate) certificate;
+            x509Certificate.checkValidity();
+            return x509Certificate;
+        } catch (IOException | CertificateException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String getFullCertData(String certData) {
+        StringWriter buff = new StringWriter();
+        PrintWriter out = new PrintWriter(buff);
+        out.println(BEGIN_CERTIFICATE);
+        out.println(certData);
+        out.println(END_CERTIFICATE);
+        out.close();
+        return buff.toString();
+    }
 
     /**
      * Java内置算法生层证书

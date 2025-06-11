@@ -15,18 +15,9 @@ package com.kewen.framework.idaas.application.config;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
+import java.io.*;
 import java.security.Principal;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -102,8 +93,6 @@ public class Cert implements Serializable {
 
     public static Cert importCert(InputStream certStream, boolean checkValidity)
             throws CertificateException {
-
-        PluginLogger.debug("Cert Stream from Store: " + certStream.toString());
 
         CertificateFactory certFactory = CertificateFactory
                 .getInstance(X509_TYPE);

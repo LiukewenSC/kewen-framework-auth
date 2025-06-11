@@ -2,6 +2,7 @@ package com.kewen.framework.idaas.application.util;
 
 import com.kewen.framework.idaas.application.config.IDPCredentials;
 import com.kewen.framework.idaas.application.exception.CertificationException;
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import net.shibboleth.utilities.java.support.security.RandomIdentifierGenerationStrategy;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -17,20 +18,13 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 import org.opensaml.xmlsec.signature.Signature;
 import org.opensaml.xmlsec.signature.X509Certificate;
 import org.opensaml.xmlsec.signature.X509Data;
-import org.opensaml.xmlsec.signature.impl.KeyInfoBuilder;
-import org.opensaml.xmlsec.signature.impl.SignatureBuilder;
-import org.opensaml.xmlsec.signature.impl.SignatureImpl;
-import org.opensaml.xmlsec.signature.impl.X509CertificateBuilder;
-import org.opensaml.xmlsec.signature.impl.X509DataBuilder;
+import org.opensaml.xmlsec.signature.impl.*;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.opensaml.xmlsec.signature.support.Signer;
-import sun.security.x509.X509CertImpl;
 
-import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
 
 public class SamlXmlUtil {
 
@@ -48,7 +42,7 @@ public class SamlXmlUtil {
         return keyInfo;
     }
 
-    private KeyInfo getKeyInfo(Credential credential) {
+    private static KeyInfo getKeyInfo(Credential credential) {
         final X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
         x509KeyInfoGeneratorFactory.setEmitEntityCertificate(true);
         final KeyInfoGenerator keyInfoGenerator = x509KeyInfoGeneratorFactory.newInstance();
@@ -58,7 +52,8 @@ public class SamlXmlUtil {
             throw new RuntimeException(e);
         }
     }
-    private KeyInfo getKeyInfo2(String x509CertificateValue) {
+
+    private static KeyInfo getKeyInfo2(String x509CertificateValue) {
 
         X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
         x509KeyInfoGeneratorFactory.setEmitEntityCertificate(true);
@@ -77,29 +72,28 @@ public class SamlXmlUtil {
         }
     }
 
-    public static void signAssertion(Assertion assertion, String x509CertificateValue) {
+    public static void signAssertion(Assertion assertion, CertificateInfo certificateInfo) {
         try {
-            if (x509CertificateValue == null) {
+            if (certificateInfo == null) {
                 throw new CertificationException("Certification parameter is null");
             }
-            KeyInfo keyInfo = new KeyInfoBuilder().buildObject();
-            X509Data x509Data = new X509DataBuilder().buildObject();
-            X509Certificate x509Certificate = new X509CertificateBuilder().buildObject();
-            x509Certificate.setValue(x509CertificateValue);
-            x509Data.getX509Certificates().add(x509Certificate);
-            keyInfo.getX509Datas().add(x509Data);
             SignatureImpl signature = new SignatureBuilder().buildObject();
 
-            signature.setSigningCredential(new BasicX509Credential(new X509CertImpl(x509CertificateValue.getBytes(StandardCharsets.UTF_8))));
-            signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
+            //java.security.cert.X509Certificate javaCertificate = JavaCertificateUtil.getCertificate(x509CertificateValue);
+            BasicX509Credential basicX509Credential = new BasicX509Credential(certificateInfo.getCertificate());
+            basicX509Credential.setPrivateKey(certificateInfo.getKeyPair().getPrivate());
+            //basicX509Credential.setPublicKey(certificateInfo.getCertificate().getPublicKey());
+            KeyInfo keyInfo = getKeyInfo(basicX509Credential);
+
+            //signature.setSigningCredential(new BasicX509Credential(new X509CertImpl(x509CertificateValue.getBytes(StandardCharsets.UTF_8))));
+            signature.setSigningCredential(basicX509Credential);
+            signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
             signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
             signature.setKeyInfo(keyInfo);
             assertion.setSignature(signature);
             //noinspection ConstantConditions =》marshall 要求输入Nonnull且输出为Nonull；
             XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(assertion).marshall(assertion);
             Signer.signObject(signature);
-        } catch (CertificateException e) {
-            throw new RuntimeException(e);
         } catch (MarshallingException e) {
             throw new RuntimeException(e);
         } catch (SignatureException e) {

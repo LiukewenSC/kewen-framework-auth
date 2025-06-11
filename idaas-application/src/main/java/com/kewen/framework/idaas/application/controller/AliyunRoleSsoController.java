@@ -124,7 +124,7 @@ public class AliyunRoleSsoController {
         AliyunRoleSsoSimpleAttributeXmlResponse aliyunRoleSsoSimpleAttributeXmlResponse = new AliyunRoleSsoSimpleAttributeXmlResponse(
                 "kewen-idp",
                 SSO_URL,
-                certificate.getCertData(),
+                certificate,
                 DateTime.now().plusHours(2),
                 "acs:ram::1555734646214700:role/kewen-saml-role,acs:ram::1555734646214700:saml-provider/kewen-saml"
         );

@@ -85,6 +85,9 @@ public class ApplicationMetedataController {
 
         CertificateResp certificate = certificateService.getCertificate(id);
 
+        String privateKeyStr = certificate.getPrivateKey();
+        String publicKeyStr = certificate.getPublicKey();
+
         EntityDescriptor entityDescriptor = new EntityDescriptorBuilder().buildObject();
         entityDescriptor.setEntityID("kewen-idp");
 
