@@ -8,6 +8,7 @@ import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.security.SecurityException;
 import org.opensaml.security.credential.BasicCredential;
+import org.opensaml.security.credential.Credential;
 import org.opensaml.security.credential.CredentialSupport;
 import org.opensaml.security.x509.BasicX509Credential;
 import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
@@ -47,6 +48,16 @@ public class SamlXmlUtil {
         return keyInfo;
     }
 
+    private KeyInfo getKeyInfo(Credential credential) {
+        final X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
+        x509KeyInfoGeneratorFactory.setEmitEntityCertificate(true);
+        final KeyInfoGenerator keyInfoGenerator = x509KeyInfoGeneratorFactory.newInstance();
+        try {
+            return keyInfoGenerator.generate(credential);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private KeyInfo getKeyInfo2(String x509CertificateValue) {
 
         X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
