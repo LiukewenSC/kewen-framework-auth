@@ -267,7 +267,6 @@ public abstract class AbstractXmlResponse {
     protected Audience getAudience() {
         Audience audience = new AudienceBuilder().buildObject();
         audience.setAudienceURI(getAudienceURI());
-        audience.setAudienceURI("");
         return audience;
     }
 }
