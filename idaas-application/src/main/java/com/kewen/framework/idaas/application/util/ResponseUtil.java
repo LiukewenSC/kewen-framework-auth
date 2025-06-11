@@ -14,14 +14,14 @@ package com.kewen.framework.idaas.application.util;
 
 import com.kewen.framework.idaas.application.model.AbstractXmlResponse;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
-import org.opensaml.saml.saml2.binding.encoding.impl.BaseSAML2MessageEncoder;
-import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
+import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostSimpleSignEncoder;
 import org.opensaml.saml.saml2.core.StatusResponseType;
 import org.opensaml.saml.saml2.metadata.Endpoint;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Properties;
 
 /**
  * 2025/05/14
@@ -38,6 +39,20 @@ import javax.servlet.http.HttpServletResponse;
  * @since 4.23.0-mysql-aliyun-sovereign
  */
 public class ResponseUtil {
+
+    private static VelocityEngine velocityEngine;
+
+    static {
+        VelocityEngine engine = new VelocityEngine();
+        Properties props = new Properties();
+        props.setProperty("resource.loader", "class");
+        props.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        props.setProperty("input.encoding", "UTF-8");
+        props.setProperty("output.encoding", "UTF-8");
+        engine.init(props);
+        velocityEngine = engine;
+    }
+
     private static final Logger log = LoggerFactory.getLogger(ResponseUtil.class);
 
     public static void redirect(HttpServletResponse httpServletResponse, AbstractXmlResponse abstractXmlResponse) {
@@ -81,18 +96,13 @@ public class ResponseUtil {
         // OpenSAML提供了HTTPRedirectDefalteEncoder
         // 它将帮助我们来对于AuthnRequest进行序列化和签名
         // redirect方式
-        BaseSAML2MessageEncoder encoder = new HTTPRedirectDeflateEncoder();
+        //BaseSAML2MessageEncoder encoder = new HTTPRedirectDeflateEncoder();
         // post方式
-        //BaseSAML2MessageEncoder encoder = new HTTPPostSimpleSignEncoder();
+        HTTPPostSimpleSignEncoder encoder = new HTTPPostSimpleSignEncoder();
 
+        encoder.setVelocityEngine(velocityEngine);
         encoder.setMessageContext(context);
         encoder.setHttpServletResponse(httpServletResponse);
-
-        try {
-            encoder.initialize();
-        } catch (ComponentInitializationException e) {
-            throw new RuntimeException(e);
-        }
         log.info("AuthnRequest: ");
         OpenSAMLUtils.logSAMLObject(message);
         log.info("Redirecting to IDP");
