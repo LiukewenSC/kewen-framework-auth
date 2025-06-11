@@ -122,11 +122,11 @@ public class AliyunRoleSsoController {
         CertificateResp certificate = certificateService.getCertificate(id);
         //构造阿里云角色SSO对象
         AliyunRoleSsoSimpleAttributeXmlResponse aliyunRoleSsoSimpleAttributeXmlResponse = new AliyunRoleSsoSimpleAttributeXmlResponse(
-                "kewen-entityId",
+                "kewen-idp",
                 SSO_URL,
                 certificate.getCertData(),
                 DateTime.now().plusHours(2),
-                "acs:ram::1555734646214700:role/old-idp-role,acs:ram::1555734646214700:saml-provider/old-idp"
+                "acs:ram::1555734646214700:role/kewen-saml-role,acs:ram::1555734646214700:saml-provider/kewen-saml"
         );
         ResponseUtil.redirect(httpServletResponse, aliyunRoleSsoSimpleAttributeXmlResponse);
     }

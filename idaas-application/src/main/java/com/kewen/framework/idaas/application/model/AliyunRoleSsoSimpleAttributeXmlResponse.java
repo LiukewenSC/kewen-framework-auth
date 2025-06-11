@@ -53,6 +53,11 @@ public class AliyunRoleSsoSimpleAttributeXmlResponse extends AbstractSimpleAttri
     }
 
     @Override
+    protected DateTime getIssueInstant() {
+        return DateTime.now();
+    }
+
+    @Override
     public String getEntityId() {
         return entityId;
     }

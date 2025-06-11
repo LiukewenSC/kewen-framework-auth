@@ -5,8 +5,43 @@ import com.kewen.framework.idaas.application.util.SamlXmlUtil;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;
-import org.opensaml.saml.saml2.core.*;
-import org.opensaml.saml.saml2.core.impl.*;
+import org.opensaml.saml.saml2.core.ArtifactResponse;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Attribute;
+import org.opensaml.saml.saml2.core.AttributeStatement;
+import org.opensaml.saml.saml2.core.Audience;
+import org.opensaml.saml.saml2.core.AudienceRestriction;
+import org.opensaml.saml.saml2.core.AuthnContext;
+import org.opensaml.saml.saml2.core.AuthnContextClassRef;
+import org.opensaml.saml.saml2.core.AuthnStatement;
+import org.opensaml.saml.saml2.core.Conditions;
+import org.opensaml.saml.saml2.core.EncryptedAssertion;
+import org.opensaml.saml.saml2.core.Issuer;
+import org.opensaml.saml.saml2.core.NameID;
+import org.opensaml.saml.saml2.core.NameIDType;
+import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.Status;
+import org.opensaml.saml.saml2.core.StatusCode;
+import org.opensaml.saml.saml2.core.Subject;
+import org.opensaml.saml.saml2.core.SubjectConfirmation;
+import org.opensaml.saml.saml2.core.SubjectConfirmationData;
+import org.opensaml.saml.saml2.core.impl.ArtifactResponseBuilder;
+import org.opensaml.saml.saml2.core.impl.AssertionBuilder;
+import org.opensaml.saml.saml2.core.impl.AttributeStatementBuilder;
+import org.opensaml.saml.saml2.core.impl.AudienceBuilder;
+import org.opensaml.saml.saml2.core.impl.AudienceRestrictionBuilder;
+import org.opensaml.saml.saml2.core.impl.AuthnContextBuilder;
+import org.opensaml.saml.saml2.core.impl.AuthnContextClassRefBuilder;
+import org.opensaml.saml.saml2.core.impl.AuthnStatementBuilder;
+import org.opensaml.saml.saml2.core.impl.ConditionsBuilder;
+import org.opensaml.saml.saml2.core.impl.IssuerBuilder;
+import org.opensaml.saml.saml2.core.impl.NameIDBuilder;
+import org.opensaml.saml.saml2.core.impl.ResponseBuilder;
+import org.opensaml.saml.saml2.core.impl.StatusBuilder;
+import org.opensaml.saml.saml2.core.impl.StatusCodeBuilder;
+import org.opensaml.saml.saml2.core.impl.SubjectBuilder;
+import org.opensaml.saml.saml2.core.impl.SubjectConfirmationBuilder;
+import org.opensaml.saml.saml2.core.impl.SubjectConfirmationDataBuilder;
 import org.opensaml.saml.saml2.encryption.Encrypter;
 import org.opensaml.xmlsec.encryption.support.DataEncryptionParameters;
 import org.opensaml.xmlsec.encryption.support.EncryptionException;
@@ -52,7 +87,7 @@ public abstract class AbstractXmlResponse {
      *
      * @return
      */
-    protected DateTime issueInstant() {
+    protected DateTime getIssueInstant() {
         return notAfter();
     }
 
@@ -127,7 +162,7 @@ public abstract class AbstractXmlResponse {
 
         response.setIssuer(getIssuer());
 
-        response.setIssueInstant(issueInstant());
+        response.setIssueInstant(getIssueInstant());
 
         response.setDestination(getDestination());
 
@@ -137,7 +172,7 @@ public abstract class AbstractXmlResponse {
         Assertion assertion = getAssertion();
         String certData = getCertData();
         KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certData);
-        SamlXmlUtil.signAssertion(assertion, keyInfo);
+        SamlXmlUtil.signAssertion(assertion, certData);
 
         response.getAssertions().add(assertion);
 
@@ -243,7 +278,7 @@ public abstract class AbstractXmlResponse {
         //可选可不选
         subjectConfirmation.setMethod(SubjectConfirmation.METHOD_BEARER);
         SubjectConfirmationData subjectConfirmationData = new SubjectConfirmationDataBuilder().buildObject();
-        subjectConfirmationData.setNotBefore(notBefore());
+        //subjectConfirmationData.setNotBefore(notBefore());
         subjectConfirmationData.setNotOnOrAfter(notAfter());
         //todo InResponseTo  是 request的唯一ID
         //subjectConfirmationData.setInResponseTo();
