@@ -32,6 +32,13 @@ public abstract class AbstractXmlResponse {
     public abstract String getEntityId();
 
     /**
+     * 当前登录人唯一标示，用于在 IDName中
+     *
+     * @return
+     */
+    public abstract String getUsername();
+
+    /**
      * 目标地址
      *
      * @return
@@ -226,10 +233,10 @@ public abstract class AbstractXmlResponse {
     public Subject getSubject() {
         Subject subject = new SubjectBuilder().buildObject();
         NameID nameID = new NameIDBuilder().buildObject();
-        nameID.setValue("IDP4admin");
+        nameID.setValue(getUsername());
         nameID.setFormat(NameIDType.TRANSIENT);
-        nameID.setSPNameQualifier("SP name qualifier");
-        nameID.setNameQualifier("Name qualifier");
+        //nameID.setSPNameQualifier("SP name qualifier");
+        //nameID.setNameQualifier("Name qualifier");
         subject.setNameID(nameID);
         SubjectConfirmation subjectConfirmation = getSubjectConfirmation();
         subject.getSubjectConfirmations().add(subjectConfirmation);

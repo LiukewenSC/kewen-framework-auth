@@ -8,22 +8,26 @@ import java.util.Map;
 
 /**
  * 阿里云对象返回
- *
+ * https://help.aliyun.com/zh/ram/user-guide/saml-response-for-role-based-sso?spm=a2c4g.11186623.help-menu-28625.d_2_4_3_0_4.db4130f3qnyLCN
  * @author kewen
  * @since 2025-06-10
  */
 public class AliyunRoleSsoSimpleAttributeXmlResponse extends AbstractSimpleAttributeXmlResponse {
+    private static final String SSO_URL = "https://signin.aliyun.com/saml-role/sso";
 
+    /**
+     * IDP 唯一标识
+     */
     private final String entityId;
-    private final String destination;
+    private final String username;
     private final String certData;
     private final CertificateResp certificateResp;
     private final DateTime notAfter;
     private final String role;
 
-    public AliyunRoleSsoSimpleAttributeXmlResponse(String entityId, String destination, CertificateResp certificateResp, DateTime notAfter, String role) {
+    public AliyunRoleSsoSimpleAttributeXmlResponse(String entityId, CertificateResp certificateResp, DateTime notAfter, String role, String username) {
+        this.username = username;
         this.entityId = entityId;
-        this.destination = destination;
         this.certData = certificateResp.getCertData();
         this.certificateResp = certificateResp;
         this.notAfter = notAfter;
@@ -66,8 +70,13 @@ public class AliyunRoleSsoSimpleAttributeXmlResponse extends AbstractSimpleAttri
     }
 
     @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
     public String getDestination() {
-        return destination;
+        return SSO_URL;
     }
 
     @Override
