@@ -29,6 +29,16 @@ import java.security.PublicKey;
 public class SamlXmlUtil {
 
 
+    private static KeyInfo getKeyInfo(Credential credential) {
+        final X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
+        x509KeyInfoGeneratorFactory.setEmitEntityCertificate(true);
+        final KeyInfoGenerator keyInfoGenerator = x509KeyInfoGeneratorFactory.newInstance();
+        try {
+            return keyInfoGenerator.generate(credential);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static KeyInfo getKeyInfo(String x509CertificateValue) {
         if (x509CertificateValue == null) {
             throw new CertificationException("Certification parameter is null");
@@ -41,18 +51,6 @@ public class SamlXmlUtil {
         keyInfo.getX509Datas().add(x509Data);
         return keyInfo;
     }
-
-    private static KeyInfo getKeyInfo(Credential credential) {
-        final X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
-        x509KeyInfoGeneratorFactory.setEmitEntityCertificate(true);
-        final KeyInfoGenerator keyInfoGenerator = x509KeyInfoGeneratorFactory.newInstance();
-        try {
-            return keyInfoGenerator.generate(credential);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private static KeyInfo getKeyInfo2(String x509CertificateValue) {
 
         X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
@@ -80,8 +78,11 @@ public class SamlXmlUtil {
             SignatureImpl signature = new SignatureBuilder().buildObject();
 
             //java.security.cert.X509Certificate javaCertificate = JavaCertificateUtil.getCertificate(x509CertificateValue);
-            BasicX509Credential basicX509Credential = new BasicX509Credential(certificateInfo.getCertificate());
-            basicX509Credential.setPrivateKey(certificateInfo.getKeyPair().getPrivate());
+            //构造SAML的 BasicX509Credential
+            BasicX509Credential basicX509Credential = new BasicX509Credential(
+                    certificateInfo.getCertificate(),
+                    certificateInfo.getKeyPair().getPrivate()
+            );
             //basicX509Credential.setPublicKey(certificateInfo.getCertificate().getPublicKey());
             KeyInfo keyInfo = getKeyInfo(basicX509Credential);
 

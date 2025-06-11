@@ -12,7 +12,6 @@ import org.opensaml.saml.saml2.encryption.Encrypter;
 import org.opensaml.xmlsec.encryption.support.DataEncryptionParameters;
 import org.opensaml.xmlsec.encryption.support.EncryptionException;
 import org.opensaml.xmlsec.encryption.support.KeyEncryptionParameters;
-import org.opensaml.xmlsec.signature.KeyInfo;
 
 import java.util.List;
 
@@ -78,9 +77,7 @@ public abstract class AbstractXmlResponse {
     /**
      * @return
      */
-    protected String getAudienceURI() {
-        return getDestination();
-    }
+    protected abstract String getAudienceURI();
 
     /**
      * 是否获取签名报文，一般不需要
@@ -138,9 +135,7 @@ public abstract class AbstractXmlResponse {
         response.setStatus(status);
 
         Assertion assertion = getAssertion();
-        String certData = getCertData();
         CertificateInfo certificateInfo = getCertificateInfo();
-        KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certData);
         SamlXmlUtil.signAssertion(assertion, certificateInfo);
 
         response.getAssertions().add(assertion);
@@ -269,5 +264,10 @@ public abstract class AbstractXmlResponse {
         return conditions;
     }
 
-    protected abstract Audience getAudience();
+    protected Audience getAudience() {
+        Audience audience = new AudienceBuilder().buildObject();
+        audience.setAudienceURI(getAudienceURI());
+        audience.setAudienceURI("");
+        return audience;
+    }
 }

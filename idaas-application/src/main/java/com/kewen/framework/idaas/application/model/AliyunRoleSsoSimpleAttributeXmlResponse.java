@@ -2,8 +2,6 @@ package com.kewen.framework.idaas.application.model;
 
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import org.joda.time.DateTime;
-import org.opensaml.saml.saml2.core.Audience;
-import org.opensaml.saml.saml2.core.impl.AudienceBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,11 +85,17 @@ public class AliyunRoleSsoSimpleAttributeXmlResponse extends AbstractSimpleAttri
         return notAfter;
     }
 
+    /**
+     * <Conditions>
+     * <AudienceRestriction>
+     * <Audience>urn:alibaba:cloudcomputing</Audience>
+     * </AudienceRestriction>
+     * </Conditions>
+     *
+     * @return
+     */
     @Override
-    protected Audience getAudience() {
-        Audience audience = new AudienceBuilder().buildObject();
-        //audience.setAudienceURI(getAudienceURI());
-        audience.setAudienceURI("urn:alibaba:cloudcomputing");
-        return audience;
+    protected String getAudienceURI() {
+        return "urn:alibaba:cloudcomputing";
     }
 }

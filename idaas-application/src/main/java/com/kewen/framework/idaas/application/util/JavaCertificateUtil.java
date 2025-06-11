@@ -3,6 +3,7 @@ package com.kewen.framework.idaas.application.util;
 import com.kewen.framework.idaas.application.model.CertificateReq;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
+import org.apache.commons.codec.binary.Base64;
 import sun.security.x509.*;
 
 import java.io.*;
@@ -12,6 +13,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Date;
 
 /**
@@ -47,6 +50,26 @@ public class JavaCertificateUtil {
         out.println(END_CERTIFICATE);
         out.close();
         return buff.toString();
+    }
+
+    /**
+     * 解析 PKCS#8格式的DER编码的私钥
+     *
+     * @param base64DerPrivateKey
+     * @return
+     * @throws Exception
+     */
+    public static PrivateKey parseDerPrivateKey(String base64DerPrivateKey) {
+        byte[] pkcs8Bytes = Base64.decodeBase64(base64DerPrivateKey);
+
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8Bytes);
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // 或 "EC"，视情况而定
+
+            return keyFactory.generatePrivate(keySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new SamlException("PrivateKey Exception : " + e.getMessage(), e);
+        }
     }
 
     /**

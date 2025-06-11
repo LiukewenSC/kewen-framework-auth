@@ -4,19 +4,30 @@ package com.kewen.framework.idaas.application.util;
 import com.kewen.framework.idaas.application.model.CertificateReq;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
+import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPrivateKeySpec;
 import java.util.Date;
 
 /**
@@ -30,6 +41,77 @@ public class BcCertificateUtil {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
+
+    /**
+     * 未测试
+     * 从 PKCS#1 格式的 DER 字节数组加载 Java 的 RSAPrivateKey。
+     */
+    public static PrivateKey loadPKCS1PrivateKey(byte[] pkcs1DerBytes) throws Exception {
+        // Step 1: 使用 BouncyCastle 解析 DER 编码的 ASN.1 序列
+        ASN1Sequence sequence = ASN1Sequence.getInstance(pkcs1DerBytes);
+        org.bouncycastle.asn1.pkcs.RSAPrivateKey bcPrivateKey = org.bouncycastle.asn1.pkcs.RSAPrivateKey.getInstance(sequence);
+
+        // Step 2: 提取模数 (modulus) 和私有指数 (private exponent)
+        java.math.BigInteger modulus = bcPrivateKey.getModulus();
+        java.math.BigInteger privateExponent = bcPrivateKey.getPrivateExponent();
+
+        // Step 3: 构造 Java 标准的 RSAPrivateKeySpec
+        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(modulus, privateExponent);
+
+        // Step 4: 使用 KeyFactory 构建 Java 的 PrivateKey 对象
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA", "BC");
+        return keyFactory.generatePrivate(keySpec);
+    }
+
+    /**
+     * 未测试,
+     * 从 PEM 字符串加载 PKCS#1 私钥（支持带头尾或裸 Base64 格式）
+     */
+    public static PrivateKey loadPKCS1PrivateKeyFromPEM(String pemString) throws IOException, Exception {
+        if (pemString.trim().startsWith("-----")) {
+            // 带 PEM 头部的情况
+            PemReader pemReader = new PemReader(new StringReader(pemString));
+            PemObject pemObject = pemReader.readPemObject();
+            pemReader.close();
+            //这里转为DER了吗？
+            return loadPKCS1PrivateKey(pemObject.getContent());
+        } else {
+            // 裸 Base64 编码的 DER 数据
+            byte[] derBytes = Base64.decodeBase64(pemString);
+            return loadPKCS1PrivateKey(derBytes);
+        }
+    }
+
+    /**
+     * 未测试
+     * 加载PEM格式的私钥
+     *
+     * @param pemPrivateKey
+     * @return
+     * @throws Exception
+     */
+    public PrivateKey loadPKCS8PemPrivateKey(String pemPrivateKey) throws Exception {
+        PEMParser pemParser = new PEMParser(new StringReader(pemPrivateKey));
+        Object object = pemParser.readObject();
+        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+        PrivateKeyInfo privateKeyInfo;
+
+        if (object instanceof PrivateKeyInfo) {
+            privateKeyInfo = (PrivateKeyInfo) object;
+        } else {
+            throw new IllegalArgumentException("Not a valid private key format.");
+        }
+
+        return converter.getPrivateKey(privateKeyInfo);
+    }
+
+    private PrivateKey loadPkcs8PrivateKey(byte[] pkcs8Bytes) throws GeneralSecurityException {
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8Bytes);
+        KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
+        return kf.generatePrivate(keySpec);
+    }
+
+
 
     /**
      * BC库算法生成证书

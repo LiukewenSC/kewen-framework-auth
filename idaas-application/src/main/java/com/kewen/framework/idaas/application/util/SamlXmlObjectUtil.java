@@ -18,6 +18,7 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 
 import java.util.Date;
 
+@Deprecated
 public class SamlXmlObjectUtil {
 
     public static ArtifactResponse getArtifactResponse(String entityId, String destination) {

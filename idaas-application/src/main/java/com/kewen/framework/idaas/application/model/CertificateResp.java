@@ -2,6 +2,7 @@ package com.kewen.framework.idaas.application.model;
 
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
+import com.kewen.framework.idaas.application.util.JavaCertificateUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.codec.binary.Base64;
@@ -13,7 +14,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 @Data
 @Accessors(chain = true)
@@ -47,23 +48,23 @@ public class CertificateResp {
     }
 
     public PrivateKey parsePrivateKey() {
-        byte[] pkcs8Bytes = Base64.decodeBase64(privateKey);
-
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8Bytes);
-        try {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // 或 "EC"，视情况而定
-            return keyFactory.generatePrivate(keySpec);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
+        return JavaCertificateUtil.parseDerPrivateKey(privateKey);
     }
 
     public PublicKey parsePublicKey() {
-        byte[] pkcs8Bytes = Base64.decodeBase64(publicKey);
+        byte[] publicKeyBytes = Base64.decodeBase64(publicKey);
 
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8Bytes);
+        // 使用 X.509 编码规范加载公钥
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // 或 "EC"，根据密钥类型
+
+            return keyFactory.generatePublic(keySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new SamlException("parsePublicKey exception", e);
+        }
+
+        /*PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8Bytes);
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // 或 "EC"，视情况而定
             return keyFactory.generatePublic(keySpec);
@@ -72,7 +73,7 @@ public class CertificateResp {
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
             return null;
-        }
+        }*/
     }
 
     public X509Certificate parseX509Certificate() throws SamlException {
