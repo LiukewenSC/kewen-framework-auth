@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,11 +98,16 @@ public class CertificateController {
      * @throws IOException
      */
     @GetMapping("/export")
-    public void exportCertificate(Long id, HttpServletResponse response) throws IOException {
+    public void exportCertificate(Long id, HttpServletResponse response) {
 
         CertificateResp certificate = certificateService.getCertificate(id);
 
-        JavaCertificateUtil.exportPkcs12Certificate(certificate.getCertificateInfoStr().parseCertificateInfo(), "123456", response.getOutputStream());
+        try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
+            JavaCertificateUtil.exportPkcs12Certificate(certificate.getCertificateInfoStr().parseCertificateInfo(), "123456", servletOutputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 

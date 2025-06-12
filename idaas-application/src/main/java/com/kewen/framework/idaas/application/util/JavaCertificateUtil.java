@@ -1,5 +1,6 @@
 package com.kewen.framework.idaas.application.util;
 
+import com.kewen.framework.idaas.application.exception.CertificationException;
 import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
@@ -39,7 +40,7 @@ public class JavaCertificateUtil {
             x509Certificate.checkValidity();
             return x509Certificate;
         } catch (IOException | CertificateException e) {
-            throw new RuntimeException(e);
+            throw new CertificationException(e);
         }
     }
 
@@ -69,7 +70,7 @@ public class JavaCertificateUtil {
 
             return keyFactory.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new SamlException("PrivateKey Exception : " + e.getMessage(), e);
+            throw new CertificationException("PrivateKey Exception : " + e.getMessage(), e);
         }
     }
 
@@ -126,17 +127,17 @@ public class JavaCertificateUtil {
             //X500PrivateCredential x500PrivateCredential = new X500PrivateCredential(x509Certificate, keyPair.getPrivate());
             return new CertificateInfo(keyPair, x509Certificate);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new CertificationException(e);
         } catch (CertificateException e) {
-            throw new SamlException("CertificateException", e);
+            throw new CertificationException("CertificateException", e);
         } catch (InvalidKeyException e) {
-            throw new SamlException("InvalidKeyException", e);
+            throw new CertificationException("InvalidKeyException", e);
         } catch (NoSuchProviderException e) {
-            throw new SamlException("NoSuchProviderException", e);
+            throw new CertificationException("NoSuchProviderException", e);
         } catch (SignatureException e) {
-            throw new SamlException("SignatureException", e);
+            throw new CertificationException("SignatureException", e);
         } catch (IOException e) {
-            throw new SamlException("IOException", e);
+            throw new CertificationException("IOException", e);
         }
     }
 
@@ -171,7 +172,7 @@ public class JavaCertificateUtil {
             }
 
             if (keyAlias == null) {
-                throw new RuntimeException("未找到有效的密钥条目");
+                throw new CertificationException("未找到有效的密钥条目");
             }
 
             // Step 3: 获取私钥
@@ -185,10 +186,17 @@ public class JavaCertificateUtil {
             return new CertificateInfo(privateKey, null, ((X509Certificate) cert));
         } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException |
                  UnrecoverableKeyException e) {
-            throw new RuntimeException(e);
+            throw new CertificationException(e);
         }
     }
 
+    /**
+     * 导出pkcs12证书，
+     *
+     * @param certificateInfo 证书信息
+     * @param password        密码
+     * @param response        不关流
+     */
     public static void exportPkcs12Certificate(CertificateInfo certificateInfo, String password, OutputStream response) {
         try {
             KeyStore pkcs12 = KeyStore.getInstance("PKCS12");
@@ -198,15 +206,8 @@ public class JavaCertificateUtil {
             char[] passwordCharArray = password.toCharArray();
             pkcs12.setKeyEntry("aliasCertificate", certificateInfo.getKeyPair().getPrivate(), passwordCharArray, chain);
             pkcs12.store(response, passwordCharArray);
-            response.flush();
         } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                response.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            throw new CertificationException(e);
         }
     }
 }

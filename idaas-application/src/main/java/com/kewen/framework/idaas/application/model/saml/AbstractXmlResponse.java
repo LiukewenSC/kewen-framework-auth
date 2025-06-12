@@ -1,6 +1,7 @@
 package com.kewen.framework.idaas.application.model.saml;
 
 import com.kewen.framework.idaas.application.config.SPCredentials;
+import com.kewen.framework.idaas.application.exception.CertificationException;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.util.SamlXmlUtil;
 import org.apache.xml.security.utils.EncryptionConstants;
@@ -208,7 +209,7 @@ public abstract class AbstractXmlResponse {
         try {
             return encrypter.encrypt(assertion);
         } catch (EncryptionException e) {
-            throw new RuntimeException(e);
+            throw new CertificationException(e);
         }
     }
 

@@ -1,9 +1,9 @@
 package com.kewen.framework.idaas.application.util;
 
 
+import com.kewen.framework.idaas.application.exception.CertificationException;
 import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
-import com.kewen.framework.idaas.application.saml.SamlException;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -23,17 +23,7 @@ import org.bouncycastle.util.io.pem.PemReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -163,15 +153,15 @@ public class BcCertificateUtil {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (OperatorCreationException e) {
-            throw new SamlException("OperatorCreationException", e);
+            throw new CertificationException("OperatorCreationException", e);
         } catch (CertificateException e) {
-            throw new SamlException("CertificateException", e);
+            throw new CertificationException("CertificateException", e);
         } catch (InvalidKeyException e) {
-            throw new SamlException("InvalidKeyException", e);
+            throw new CertificationException("InvalidKeyException", e);
         } catch (NoSuchProviderException e) {
-            throw new SamlException("NoSuchProviderException", e);
+            throw new CertificationException("NoSuchProviderException", e);
         } catch (SignatureException e) {
-            throw new SamlException("SignatureException", e);
+            throw new CertificationException("SignatureException", e);
         }
     }
 
