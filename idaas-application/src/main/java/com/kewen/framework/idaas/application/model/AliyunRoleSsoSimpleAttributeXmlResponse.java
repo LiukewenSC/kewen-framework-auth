@@ -21,15 +21,15 @@ public class AliyunRoleSsoSimpleAttributeXmlResponse extends AbstractSimpleAttri
     private final String entityId;
     private final String username;
     private final String certData;
-    private final CertificateResp certificateResp;
+    private final CertificateInfoStr certificateInfoStr;
     private final DateTime notAfter;
     private final String role;
 
-    public AliyunRoleSsoSimpleAttributeXmlResponse(String entityId, CertificateResp certificateResp, DateTime notAfter, String role, String username) {
+    public AliyunRoleSsoSimpleAttributeXmlResponse(String entityId, CertificateInfoStr certificateInfoStr, DateTime notAfter, String role, String username) {
         this.username = username;
         this.entityId = entityId;
-        this.certData = certificateResp.getCertData();
-        this.certificateResp = certificateResp;
+        this.certData = certificateInfoStr.getX509CertificateDerStr();
+        this.certificateInfoStr = certificateInfoStr;
         this.notAfter = notAfter;
         this.role = role;
     }
@@ -86,7 +86,7 @@ public class AliyunRoleSsoSimpleAttributeXmlResponse extends AbstractSimpleAttri
 
     @Override
     protected CertificateInfo getCertificateInfo() {
-        return certificateResp.parseCertificateInfo();
+        return certificateInfoStr.parseCertificateInfo();
     }
 
     @Override

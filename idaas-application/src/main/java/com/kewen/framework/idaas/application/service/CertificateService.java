@@ -1,5 +1,6 @@
 package com.kewen.framework.idaas.application.service;
 
+import com.kewen.framework.idaas.application.model.CertificateInfoStr;
 import com.kewen.framework.idaas.application.model.CertificateReq;
 import com.kewen.framework.idaas.application.model.CertificateResp;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
@@ -37,8 +38,12 @@ public class CertificateService {
     private IdaasCertificateMpService idaasCertificateMpService;
 
 
+    /**
+     * 保存证书
+     * @param req
+     * @return
+     */
     public CertificateResp saveCertificate(CertificateReq req) {
-
         CertificateInfo certificateInfo = BcCertificateUtil.generate(req);
         IdaasCertificate certificate = new IdaasCertificate()
                 .setIssuer(req.getIssuer())
@@ -50,22 +55,32 @@ public class CertificateService {
                 .setEffectTime(req.getNotBefore())
                 .setExpireTime(req.getNotAfter());
         idaasCertificateMpService.save(certificate);
-        return new CertificateResp(certificate.getId(), certificateInfo);
+        CertificateInfoStr certificateInfoStr = new CertificateInfoStr(certificateInfo);
+        return new CertificateResp()
+                .setId(certificate.getId())
+                .setCertificateInfoStr(certificateInfoStr);
     }
 
+    /**
+     * 获取证书
+     * @param id
+     * @return
+     */
     public CertificateResp getCertificate(Long id) {
         IdaasCertificate certificate = idaasCertificateMpService.getById(id);
 
+        CertificateInfoStr certificateInfoStr = new CertificateInfoStr()
+                .setX509CertificateDerStr(certificate.getCertificate())
+                .setPrivateKeyBase64Str(certificate.getPrivateKey())
+                .setPublicKeyBase64Str(certificate.getPublicKey());
         return new CertificateResp()
                 .setId(certificate.getId())
-                .setCertData(certificate.getCertificate())
-                .setPrivateKey(certificate.getPrivateKey())
-                .setPublicKey(certificate.getPublicKey());
+                .setCertificateInfoStr(certificateInfoStr);
     }
 
     public String getMetadata(Long id) {
         CertificateResp certificate = getCertificate(id);
-        return getMetadata(certificate);
+        return getMetadata(certificate.getCertificateInfoStr().parseCertificateInfo());
     }
 
     /**
@@ -86,10 +101,10 @@ public class CertificateService {
      *         <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8080/webprofile-ref-project/idp/singleSignOnServicePost"/>
      *     </md:IDPSSODescriptor>
      * </md:EntityDescriptor>
-     * @param certificate
+     * @param certificateInfo
      * @return
      */
-    public String getMetadata(CertificateResp certificate) {
+    public String getMetadata(CertificateInfo certificateInfo) {
         EntityDescriptor entityDescriptor = new EntityDescriptorBuilder().buildObject();
         entityDescriptor.setEntityID("kewen-idp");
 
@@ -101,7 +116,6 @@ public class CertificateService {
         keyDescriptor.setUse(UsageType.SIGNING);
 
         //KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certificate.getCertData());
-        CertificateInfo certificateInfo = certificate.parseCertificateInfo();
         KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certificateInfo);
         keyDescriptor.setKeyInfo(keyInfo);
 

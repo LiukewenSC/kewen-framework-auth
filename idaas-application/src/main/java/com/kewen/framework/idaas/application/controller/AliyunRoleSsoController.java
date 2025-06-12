@@ -123,7 +123,7 @@ public class AliyunRoleSsoController {
         //构造阿里云角色SSO对象
         AliyunRoleSsoSimpleAttributeXmlResponse aliyunRoleSsoSimpleAttributeXmlResponse = new AliyunRoleSsoSimpleAttributeXmlResponse(
                 "kewen-idp",
-                certificate,
+                certificate.getCertificateInfoStr(),
                 DateTime.now().plusHours(2),
                 "acs:ram::1555734646214700:role/kewen-saml-role,acs:ram::1555734646214700:saml-provider/kewen-saml",
                 "IDPAdmin"

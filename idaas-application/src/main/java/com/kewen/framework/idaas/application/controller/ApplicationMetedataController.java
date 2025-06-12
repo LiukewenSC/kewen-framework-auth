@@ -56,8 +56,8 @@ public class ApplicationMetedataController {
                 .setNotBefore(new Date(System.currentTimeMillis()))
                 .setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)))
         ;
-        CertificateResp certificateResp = certificateService.saveCertificate(certificateReq);
-        return certificateResp;
+        CertificateResp certificateInfoStr = certificateService.saveCertificate(certificateReq);
+        return certificateInfoStr;
     }
 
     @GetMapping("/getMetadataBytes")
@@ -81,9 +81,7 @@ public class ApplicationMetedataController {
     @ResponseBody
     public String getMetadata(@RequestParam("id") Long id) {
 
-        CertificateResp certificate = certificateService.getCertificate(id);
-
-        return certificateService.getMetadata(certificate);
+        return certificateService.getMetadata(id);
 
     }
 
