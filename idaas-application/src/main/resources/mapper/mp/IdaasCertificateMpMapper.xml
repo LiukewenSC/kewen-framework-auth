@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kewen.framework.idaas.application.mp.mapper.IdaasCertificateMpMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kewen.framework.idaas.application.mp.entity.IdaasCertificate">
+        <id column="id" property="id"/>
+        <result column="issuer" property="issuer"/>
+        <result column="subject" property="subject"/>
+        <result column="certificate" property="certificate"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , issuer, subject, certificate, create_time, update_time, deleted
+    </sql>
+
+</mapper>
