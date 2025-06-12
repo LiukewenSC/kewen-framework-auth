@@ -12,7 +12,7 @@
 
 package com.kewen.framework.idaas.application.util;
 
-import com.kewen.framework.idaas.application.model.AbstractXmlResponse;
+import com.kewen.framework.idaas.application.model.saml.AbstractXmlResponse;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.messaging.context.MessageContext;

@@ -1,4 +1,4 @@
-package com.kewen.framework.idaas.application.model;
+package com.kewen.framework.idaas.application.model.saml;
 
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.core.xml.schema.impl.XSAnyBuilder;
@@ -42,6 +42,7 @@ public abstract class AbstractSimpleAttributeXmlResponse extends AbstractXmlResp
      *
      * @return
      */
+    @Override
     public List<Attribute> getAttributes() {
         Map<String, String> attributeValues = getAttributeValues();
         return attributeValues.entrySet().stream().map(entry -> {

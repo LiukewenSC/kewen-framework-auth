@@ -1,9 +1,10 @@
 package com.kewen.framework.idaas.application.service;
 
-import com.kewen.framework.idaas.application.model.CertificateInfoStr;
-import com.kewen.framework.idaas.application.model.CertificateReq;
-import com.kewen.framework.idaas.application.model.CertificateResp;
+import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfoStr;
+import com.kewen.framework.idaas.application.model.req.IdaasCertificateReq;
+import com.kewen.framework.idaas.application.model.resp.CertificateResp;
 import com.kewen.framework.idaas.application.mp.entity.IdaasCertificate;
 import com.kewen.framework.idaas.application.mp.service.IdaasCertificateMpService;
 import com.kewen.framework.idaas.application.util.BcCertificateUtil;
@@ -43,8 +44,15 @@ public class CertificateService {
      * @param req
      * @return
      */
-    public CertificateResp saveCertificate(CertificateReq req) {
-        CertificateInfo certificateInfo = BcCertificateUtil.generate(req);
+    public CertificateResp saveCertificate(IdaasCertificateReq req) {
+        CertificateInfo certificateInfo = BcCertificateUtil.generate(
+                new CertificateGen()
+                        .setSubject(req.getSubject())
+                        .setIssuer(req.getIssuer())
+                        .setNotBefore(req.getNotBefore())
+                        .setNotAfter(req.getNotAfter())
+                        .setSignatureAlgorithm(req.getSignatureAlgorithm())
+        );
         IdaasCertificate certificate = new IdaasCertificate()
                 .setIssuer(req.getIssuer())
                 .setSubject(req.getSubject())

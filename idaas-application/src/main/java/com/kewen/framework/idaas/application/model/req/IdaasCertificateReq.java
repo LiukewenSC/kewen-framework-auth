@@ -10,19 +10,25 @@
  * entered into with BeiJing JZYT Technology Co. Ltd.
  */
 
-package com.kewen.framework.idaas.application.model;
+package com.kewen.framework.idaas.application.model.req;
 
 import lombok.Data;
-import lombok.experimental.Accessors;
+
+import java.util.Date;
 
 /**
  * 2025/06/12
  *
  * @author kewen
+ * @since 4.23.0-mysql-aliyun-sovereign
  */
 @Data
-@Accessors(chain = true)
-public class CertificateResp {
-    private Long id;
-    private CertificateInfoStr certificateInfoStr;
+public class IdaasCertificateReq {
+    protected String subject;
+    protected String issuer;
+    protected String serial;
+    protected Date notBefore;
+    protected Date notAfter;
+    protected String signatureAlgorithm = "SHA256withRSA";
+
 }

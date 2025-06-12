@@ -1,6 +1,7 @@
-package com.kewen.framework.idaas.application.model;
+package com.kewen.framework.idaas.application.model.saml;
 
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfoStr;
 import org.joda.time.DateTime;
 
 import java.util.HashMap;

@@ -1,8 +1,9 @@
 package com.kewen.framework.idaas.application.controller;
 
 
-import com.kewen.framework.idaas.application.model.CertificateReq;
-import com.kewen.framework.idaas.application.model.CertificateResp;
+import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
+import com.kewen.framework.idaas.application.model.req.IdaasCertificateReq;
+import com.kewen.framework.idaas.application.model.resp.CertificateResp;
 import com.kewen.framework.idaas.application.service.CertificateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,14 +50,14 @@ public class ApplicationMetedataController {
 
     @GetMapping("/generateCertificate")
     @ResponseBody
-    public CertificateResp generateCertificate() {
-        CertificateReq certificateReq = new CertificateReq();
-        certificateReq.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
+    public CertificateResp generateCertificate(IdaasCertificateReq req) {
+        CertificateGen certificateGen = new CertificateGen();
+        certificateGen.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
                 .setNotBefore(new Date(System.currentTimeMillis()))
                 .setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)))
         ;
-        CertificateResp certificateInfoStr = certificateService.saveCertificate(certificateReq);
+        CertificateResp certificateInfoStr = certificateService.saveCertificate(req);
         return certificateInfoStr;
     }
 

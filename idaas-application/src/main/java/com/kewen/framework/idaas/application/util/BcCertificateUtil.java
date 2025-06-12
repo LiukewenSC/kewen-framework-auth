@@ -1,7 +1,7 @@
 package com.kewen.framework.idaas.application.util;
 
 
-import com.kewen.framework.idaas.application.model.CertificateReq;
+import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
 import org.apache.commons.codec.binary.Base64;
@@ -23,7 +23,17 @@ import org.bouncycastle.util.io.pem.PemReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -116,10 +126,10 @@ public class BcCertificateUtil {
     /**
      * BC库算法生成证书
      *
-     * @param certificateReq
+     * @param certificateGen
      * @return
      */
-    public static CertificateInfo generate(CertificateReq certificateReq) {
+    public static CertificateInfo generate(CertificateGen certificateGen) {
         try {
 
             //生成秘钥
@@ -129,17 +139,17 @@ public class BcCertificateUtil {
             BigInteger serial = BigInteger.valueOf(System.currentTimeMillis());
 
             // 签名算法
-            ContentSigner signer = new JcaContentSignerBuilder(certificateReq.getSignatureAlgorithm()).build(keyPair.getPrivate());
+            ContentSigner signer = new JcaContentSignerBuilder(certificateGen.getSignatureAlgorithm()).build(keyPair.getPrivate());
 
             // 颁发者
-            X500Name issuer = new X500Name(certificateReq.getIssuer());
+            X500Name issuer = new X500Name(certificateGen.getIssuer());
 
             //定义有效期
-            Date notBefore = certificateReq.getNotBefore();
-            Date notAfter = certificateReq.getNotAfter();
+            Date notBefore = certificateGen.getNotBefore();
+            Date notAfter = certificateGen.getNotAfter();
 
             // 定义证书主体（自签名）
-            X500Name subject = new X500Name(certificateReq.getSubject());
+            X500Name subject = new X500Name(certificateGen.getSubject());
 
             // 构建生成证书
             X509Certificate x509Certificate = getX509Certificate(

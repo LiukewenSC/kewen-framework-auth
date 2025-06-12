@@ -1,14 +1,36 @@
 package com.kewen.framework.idaas.application.util;
 
-import com.kewen.framework.idaas.application.model.CertificateReq;
+import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
 import org.apache.commons.codec.binary.Base64;
-import sun.security.x509.*;
+import sun.security.x509.AlgorithmId;
+import sun.security.x509.CertificateAlgorithmId;
+import sun.security.x509.CertificateIssuerName;
+import sun.security.x509.CertificateSerialNumber;
+import sun.security.x509.CertificateSubjectName;
+import sun.security.x509.CertificateValidity;
+import sun.security.x509.CertificateVersion;
+import sun.security.x509.CertificateX509Key;
+import sun.security.x509.X500Name;
+import sun.security.x509.X509CertImpl;
+import sun.security.x509.X509CertInfo;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -75,10 +97,10 @@ public class JavaCertificateUtil {
     /**
      * Java内置算法生层证书
      *
-     * @param certificateReq
+     * @param certificateGen
      * @return
      */
-    public static CertificateInfo generate(CertificateReq certificateReq) {
+    public static CertificateInfo generate(CertificateGen certificateGen) {
         try {
             // 生成RSA密钥对
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
@@ -101,17 +123,17 @@ public class JavaCertificateUtil {
             x509CertInfo.set(X509CertInfo.ALGORITHM_ID, new CertificateAlgorithmId(AlgorithmId.get("RSA")));
 
             // 设置颁发者
-            X500Name issuer = new X500Name(certificateReq.getIssuer());
+            X500Name issuer = new X500Name(certificateGen.getIssuer());
             x509CertInfo.set(X509CertInfo.ISSUER, new CertificateIssuerName(issuer));
 
 
             // 设置有效期
-            Date notBefore = certificateReq.getNotBefore();
-            Date notAfter = certificateReq.getNotAfter();
+            Date notBefore = certificateGen.getNotBefore();
+            Date notAfter = certificateGen.getNotAfter();
             x509CertInfo.set(X509CertInfo.VALIDITY, new CertificateValidity(notBefore, notAfter));
 
             // 设置主体名
-            X500Name owner = new X500Name(certificateReq.getSubject());
+            X500Name owner = new X500Name(certificateGen.getSubject());
             x509CertInfo.set(X509CertInfo.SUBJECT, new CertificateSubjectName(owner));
 
             // 设置公钥

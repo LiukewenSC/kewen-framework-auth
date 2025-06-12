@@ -1,6 +1,5 @@
-package com.kewen.framework.idaas.application.model;
+package com.kewen.framework.idaas.application.model.certificate;
 
-import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
 import com.kewen.framework.idaas.application.util.JavaCertificateUtil;
 import lombok.Data;

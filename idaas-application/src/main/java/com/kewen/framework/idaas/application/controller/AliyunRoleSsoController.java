@@ -12,8 +12,8 @@
 
 package com.kewen.framework.idaas.application.controller;
 
-import com.kewen.framework.idaas.application.model.AliyunRoleSsoSimpleAttributeXmlResponse;
-import com.kewen.framework.idaas.application.model.CertificateResp;
+import com.kewen.framework.idaas.application.model.resp.CertificateResp;
+import com.kewen.framework.idaas.application.model.saml.AliyunRoleSsoSimpleAttributeXmlResponse;
 import com.kewen.framework.idaas.application.service.CertificateService;
 import com.kewen.framework.idaas.application.util.ResponseUtil;
 import org.joda.time.DateTime;

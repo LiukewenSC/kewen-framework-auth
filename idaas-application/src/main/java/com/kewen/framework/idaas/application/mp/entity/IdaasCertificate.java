@@ -54,13 +54,13 @@ public class IdaasCertificate {
     @TableField("signature_algorithm")
     private String signatureAlgorithm;
     /**
-     * 签名算法
+     * 私钥
      */
     @TableField("private_key")
     private String privateKey;
 
     /**
-     * 签名算法
+     * 公钥
      */
     @TableField("public_key")
     private String publicKey;
