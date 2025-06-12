@@ -18,7 +18,11 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 import org.opensaml.xmlsec.signature.Signature;
 import org.opensaml.xmlsec.signature.X509Certificate;
 import org.opensaml.xmlsec.signature.X509Data;
-import org.opensaml.xmlsec.signature.impl.*;
+import org.opensaml.xmlsec.signature.impl.KeyInfoBuilder;
+import org.opensaml.xmlsec.signature.impl.SignatureBuilder;
+import org.opensaml.xmlsec.signature.impl.SignatureImpl;
+import org.opensaml.xmlsec.signature.impl.X509CertificateBuilder;
+import org.opensaml.xmlsec.signature.impl.X509DataBuilder;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.opensaml.xmlsec.signature.support.Signer;
@@ -29,7 +33,27 @@ import java.security.PublicKey;
 public class SamlXmlUtil {
 
 
-    private static KeyInfo getKeyInfo(Credential credential) {
+    /**
+     *
+     * @return
+     */
+    public static KeyInfo getKeyInfo(CertificateInfo certificateInfo) {
+        BasicX509Credential basicX509Credential = new BasicX509Credential(
+                certificateInfo.getCertificate(),
+                certificateInfo.getKeyPair().getPrivate()
+        );
+        //也可以使用以下工具来生成，效果一样；
+        //BasicX509Credential credential = CredentialSupport.getSimpleCredential(cert, privateKey);
+        //BasicCredential credential = CredentialSupport.getSimpleCredential(publicKey, privateKey);
+        return getKeyInfo(basicX509Credential);
+    }
+
+    /**
+     *
+     * @param credential
+     * @return
+     */
+    public static KeyInfo getKeyInfo(Credential credential) {
         final X509KeyInfoGeneratorFactory x509KeyInfoGeneratorFactory = new X509KeyInfoGeneratorFactory();
         x509KeyInfoGeneratorFactory.setEmitEntityCertificate(true);
         final KeyInfoGenerator keyInfoGenerator = x509KeyInfoGeneratorFactory.newInstance();
@@ -39,6 +63,12 @@ public class SamlXmlUtil {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * 获取KeyInfo，只有证书信息，KeyInfo中不包含私钥
+     * @param x509CertificateValue
+     * @return
+     */
     public static KeyInfo getKeyInfo(String x509CertificateValue) {
         if (x509CertificateValue == null) {
             throw new CertificationException("Certification parameter is null");

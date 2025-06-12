@@ -3,12 +3,21 @@ package com.kewen.framework.idaas.application.controller;
 
 import com.kewen.framework.idaas.application.model.CertificateReq;
 import com.kewen.framework.idaas.application.model.CertificateResp;
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.service.CertificateService;
 import com.kewen.framework.idaas.application.util.OpenSAMLUtils;
 import com.kewen.framework.idaas.application.util.SamlXmlUtil;
 import org.opensaml.saml.common.xml.SAMLConstants;
-import org.opensaml.saml.saml2.metadata.*;
-import org.opensaml.saml.saml2.metadata.impl.*;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
+import org.opensaml.saml.saml2.metadata.KeyDescriptor;
+import org.opensaml.saml.saml2.metadata.SingleLogoutService;
+import org.opensaml.saml.saml2.metadata.SingleSignOnService;
+import org.opensaml.saml.saml2.metadata.impl.EntityDescriptorBuilder;
+import org.opensaml.saml.saml2.metadata.impl.IDPSSODescriptorBuilder;
+import org.opensaml.saml.saml2.metadata.impl.KeyDescriptorBuilder;
+import org.opensaml.saml.saml2.metadata.impl.SingleLogoutServiceBuilder;
+import org.opensaml.saml.saml2.metadata.impl.SingleSignOnServiceBuilder;
 import org.opensaml.security.credential.UsageType;
 import org.opensaml.xmlsec.signature.KeyInfo;
 import org.slf4j.Logger;
@@ -98,8 +107,9 @@ public class ApplicationMetedataController {
         KeyDescriptor keyDescriptor = new KeyDescriptorBuilder().buildObject();
         keyDescriptor.setUse(UsageType.SIGNING);
 
-        KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certificate.getCertData());
-
+        //KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certificate.getCertData());
+        CertificateInfo certificateInfo = certificate.parseCertificateInfo();
+        KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certificateInfo);
         keyDescriptor.setKeyInfo(keyInfo);
 
         idpssoDescriptor.getKeyDescriptors().add(keyDescriptor);
