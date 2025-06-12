@@ -189,7 +189,7 @@ public class JavaCertificateUtil {
         }
     }
 
-    public static void exportPkcs12(CertificateInfo certificateInfo, String password, OutputStream response) {
+    public static void exportPkcs12Certificate(CertificateInfo certificateInfo, String password, OutputStream response) {
         try {
             KeyStore pkcs12 = KeyStore.getInstance("PKCS12");
             pkcs12.load(null, null);

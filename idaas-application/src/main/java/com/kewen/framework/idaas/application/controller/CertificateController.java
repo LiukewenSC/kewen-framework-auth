@@ -101,7 +101,7 @@ public class CertificateController {
 
         CertificateResp certificate = certificateService.getCertificate(id);
 
-        JavaCertificateUtil.exportPkcs12(certificate.getCertificateInfoStr().parseCertificateInfo(), "123456", response.getOutputStream());
+        JavaCertificateUtil.exportPkcs12Certificate(certificate.getCertificateInfoStr().parseCertificateInfo(), "123456", response.getOutputStream());
     }
 
 
