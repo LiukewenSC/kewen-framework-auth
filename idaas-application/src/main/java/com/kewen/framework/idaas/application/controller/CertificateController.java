@@ -2,19 +2,22 @@ package com.kewen.framework.idaas.application.controller;
 
 
 import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfoStr;
 import com.kewen.framework.idaas.application.model.req.IdaasCertificateReq;
 import com.kewen.framework.idaas.application.model.resp.CertificateResp;
 import com.kewen.framework.idaas.application.service.CertificateService;
+import com.kewen.framework.idaas.application.util.JavaCertificateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -86,5 +89,27 @@ public class CertificateController {
 
     }
 
+    @GetMapping("/export")
+    public void exportCertificate(Long id, HttpServletResponse response) throws IOException {
 
+        CertificateResp certificate = certificateService.getCertificate(id);
+
+        JavaCertificateUtil.exportPkcs12(certificate.getCertificateInfoStr().parseCertificateInfo(), "123456", response.getOutputStream());
+    }
+
+
+    @PostMapping("/import")
+    @ResponseBody
+    public CertificateInfoStr importCertificate(@RequestParam("file") MultipartFile file) throws IOException {
+        try (InputStream inputStream = file.getInputStream()) {
+            CertificateInfo certificateInfo = JavaCertificateUtil.parsePkcs12Certificate(
+                    inputStream, "123456", null, null
+            );
+
+            CertificateInfoStr certificateInfoStr = new CertificateInfoStr(certificateInfo);
+
+            return certificateInfoStr;
+
+        }
+    }
 }

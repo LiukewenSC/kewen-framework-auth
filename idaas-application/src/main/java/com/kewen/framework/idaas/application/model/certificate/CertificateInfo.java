@@ -17,6 +17,8 @@ import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
@@ -39,6 +41,11 @@ public class CertificateInfo {
      */
     private final X509Certificate certificate;
 
+    public CertificateInfo(PrivateKey privateKey, PublicKey publicKey, X509Certificate certificate) {
+        this.keyPair = new KeyPair(publicKey, privateKey);
+        this.certificate = certificate;
+    }
+
     public CertificateInfo(KeyPair keyPair, X509Certificate certificate) {
         this.keyPair = keyPair;
         this.certificate = certificate;
@@ -46,22 +53,33 @@ public class CertificateInfo {
 
     /**
      * 私钥字符串
+     *
      * @return
      */
     public String getPrivateKeyStr() {
-        return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
+        PrivateKey aPrivate = keyPair.getPrivate();
+        if (aPrivate == null) {
+            return null;
+        }
+        return Base64.encodeBase64String(aPrivate.getEncoded());
     }
 
     /**
      * 公钥字符串
+     *
      * @return
      */
     public String getPublicKeyStr() {
-        return Base64.encodeBase64String(keyPair.getPublic().getEncoded());
+        PublicKey aPublic = keyPair.getPublic();
+        if (aPublic == null) {
+            return null;
+        }
+        return Base64.encodeBase64String(aPublic.getEncoded());
     }
 
     /**
      * 获取证书数据
+     *
      * @return
      */
     public String getCertDataStr() {
@@ -78,7 +96,11 @@ public class CertificateInfo {
         // encodeBase64Chunked 表示可以换行
         //String strCertData = StringUtils.newStringUsAscii(Base64.encodeBase64Chunked(encoded));
         try {
-            return Base64.encodeBase64String(certificate.getEncoded());
+            byte[] encoded = certificate.getEncoded();
+            if (encoded == null) {
+                return null;
+            }
+            return Base64.encodeBase64String(encoded);
         } catch (CertificateEncodingException e) {
             throw new SamlException("x509Certificate.getEncoded error : " + e.getMessage(), e);
         }

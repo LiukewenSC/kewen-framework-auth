@@ -4,33 +4,11 @@ import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.saml.SamlException;
 import org.apache.commons.codec.binary.Base64;
-import sun.security.x509.AlgorithmId;
-import sun.security.x509.CertificateAlgorithmId;
-import sun.security.x509.CertificateIssuerName;
-import sun.security.x509.CertificateSerialNumber;
-import sun.security.x509.CertificateSubjectName;
-import sun.security.x509.CertificateValidity;
-import sun.security.x509.CertificateVersion;
-import sun.security.x509.CertificateX509Key;
-import sun.security.x509.X500Name;
-import sun.security.x509.X509CertImpl;
-import sun.security.x509.X509CertInfo;
+import sun.security.x509.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -38,6 +16,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Date;
+import java.util.Enumeration;
 
 /**
  * 2025/04/18
@@ -158,6 +137,76 @@ public class JavaCertificateUtil {
             throw new SamlException("SignatureException", e);
         } catch (IOException e) {
             throw new SamlException("IOException", e);
+        }
+    }
+
+    /**
+     * 从 .p12 文件中加载私钥和证书
+     *
+     * @param in            PKCS#12 文件路径
+     * @param storePassword 密钥库密码（用于打开整个 .p12 文件）
+     * @param keyAlias      别名（可选，如果不指定则取第一个可用别名）
+     * @param keyPassword   私钥密码（如果与 storePassword 相同可设为 null）
+     * @return 包含私钥和证书
+     */
+    public static CertificateInfo parsePkcs12Certificate(InputStream in,
+                                                         String storePassword, String keyAlias, String keyPassword) throws RuntimeException {
+
+        try {
+            // Step 1: 加载 PKCS12 KeyStore
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+
+            keyStore.load(in, storePassword.toCharArray());
+
+            // Step 2: 获取别名（如果没有指定）
+            if (keyAlias == null || keyAlias.isEmpty()) {
+                Enumeration<String> aliases = keyStore.aliases();
+                while (aliases.hasMoreElements()) {
+                    String alias = aliases.nextElement();
+                    if (keyStore.isKeyEntry(alias)) {
+                        keyAlias = alias;
+                        break;
+                    }
+                }
+            }
+
+            if (keyAlias == null) {
+                throw new RuntimeException("未找到有效的密钥条目");
+            }
+
+            // Step 3: 获取私钥
+            PrivateKey privateKey = (PrivateKey) keyStore.getKey(keyAlias, keyPassword == null ? storePassword.toCharArray() : keyPassword.toCharArray());
+
+            // Step 4: 获取证书
+            Certificate cert = keyStore.getCertificate(keyAlias);
+            if (!(cert instanceof X509Certificate)) {
+                throw new RuntimeException("证书不是 X.509 格式");
+            }
+            return new CertificateInfo(privateKey, null, ((X509Certificate) cert));
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException |
+                 UnrecoverableKeyException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void exportPkcs12(CertificateInfo certificateInfo, String password, OutputStream response) {
+        try {
+            KeyStore pkcs12 = KeyStore.getInstance("PKCS12");
+            pkcs12.load(null, null);
+            X509Certificate certificate = certificateInfo.getCertificate();
+            Certificate[] chain = new Certificate[]{certificate};
+            char[] passwordCharArray = password.toCharArray();
+            pkcs12.setKeyEntry("aliasCertificate", certificateInfo.getKeyPair().getPrivate(), passwordCharArray, chain);
+            pkcs12.store(response, passwordCharArray);
+            response.flush();
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
