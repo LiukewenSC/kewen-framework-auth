@@ -6,43 +6,8 @@ import com.kewen.framework.idaas.application.util.SamlXmlUtil;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;
-import org.opensaml.saml.saml2.core.ArtifactResponse;
-import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Attribute;
-import org.opensaml.saml.saml2.core.AttributeStatement;
-import org.opensaml.saml.saml2.core.Audience;
-import org.opensaml.saml.saml2.core.AudienceRestriction;
-import org.opensaml.saml.saml2.core.AuthnContext;
-import org.opensaml.saml.saml2.core.AuthnContextClassRef;
-import org.opensaml.saml.saml2.core.AuthnStatement;
-import org.opensaml.saml.saml2.core.Conditions;
-import org.opensaml.saml.saml2.core.EncryptedAssertion;
-import org.opensaml.saml.saml2.core.Issuer;
-import org.opensaml.saml.saml2.core.NameID;
-import org.opensaml.saml.saml2.core.NameIDType;
-import org.opensaml.saml.saml2.core.Response;
-import org.opensaml.saml.saml2.core.Status;
-import org.opensaml.saml.saml2.core.StatusCode;
-import org.opensaml.saml.saml2.core.Subject;
-import org.opensaml.saml.saml2.core.SubjectConfirmation;
-import org.opensaml.saml.saml2.core.SubjectConfirmationData;
-import org.opensaml.saml.saml2.core.impl.ArtifactResponseBuilder;
-import org.opensaml.saml.saml2.core.impl.AssertionBuilder;
-import org.opensaml.saml.saml2.core.impl.AttributeStatementBuilder;
-import org.opensaml.saml.saml2.core.impl.AudienceBuilder;
-import org.opensaml.saml.saml2.core.impl.AudienceRestrictionBuilder;
-import org.opensaml.saml.saml2.core.impl.AuthnContextBuilder;
-import org.opensaml.saml.saml2.core.impl.AuthnContextClassRefBuilder;
-import org.opensaml.saml.saml2.core.impl.AuthnStatementBuilder;
-import org.opensaml.saml.saml2.core.impl.ConditionsBuilder;
-import org.opensaml.saml.saml2.core.impl.IssuerBuilder;
-import org.opensaml.saml.saml2.core.impl.NameIDBuilder;
-import org.opensaml.saml.saml2.core.impl.ResponseBuilder;
-import org.opensaml.saml.saml2.core.impl.StatusBuilder;
-import org.opensaml.saml.saml2.core.impl.StatusCodeBuilder;
-import org.opensaml.saml.saml2.core.impl.SubjectBuilder;
-import org.opensaml.saml.saml2.core.impl.SubjectConfirmationBuilder;
-import org.opensaml.saml.saml2.core.impl.SubjectConfirmationDataBuilder;
+import org.opensaml.saml.saml2.core.*;
+import org.opensaml.saml.saml2.core.impl.*;
 import org.opensaml.saml.saml2.encryption.Encrypter;
 import org.opensaml.xmlsec.encryption.support.DataEncryptionParameters;
 import org.opensaml.xmlsec.encryption.support.EncryptionException;
@@ -67,11 +32,11 @@ public abstract class AbstractXmlResponse {
     public abstract String getEntityId();
 
     /**
-     * 当前登录人唯一标示，用于在 IDName中
+     * 当前登录人唯一标示，用于在 NameID中
      *
      * @return
      */
-    public abstract String getUsername();
+    public abstract String getNameID();
 
     /**
      * 目标地址
@@ -86,8 +51,6 @@ public abstract class AbstractXmlResponse {
      *
      * @return
      */
-    protected abstract String getCertData();
-
     protected abstract CertificateInfo getCertificateInfo();
 
 
@@ -127,6 +90,10 @@ public abstract class AbstractXmlResponse {
      * @return
      */
     public boolean isEncryptResponse() {
+        return false;
+    }
+
+    public boolean isEncryptAssertion() {
         return false;
     }
 
@@ -183,8 +150,10 @@ public abstract class AbstractXmlResponse {
         response.getAssertions().add(assertion);
 
         //这里是加密的，可以不要，根据协议要求来
-        EncryptedAssertion encryptedAssertion = encryptAssertion(assertion);
-        response.getEncryptedAssertions().add(encryptedAssertion);
+        if (isEncryptAssertion()) {
+            EncryptedAssertion encryptedAssertion = encryptAssertion(assertion);
+            response.getEncryptedAssertions().add(encryptedAssertion);
+        }
 
         return response;
     }
@@ -268,7 +237,7 @@ public abstract class AbstractXmlResponse {
     public Subject getSubject() {
         Subject subject = new SubjectBuilder().buildObject();
         NameID nameID = new NameIDBuilder().buildObject();
-        nameID.setValue(getUsername());
+        nameID.setValue(getNameID());
         nameID.setFormat(NameIDType.TRANSIENT);
         //nameID.setSPNameQualifier("SP name qualifier");
         //nameID.setNameQualifier("Name qualifier");

@@ -6,6 +6,8 @@ import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeValue;
 import org.opensaml.saml.saml2.core.impl.AttributeBuilder;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,7 +27,24 @@ public abstract class AbstractSimpleAttributeXmlResponse extends AbstractXmlResp
      *
      * @return
      */
-    protected abstract Map<String, String> getAttributeValues();
+    protected Map<String, String> getAttributeValues() {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * 属性填充， 和上面选则一个即可
+     *
+     * @return
+     */
+    protected Map<String, List<String>> getAttributeValueLists() {
+        Map<String, String> attributeValues = getAttributeValues();
+        HashMap<String, List<String>> map = new HashMap<>(attributeValues.size());
+        for (Map.Entry<String, String> entry : attributeValues.entrySet()) {
+            String value = entry.getValue();
+            map.put(entry.getKey(), Collections.singletonList(value));
+        }
+        return map;
+    }
 
     /**
      * <saml2:AttributeStatement>
@@ -44,13 +63,15 @@ public abstract class AbstractSimpleAttributeXmlResponse extends AbstractXmlResp
      */
     @Override
     public List<Attribute> getAttributes() {
-        Map<String, String> attributeValues = getAttributeValues();
+        Map<String, List<String>> attributeValues = getAttributeValueLists();
         return attributeValues.entrySet().stream().map(entry -> {
             Attribute attribute = new AttributeBuilder().buildObject();
             attribute.setName(entry.getKey());
-            XSAny attrValue = new XSAnyBuilder().buildObject(AttributeValue.DEFAULT_ELEMENT_NAME);
-            attrValue.setTextContent(entry.getValue());
-            attribute.getAttributeValues().add(attrValue);
+            for (String value : entry.getValue()) {
+                XSAny attrValue = new XSAnyBuilder().buildObject(AttributeValue.DEFAULT_ELEMENT_NAME);
+                attrValue.setTextContent(value);
+                attribute.getAttributeValues().add(attrValue);
+            }
             return attribute;
         }).collect(Collectors.toList());
     }

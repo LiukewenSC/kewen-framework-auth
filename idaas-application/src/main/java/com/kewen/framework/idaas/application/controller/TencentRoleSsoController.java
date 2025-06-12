@@ -1,24 +1,11 @@
-/*
- * Copyright (c) 2019 BeiJing JZYT Technology Co. Ltd
- * www.idsmanager.com
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * BeiJing JZYT Technology Co. Ltd ("Confidential Information").
- * You shall not disclose such Confidential Information and shall use
- * it only in accordance with the terms of the license agreement you
- * entered into with BeiJing JZYT Technology Co. Ltd.
- */
-
 package com.kewen.framework.idaas.application.controller;
 
 import com.kewen.framework.idaas.application.model.resp.CertificateResp;
-import com.kewen.framework.idaas.application.model.saml.AliyunRoleSsoXmlResponse;
+import com.kewen.framework.idaas.application.model.saml.AbstractXmlResponse;
+import com.kewen.framework.idaas.application.model.saml.TencentRoleSsoXmlResponse;
 import com.kewen.framework.idaas.application.service.CertificateService;
 import com.kewen.framework.idaas.application.util.ResponseUtil;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,23 +15,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * 2025/05/13
- *
- * @author kewen
- */
-@RequestMapping("/sso/role/aliyun")
+@RequestMapping("/sso/role/tencent")
 @Controller
-public class AliyunRoleSsoController {
-
-    private static final Logger log = LoggerFactory.getLogger(AliyunRoleSsoController.class);
-
+public class TencentRoleSsoController {
 
     @Autowired
     private CertificateService certificateService;
 
     /**
-     * 跳转阿里云登录
+     * 跳转腾讯云登录
      *
      * @param id
      * @param httpServletResponse
@@ -55,14 +34,15 @@ public class AliyunRoleSsoController {
 
         CertificateResp certificate = certificateService.getCertificate(id);
         //构造阿里云角色SSO对象
-        AliyunRoleSsoXmlResponse aliyunRoleSsoXmlResponse = new AliyunRoleSsoXmlResponse(
+        AbstractXmlResponse aliyunRoleSsoSimpleAttributeXmlResponse = new TencentRoleSsoXmlResponse(
                 "kewen-idp",
+                "IDPAdmin",
                 certificate.getCertificateInfoStr(),
-                DateTime.now().plusHours(2),
-                "acs:ram::1555734646214700:role/kewen-saml-role,acs:ram::1555734646214700:saml-provider/kewen-saml",
-                "IDPAdmin"
+                "qcs::cam::uin/100011725657:roleName/KewenSamlRole,qcs::cam::uin/100011725657:saml-provider/KewenSamlTest",
+                DateTime.now().plusHours(2)
         );
-        ResponseUtil.redirect(httpServletResponse, aliyunRoleSsoXmlResponse);
+        ResponseUtil.redirect(httpServletResponse, aliyunRoleSsoSimpleAttributeXmlResponse);
     }
+
 
 }
