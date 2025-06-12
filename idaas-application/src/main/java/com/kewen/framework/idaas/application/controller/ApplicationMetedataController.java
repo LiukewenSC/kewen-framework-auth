@@ -3,23 +3,7 @@ package com.kewen.framework.idaas.application.controller;
 
 import com.kewen.framework.idaas.application.model.CertificateReq;
 import com.kewen.framework.idaas.application.model.CertificateResp;
-import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.service.CertificateService;
-import com.kewen.framework.idaas.application.util.OpenSAMLUtils;
-import com.kewen.framework.idaas.application.util.SamlXmlUtil;
-import org.opensaml.saml.common.xml.SAMLConstants;
-import org.opensaml.saml.saml2.metadata.EntityDescriptor;
-import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.saml.saml2.metadata.KeyDescriptor;
-import org.opensaml.saml.saml2.metadata.SingleLogoutService;
-import org.opensaml.saml.saml2.metadata.SingleSignOnService;
-import org.opensaml.saml.saml2.metadata.impl.EntityDescriptorBuilder;
-import org.opensaml.saml.saml2.metadata.impl.IDPSSODescriptorBuilder;
-import org.opensaml.saml.saml2.metadata.impl.KeyDescriptorBuilder;
-import org.opensaml.saml.saml2.metadata.impl.SingleLogoutServiceBuilder;
-import org.opensaml.saml.saml2.metadata.impl.SingleSignOnServiceBuilder;
-import org.opensaml.security.credential.UsageType;
-import org.opensaml.xmlsec.signature.KeyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +62,7 @@ public class ApplicationMetedataController {
 
     @GetMapping("/getMetadataBytes")
     public void getMetadataBytes(@RequestParam("id") Long id, HttpServletResponse response) {
-        String metadata = getMetadata(id);
+        String metadata = certificateService.getMetadata(id);
         response.setContentType("application/xml");
         response.setCharacterEncoding("UTF-8");
         try {
@@ -88,57 +72,18 @@ public class ApplicationMetedataController {
         }
     }
 
+    /**
+     * 生成Metadata
+     * @param id
+     * @return
+     */
     @GetMapping("/getMetadata")
     @ResponseBody
     public String getMetadata(@RequestParam("id") Long id) {
 
         CertificateResp certificate = certificateService.getCertificate(id);
 
-        String privateKeyStr = certificate.getPrivateKey();
-        String publicKeyStr = certificate.getPublicKey();
-
-        EntityDescriptor entityDescriptor = new EntityDescriptorBuilder().buildObject();
-        entityDescriptor.setEntityID("kewen-idp");
-
-        IDPSSODescriptor idpssoDescriptor = new IDPSSODescriptorBuilder().buildObject();
-        idpssoDescriptor.setWantAuthnRequestsSigned(false);
-        idpssoDescriptor.addSupportedProtocol(SAMLConstants.SAML20P_NS);
-
-        KeyDescriptor keyDescriptor = new KeyDescriptorBuilder().buildObject();
-        keyDescriptor.setUse(UsageType.SIGNING);
-
-        //KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certificate.getCertData());
-        CertificateInfo certificateInfo = certificate.parseCertificateInfo();
-        KeyInfo keyInfo = SamlXmlUtil.getKeyInfo(certificateInfo);
-        keyDescriptor.setKeyInfo(keyInfo);
-
-        idpssoDescriptor.getKeyDescriptors().add(keyDescriptor);
-
-
-        SingleSignOnService singleSignOnService = new SingleSignOnServiceBuilder().buildObject();
-        singleSignOnService.setBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
-        singleSignOnService.setLocation("http://localhost:8080/webprofile-ref-project/idp/singleSignOnService");
-        idpssoDescriptor.getSingleSignOnServices().add(singleSignOnService);
-
-        SingleSignOnService singleSignOnServicePost = new SingleSignOnServiceBuilder().buildObject();
-        singleSignOnServicePost.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
-        singleSignOnServicePost.setLocation("http://localhost:8080/webprofile-ref-project/idp/singleSignOnServicePost");
-        idpssoDescriptor.getSingleSignOnServices().add(singleSignOnServicePost);
-
-
-        SingleLogoutService singleLogoutService = new SingleLogoutServiceBuilder().buildObject();
-        singleLogoutService.setBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
-        singleLogoutService.setLocation("http://localhost:8080/webprofile-ref-project/idp/singleLogoutService");
-        idpssoDescriptor.getSingleLogoutServices().add(singleLogoutService);
-
-        SingleLogoutService singleLogoutServicePost = new SingleLogoutServiceBuilder().buildObject();
-        singleLogoutServicePost.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
-        singleLogoutServicePost.setLocation("http://localhost:8080/webprofile-ref-project/idp/singleLogoutService");
-        idpssoDescriptor.getSingleLogoutServices().add(singleLogoutServicePost);
-
-        entityDescriptor.getRoleDescriptors().add(idpssoDescriptor);
-        OpenSAMLUtils.marshall(entityDescriptor);
-        return OpenSAMLUtils.formatXMLObject(entityDescriptor.getDOM());
+        return certificateService.getMetadata(certificate);
 
     }
 
