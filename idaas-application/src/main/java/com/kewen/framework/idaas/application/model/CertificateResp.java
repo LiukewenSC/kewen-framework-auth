@@ -7,8 +7,16 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.codec.binary.Base64;
 
-import java.io.*;
-import java.security.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -76,8 +84,20 @@ public class CertificateResp {
         }*/
     }
 
+    /**
+     *
+     *
+     * @return
+     * @throws SamlException
+     */
     public X509Certificate parseX509Certificate() throws SamlException {
-        try (InputStream inputStream = new ByteArrayInputStream(getFullCertData().getBytes())) {
+
+        // 这里实际不需要转换成PEM格式的，直接使用Base64解码成byte[]即可
+        //-----BEGIN CERTIFICATE-----
+        //<Base64 编码的 DER 数据>
+        //-----END CERTIFICATE-----
+        //try (InputStream inputStream = new ByteArrayInputStream(getPemCertData().getBytes())) {
+        try (InputStream inputStream = new ByteArrayInputStream(Base64.decodeBase64(certData))) {
             CertificateFactory certFactory = CertificateFactory
                     .getInstance(X509_TYPE);
             Certificate certificate = certFactory.generateCertificate(inputStream);
@@ -89,7 +109,7 @@ public class CertificateResp {
         }
     }
 
-    private String getFullCertData() {
+    private String getPemCertData() {
         StringWriter buff = new StringWriter();
         PrintWriter out = new PrintWriter(buff);
         out.println(BEGIN_CERTIFICATE);
