@@ -39,10 +39,10 @@ import java.util.Date;
  * @since 1.0.0
  */
 @Controller
-@RequestMapping("/application")
-public class ApplicationMetedataController {
+@RequestMapping("/certificate")
+public class CertificateController {
 
-    private static final Logger log = LoggerFactory.getLogger(ApplicationMetedataController.class);
+    private static final Logger log = LoggerFactory.getLogger(CertificateController.class);
 
     @Autowired
     private CertificateService certificateService;
