@@ -89,6 +89,13 @@ public class CertificateController {
 
     }
 
+    /**
+     * 导出证书
+     *
+     * @param id
+     * @param response
+     * @throws IOException
+     */
     @GetMapping("/export")
     public void exportCertificate(Long id, HttpServletResponse response) throws IOException {
 
@@ -98,6 +105,12 @@ public class CertificateController {
     }
 
 
+    /**
+     * 导入证书
+     * @param file
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/import")
     @ResponseBody
     public CertificateInfoStr importCertificate(@RequestParam("file") MultipartFile file) throws IOException {
