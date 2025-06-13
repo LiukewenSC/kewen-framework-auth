@@ -16,6 +16,8 @@ import com.kewen.framework.idaas.application.model.certificate.CertificateInfoSt
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
+
 /**
  * 2025/06/12
  *
@@ -24,6 +26,35 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class CertificateResp {
+
+    /**
+     * 主键
+     */
     private Long id;
+
+    /**
+     * 发行人
+     */
+    private String issuer;
+
+    /**
+     * 主体
+     */
+    private String subject;
+
+    /**
+     * 生效时间
+     */
+    private Date effectTime;
+
+    /**
+     * 过期时间
+     */
+    private Date expireTime;
+
+    /**
+     * 证书信息
+     */
     private CertificateInfoStr certificateInfoStr;
+
 }

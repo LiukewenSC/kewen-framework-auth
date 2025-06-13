@@ -66,6 +66,10 @@ public class CertificateService {
         CertificateInfoStr certificateInfoStr = new CertificateInfoStr(certificateInfo);
         return new CertificateResp()
                 .setId(certificate.getId())
+                .setIssuer(certificate.getIssuer())
+                .setSubject(certificate.getSubject())
+                .setEffectTime(certificate.getEffectTime())
+                .setExpireTime(certificate.getExpireTime())
                 .setCertificateInfoStr(certificateInfoStr);
     }
 
@@ -83,6 +87,10 @@ public class CertificateService {
                 .setPublicKeyBase64Str(certificate.getPublicKey());
         return new CertificateResp()
                 .setId(certificate.getId())
+                .setIssuer(certificate.getIssuer())
+                .setSubject(certificate.getSubject())
+                .setEffectTime(certificate.getEffectTime())
+                .setExpireTime(certificate.getExpireTime())
                 .setCertificateInfoStr(certificateInfoStr);
     }
 

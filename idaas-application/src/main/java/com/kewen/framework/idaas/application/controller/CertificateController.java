@@ -12,7 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
@@ -51,7 +55,6 @@ public class CertificateController {
     @Autowired
     private CertificateService certificateService;
 
-
     @GetMapping("/generateCertificate")
     @ResponseBody
     public CertificateResp generateCertificate(IdaasCertificateReq req) {
@@ -63,6 +66,14 @@ public class CertificateController {
         ;
         CertificateResp certificateInfoStr = certificateService.saveCertificate(req);
         return certificateInfoStr;
+    }
+
+    @GetMapping("/getCertificate")
+    @ResponseBody
+    public CertificateResp getCertificate(@RequestParam("id") Long id) {
+
+        return certificateService.getCertificate(id);
+
     }
 
     @GetMapping("/getMetadataBytes")
@@ -97,13 +108,13 @@ public class CertificateController {
      * @param response
      * @throws IOException
      */
-    @GetMapping("/export")
-    public void exportCertificate(Long id, HttpServletResponse response) {
+    @PostMapping("/export")
+    public void exportCertificate(@RequestParam("id") Long id, HttpServletResponse response, @RequestParam("password") String password) {
 
         CertificateResp certificate = certificateService.getCertificate(id);
 
         try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
-            JavaCertificateUtil.exportPkcs12Certificate(certificate.getCertificateInfoStr().parseCertificateInfo(), "123456", servletOutputStream);
+            JavaCertificateUtil.exportPkcs12Certificate(certificate.getCertificateInfoStr().parseCertificateInfo(), password, servletOutputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -119,11 +130,9 @@ public class CertificateController {
      */
     @PostMapping("/import")
     @ResponseBody
-    public CertificateInfoStr importCertificate(@RequestParam("file") MultipartFile file) throws IOException {
+    public CertificateInfoStr importCertificate(@RequestParam("file") MultipartFile file, @RequestParam("password") String password) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
-            CertificateInfo certificateInfo = JavaCertificateUtil.parsePkcs12Certificate(
-                    inputStream, "123456", null, null
-            );
+            CertificateInfo certificateInfo = JavaCertificateUtil.parsePkcs12Certificate(inputStream, password);
 
             CertificateInfoStr certificateInfoStr = new CertificateInfoStr(certificateInfo);
 
