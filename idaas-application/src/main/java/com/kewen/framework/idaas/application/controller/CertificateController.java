@@ -12,11 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
@@ -108,7 +104,7 @@ public class CertificateController {
      * @param response
      * @throws IOException
      */
-    @PostMapping("/export")
+    @PostMapping("/exportPkcs12")
     public void exportCertificate(@RequestParam("id") Long id, HttpServletResponse response, @RequestParam("password") String password) {
 
         CertificateResp certificate = certificateService.getCertificate(id);
@@ -118,7 +114,6 @@ public class CertificateController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
 
@@ -128,11 +123,53 @@ public class CertificateController {
      * @return
      * @throws IOException
      */
-    @PostMapping("/import")
+    @PostMapping("/importPkcs12")
     @ResponseBody
     public CertificateInfoStr importCertificate(@RequestParam("file") MultipartFile file, @RequestParam("password") String password) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             CertificateInfo certificateInfo = JavaCertificateUtil.parsePkcs12Certificate(inputStream, password);
+
+            CertificateInfoStr certificateInfoStr = new CertificateInfoStr(certificateInfo);
+
+            return certificateInfoStr;
+
+        }
+    }
+
+
+    /**
+     * 导出证书
+     *
+     * @param id
+     * @param type     PRIVATE PUBLIC CERTIFICATE
+     * @param response
+     * @throws IOException
+     */
+    @PostMapping("/exportPem")
+    public void exportPem(@RequestParam("id") Long id, @RequestParam("type") String type, HttpServletResponse response) {
+
+        CertificateResp certificate = certificateService.getCertificate(id);
+
+        try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
+            JavaCertificateUtil.exportPem(certificate.getCertificateInfoStr().parseCertificateInfo(), servletOutputStream, type);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 导入证书
+     *
+     * @param file
+     * @param type PRIVATE PUBLIC CERTIFICATE
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/importPem")
+    @ResponseBody
+    public CertificateInfoStr importPem(@RequestParam("file") MultipartFile file, @RequestParam("type") String type) throws IOException {
+        try (InputStream inputStream = file.getInputStream()) {
+            CertificateInfo certificateInfo = JavaCertificateUtil.importPem(inputStream, type);
 
             CertificateInfoStr certificateInfoStr = new CertificateInfoStr(certificateInfo);
 

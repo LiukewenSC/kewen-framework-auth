@@ -83,6 +83,9 @@ public class CertificateInfo {
      * @return
      */
     public String getCertDataStr() {
+        if (certificate == null) {
+            return null;
+        }
         //TIP 在处理没有中文或其他非ASCII字符的情况时，newStringUsAscii 和 newStringUtf8 的结果通常是相同的，
         // 因为 ASCII 字符集是 UTF-8 字符集的一个子集。不过，这两个方法的具体行为取决于它们是如何定义和使用的。
         //newStringUsAscii 方法:

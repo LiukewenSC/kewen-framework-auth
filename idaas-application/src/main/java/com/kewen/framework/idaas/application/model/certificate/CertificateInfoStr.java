@@ -5,17 +5,10 @@ import com.kewen.framework.idaas.application.util.JavaCertificateUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.io.*;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -64,10 +57,18 @@ public class CertificateInfoStr {
     }
 
     public PrivateKey parsePrivateKey() {
+        if (StringUtils.isEmpty(privateKeyBase64Str)) {
+            return null;
+        }
         return JavaCertificateUtil.parseDerPrivateKey(privateKeyBase64Str);
     }
 
     public PublicKey parsePublicKey() {
+
+        if (StringUtils.isEmpty(publicKeyBase64Str)) {
+            return null;
+        }
+
         byte[] publicKeyBytes = Base64.decodeBase64(publicKeyBase64Str);
 
         // 使用 X.509 编码规范加载公钥
@@ -99,7 +100,9 @@ public class CertificateInfoStr {
      * @throws SamlException
      */
     public X509Certificate parseX509Certificate() throws SamlException {
-
+        if (StringUtils.isEmpty(x509CertificateDerStr)) {
+            return null;
+        }
         // 这里实际不需要转换成PEM格式的，直接使用Base64解码成byte[]即可
         //-----BEGIN CERTIFICATE-----
         //<Base64 编码的 DER 数据>

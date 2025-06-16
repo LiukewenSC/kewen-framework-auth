@@ -1,41 +1,18 @@
 package com.kewen.framework.idaas.application.util;
 
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.CharsetUtil;
 import com.kewen.framework.idaas.application.exception.CertificationException;
 import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
+import com.kewen.framework.idaas.application.model.certificate.CertificateInfoStr;
 import com.kewen.framework.idaas.application.saml.SamlException;
 import org.apache.commons.codec.binary.Base64;
-import sun.security.x509.AlgorithmId;
-import sun.security.x509.CertificateAlgorithmId;
-import sun.security.x509.CertificateIssuerName;
-import sun.security.x509.CertificateSerialNumber;
-import sun.security.x509.CertificateSubjectName;
-import sun.security.x509.CertificateValidity;
-import sun.security.x509.CertificateVersion;
-import sun.security.x509.CertificateX509Key;
-import sun.security.x509.X500Name;
-import sun.security.x509.X509CertImpl;
-import sun.security.x509.X509CertInfo;
+import sun.security.x509.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -54,8 +31,12 @@ import java.util.Enumeration;
 public class JavaCertificateUtil {
 
     public static final String X509_TYPE = "X.509";
-    public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----";
-    public static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
+    public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----\n";
+    public static final String END_CERTIFICATE = "-----END CERTIFICATE-----\n";
+    public static final String BEGIN_PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----\n";
+    public static final String END_PRIVATE_KEY = "-----END RSA PRIVATE KEY-----\n";
+    public static final String BEGIN_PUBLIC_KEY = "-----BEGIN RSA PUBLIC KEY-----\n";
+    public static final String END_PUBLIC_KEY = "-----END RSA PUBLIC KEY-----\n";
 
     public static X509Certificate getCertificate(String certData) throws SamlException {
         try (InputStream inputStream = new ByteArrayInputStream(getFullCertData(certData).getBytes())) {
@@ -168,8 +149,7 @@ public class JavaCertificateUtil {
     }
 
     /**
-     *
-     * @param in PKCS#12 文件
+     * @param in       PKCS#12 文件
      * @param password PKCS#12 文件密码
      * @return 包含私钥和证书
      * @throws RuntimeException
@@ -178,6 +158,7 @@ public class JavaCertificateUtil {
                                                          String password) throws RuntimeException {
         return parsePkcs12Certificate(in, password, null, null);
     }
+
     /**
      * 从 .p12 文件中加载私钥和证书
      *
@@ -247,4 +228,45 @@ public class JavaCertificateUtil {
             throw new CertificationException(e);
         }
     }
+
+    public static void exportPem(CertificateInfo certificateInfo, OutputStream response, String x509_TYPE) {
+        String result;
+        if ("PRIVATE".equals(x509_TYPE)) {
+            result = BEGIN_PRIVATE_KEY.concat(certificateInfo.getPrivateKeyStr()).concat("\n").concat(END_PRIVATE_KEY);
+        } else if ("PUBLIC".equals(x509_TYPE)) {
+            result = BEGIN_PUBLIC_KEY.concat(certificateInfo.getPublicKeyStr()).concat("\n").concat(END_PUBLIC_KEY);
+        } else if ("CERTIFICATE".equals(x509_TYPE)) {
+            result = BEGIN_CERTIFICATE.concat(certificateInfo.getCertDataStr()).concat("\n").concat(END_CERTIFICATE);
+        } else {
+            throw new CertificationException("unsupported key type: " + x509_TYPE);
+        }
+        try {
+            response.write(result.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static CertificateInfo importPem(InputStream in, String x509_TYPE) {
+        String s = IoUtil.read(in, CharsetUtil.CHARSET_GBK);
+        if ("PRIVATE".equals(x509_TYPE)) {
+            String base64DerPrivateKey = s.substring(BEGIN_PRIVATE_KEY.length(), s.indexOf(END_PRIVATE_KEY));
+            CertificateInfoStr certificateInfoStr = new CertificateInfoStr();
+            certificateInfoStr.setPrivateKeyBase64Str(base64DerPrivateKey);
+            return certificateInfoStr.parseCertificateInfo();
+        } else if ("PUBLIC".equals(x509_TYPE)) {
+            String base64DerPrivateKey = s.substring(BEGIN_PUBLIC_KEY.length(), s.indexOf(END_PUBLIC_KEY));
+            CertificateInfoStr certificateInfoStr = new CertificateInfoStr();
+            certificateInfoStr.setPublicKeyBase64Str(base64DerPrivateKey);
+            return certificateInfoStr.parseCertificateInfo();
+        } else if ("CERTIFICATE".equals(x509_TYPE)) {
+            String base64DerPrivateKey = s.substring(BEGIN_CERTIFICATE.length(), s.indexOf(END_CERTIFICATE));
+            CertificateInfoStr certificateInfoStr = new CertificateInfoStr();
+            certificateInfoStr.setX509CertificateDerStr(base64DerPrivateKey);
+            return certificateInfoStr.parseCertificateInfo();
+        } else {
+            throw new CertificationException("unsupported key type: " + x509_TYPE);
+        }
+    }
+
 }
