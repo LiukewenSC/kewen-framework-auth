@@ -7,12 +7,17 @@ import com.kewen.framework.idaas.application.model.certificate.CertificateInfoSt
 import com.kewen.framework.idaas.application.model.req.IdaasCertificateReq;
 import com.kewen.framework.idaas.application.model.resp.CertificateResp;
 import com.kewen.framework.idaas.application.service.CertificateService;
+import com.kewen.framework.idaas.application.util.HutoolCertificateUtil;
 import com.kewen.framework.idaas.application.util.JavaCertificateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
@@ -175,6 +180,27 @@ public class CertificateController {
 
             return certificateInfoStr;
 
+        }
+    }
+
+
+    /**
+     * 导出证书
+     *
+     * @param id
+     * @param type     PRIVATE PUBLIC CERTIFICATE
+     * @param response
+     * @throws IOException
+     */
+    @PostMapping("/exportPemHutool")
+    public void exportPem2(@RequestParam("id") Long id, @RequestParam("type") String type, HttpServletResponse response) {
+
+        CertificateResp certificate = certificateService.getCertificate(id);
+
+        try (ServletOutputStream servletOutputStream = response.getOutputStream()) {
+            HutoolCertificateUtil.exportPem(certificate.getCertificateInfoStr(), type, servletOutputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
