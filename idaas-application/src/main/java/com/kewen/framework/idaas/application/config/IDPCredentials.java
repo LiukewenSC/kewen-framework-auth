@@ -8,6 +8,7 @@ import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
+@Deprecated
 public class IDPCredentials {
     private static final Credential credential;
 
