@@ -14,8 +14,8 @@ package com.kewen.framework.idaas.application.controller;
 
 import com.kewen.framework.idaas.application.model.resp.CertificateResp;
 import com.kewen.framework.idaas.application.model.saml.AliyunRoleSsoXmlResponse;
+import com.kewen.framework.idaas.application.saml.ResponseUtil;
 import com.kewen.framework.idaas.application.service.CertificateService;
-import com.kewen.framework.idaas.application.util.ResponseUtil;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -3,7 +3,7 @@ package com.kewen.framework.idaas.application.model.saml;
 import com.kewen.framework.idaas.application.config.SPCredentials;
 import com.kewen.framework.idaas.application.exception.CertificationException;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
-import com.kewen.framework.idaas.application.util.SamlXmlUtil;
+import com.kewen.framework.idaas.application.saml.SamlXmlUtil;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.joda.time.DateTime;
 import org.opensaml.saml.common.SAMLVersion;

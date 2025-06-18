@@ -10,7 +10,6 @@ import java.util.Date;
 public class CertificateGen {
     protected String subject;
     protected String issuer;
-    protected String serial;
     protected Date notBefore;
     protected Date notAfter;
     protected String signatureAlgorithm = "SHA256withRSA";

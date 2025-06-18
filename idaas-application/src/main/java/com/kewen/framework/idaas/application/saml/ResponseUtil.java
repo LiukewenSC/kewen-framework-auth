@@ -10,7 +10,7 @@
  * entered into with BeiJing JZYT Technology Co. Ltd.
  */
 
-package com.kewen.framework.idaas.application.util;
+package com.kewen.framework.idaas.application.saml;
 
 import com.kewen.framework.idaas.application.model.saml.AbstractXmlResponse;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;

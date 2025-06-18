@@ -1,4 +1,4 @@
-package com.kewen.framework.idaas.application.util;
+package com.kewen.framework.idaas.application.saml;
 
 import com.kewen.framework.idaas.application.config.IDPCredentials;
 import com.kewen.framework.idaas.application.exception.CertificationException;
@@ -18,11 +18,7 @@ import org.opensaml.xmlsec.signature.KeyInfo;
 import org.opensaml.xmlsec.signature.Signature;
 import org.opensaml.xmlsec.signature.X509Certificate;
 import org.opensaml.xmlsec.signature.X509Data;
-import org.opensaml.xmlsec.signature.impl.KeyInfoBuilder;
-import org.opensaml.xmlsec.signature.impl.SignatureBuilder;
-import org.opensaml.xmlsec.signature.impl.SignatureImpl;
-import org.opensaml.xmlsec.signature.impl.X509CertificateBuilder;
-import org.opensaml.xmlsec.signature.impl.X509DataBuilder;
+import org.opensaml.xmlsec.signature.impl.*;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.opensaml.xmlsec.signature.support.Signer;
