@@ -13,8 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ *  从本地加载 KeyStore
  * Created by Privat on 13/05/14.
  */
+@Deprecated
 public class SPCredentials {
     private static final String KEY_STORE_PASSWORD = "password";
     private static final String KEY_STORE_ENTRY_PASSWORD = "password";
