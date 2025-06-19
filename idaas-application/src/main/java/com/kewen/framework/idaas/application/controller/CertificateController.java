@@ -1,7 +1,6 @@
 package com.kewen.framework.idaas.application.controller;
 
 
-import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfoStr;
 import com.kewen.framework.idaas.application.model.req.IdaasCertificateReq;
@@ -24,7 +23,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 /**
  * 2025/04/13
@@ -59,12 +57,6 @@ public class CertificateController {
     @GetMapping("/generateCertificate")
     @ResponseBody
     public CertificateResp generateCertificate(IdaasCertificateReq req) {
-        CertificateGen certificateGen = new CertificateGen();
-        certificateGen.setSubject("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
-                .setIssuer("CN=John Doe, OU=Engineering, O=MyCompany, C=US")
-                .setNotBefore(new Date(System.currentTimeMillis()))
-                .setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)))
-        ;
         CertificateResp certificateInfoStr = certificateService.saveCertificate(req);
         return certificateInfoStr;
     }

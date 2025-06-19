@@ -24,11 +24,11 @@ import java.util.Date;
  */
 @Data
 public class IdaasCertificateReq {
-    protected String subject;
-    protected String issuer;
+    protected String subject = "CN=John Doe, OU=Engineering, O=MyCompany, C=US";
+    protected String issuer = "CN=John Doe, OU=Engineering, O=MyCompany, C=US";
     protected String serial;
-    protected Date notBefore;
-    protected Date notAfter;
+    protected Date notBefore = new Date(System.currentTimeMillis());
+    protected Date notAfter = new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365));
     protected String signatureAlgorithm = "SHA256withRSA";
 
 }
