@@ -4,7 +4,6 @@ package com.kewen.framework.idaas.application.util;
 import com.kewen.framework.idaas.application.exception.CertificationException;
 import com.kewen.framework.idaas.application.model.certificate.CertificateGen;
 import com.kewen.framework.idaas.application.model.certificate.CertificateInfo;
-import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -17,16 +16,21 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemReader;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.util.Date;
 
@@ -46,7 +50,7 @@ public class BcCertificateUtil {
      * 未测试
      * 从 PKCS#1 格式的 DER 字节数组加载 Java 的 RSAPrivateKey。
      */
-    public static PrivateKey loadPKCS1PrivateKey(byte[] pkcs1DerBytes) throws Exception {
+    public static PrivateKey loadPkcs1PrivateKey(byte[] pkcs1DerBytes) throws Exception {
         // Step 1: 使用 BouncyCastle 解析 DER 编码的 ASN.1 序列
         ASN1Sequence sequence = ASN1Sequence.getInstance(pkcs1DerBytes);
         org.bouncycastle.asn1.pkcs.RSAPrivateKey bcPrivateKey = org.bouncycastle.asn1.pkcs.RSAPrivateKey.getInstance(sequence);
@@ -61,25 +65,6 @@ public class BcCertificateUtil {
         // Step 4: 使用 KeyFactory 构建 Java 的 PrivateKey 对象
         KeyFactory keyFactory = KeyFactory.getInstance("RSA", "BC");
         return keyFactory.generatePrivate(keySpec);
-    }
-
-    /**
-     * 未测试,
-     * 从 PEM 字符串加载 PKCS#1 私钥（支持带头尾或裸 Base64 格式）
-     */
-    public static PrivateKey loadPKCS1PrivateKeyFromPEM(String pemString) throws IOException, Exception {
-        if (pemString.trim().startsWith("-----")) {
-            // 带 PEM 头部的情况
-            PemReader pemReader = new PemReader(new StringReader(pemString));
-            PemObject pemObject = pemReader.readPemObject();
-            pemReader.close();
-            //这里转为DER了吗？
-            return loadPKCS1PrivateKey(pemObject.getContent());
-        } else {
-            // 裸 Base64 编码的 DER 数据
-            byte[] derBytes = Base64.decodeBase64(pemString);
-            return loadPKCS1PrivateKey(derBytes);
-        }
     }
 
     /**
@@ -103,12 +88,6 @@ public class BcCertificateUtil {
         }
 
         return converter.getPrivateKey(privateKeyInfo);
-    }
-
-    private PrivateKey loadPkcs8PrivateKey(byte[] pkcs8Bytes) throws GeneralSecurityException {
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8Bytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
-        return kf.generatePrivate(keySpec);
     }
 
 
