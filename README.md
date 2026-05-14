@@ -1,3 +1,6 @@
+# Deprecated
+
+此项目已并入 kewen-framework中，不再单独维护了
 
 # 1. 框架简介
 
